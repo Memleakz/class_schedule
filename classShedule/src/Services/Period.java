@@ -9,6 +9,8 @@ package Services;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,20 +20,22 @@ import java.util.logging.Logger;
  * @author lawar15
  */
 public class Period {
-    String startTime;
-    String finishTime;
+    LocalDateTime startTime;
+    LocalDateTime finishTime;
     public Period(String startTime,String finishTime){
-	try {
-	    Date formatOfStartTime = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(startTime);
-	} catch (ParseException ex) {
-	    Logger.getLogger(Period.class.getName()).log(Level.SEVERE, null, ex);
-	}
-	try {
-	    Date formatOfFinishTime = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(finishTime);
-	} catch (ParseException ex) {
-	    Logger.getLogger(Period.class.getName()).log(Level.SEVERE, null, ex);
-	}
-	this.startTime = startTime;
-	this.finishTime = finishTime;
+	
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+	LocalDateTime formatOfStartTime = LocalDateTime.parse(startTime,formatter);
+	this.startTime = formatOfStartTime;
+	LocalDateTime formatOfFinishTime = LocalDateTime.parse(finishTime,formatter);
+	this.finishTime = formatOfFinishTime;
+    }
+    public LocalDateTime getStartDate()
+    {
+	return this.startTime;
+    }
+    public LocalDateTime getEndDate()
+    {
+	return this.finishTime;
     }
 }
