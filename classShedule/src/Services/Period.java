@@ -38,4 +38,8 @@ public class Period {
     {
 	return this.finishTime;
     }
+    public LocalDateTime getRelativeDate(int plusDays,int plusHours)
+    {
+	return this.startTime.plusDays(plusDays).plusHours(plusHours);
+    }
 }
