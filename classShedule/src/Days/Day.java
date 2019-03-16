@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Services;
+package Days;
 
+import Common.Period;
+import IServices.DayInterface;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -16,7 +18,7 @@ import java.util.Date;
  * @author lawar15
  */
 
-public class Day {
+public class Day implements DayInterface{
     private final Period bestPeriod;
     private final Period mediumPeriod;
     private final Period emergencyPeriod;
@@ -30,12 +32,15 @@ public class Day {
       this.emergencyPeriod = this.calculateEmergencyPeriodOgTheDay(dateOfTheDay);
       //this.hollyDay = this.isThisHollyDay(dateOfTheDay);
   }
+    @Override
   public Period getBestPeriod(){
       return this.bestPeriod;
   }
+    @Override
   public Period getMediumPeriod(){
       return this.mediumPeriod;
   }
+    @Override
   public Period getEmergencyPeriod(){
       return this.emergencyPeriod;
   }
@@ -136,7 +141,8 @@ switch(dayOfWeek) {
 }
 return null;   
 }
-public LocalDateTime getDateOfTheDay()
+    @Override
+    public LocalDateTime getDateOfTheDay()
 {
     return this.dateOfTheDay;
 }

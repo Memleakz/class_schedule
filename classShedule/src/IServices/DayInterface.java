@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Services;
+package IServices;
 
+import Common.Period;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -12,5 +14,13 @@ import java.util.Date;
  * @author lawar15
  */
 public interface DayInterface {
-  public Day whichDay(Date date); 
+  public Period getBestPeriod();
+ 
+  public Period getMediumPeriod();
+  
+  public Period getEmergencyPeriod();
+  
+  public LocalDateTime getDateOfTheDay();
 }
+  
+
