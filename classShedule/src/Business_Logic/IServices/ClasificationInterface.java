@@ -3,17 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package IServices;
+package Business_Logic.IServices;
 
-import Common.Period;
+import Business_Logic.Common.Period;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  *
  * @author lawar15
  */
-public interface DayInterface {
+public interface ClasificationInterface {
   public Period getBestPeriod();
  
   public Period getMediumPeriod();

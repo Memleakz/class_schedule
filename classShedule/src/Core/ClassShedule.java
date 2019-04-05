@@ -3,18 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Common;
+package Core;
 
-import Courses.Course;
-import Locations.Area;
-import Locations.Room;
-import IServices.BookingLocationsInterface;
-import IServices.CourseInterface;
-import IServices.LocationInterface;
-import Responsible.Lecturer;
-import Participants.ClassOfTheStudents;
-import IServices.StudentsInterface;
-import IServices.TeacherInterface;
+import Business_Logic.Common.Period;
+import Business_Logic.Courses.Course;
+import Business_Logic.Locations.Room;
+import Business_Logic.IServices.BookingLocationsInterface;
+import Business_Logic.IServices.CourseInterface;
+import Business_Logic.IServices.LocationInterface;
+import Business_Logic.Responsible.Lecturer;
+import Business_Logic.Participants.ClassOfTheStudents;
+import Business_Logic.IServices.StudentsInterface;
+import Business_Logic.IServices.TeacherInterface;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,9 +25,9 @@ import java.util.List;
 public class ClassShedule {
 
     public static void main(String[] args) {
-	Area tek = new Area("1", "TEK");
-	Area b44 = new Area("2", "B44");
-	ArrayList<Area> Areas = new ArrayList<Area>();
+	String tek = new String("TEK");
+	String b44 = new String("B44");
+	ArrayList<String> Areas = new ArrayList<String>();
 	Room roomie = new Room("01", "U1", tek, Areas, new ArrayList<BookingLocationsInterface>(), 200);
 
 	StudentsInterface software = new ClassOfTheStudents("001", "SE", 80, new ArrayList<Period>());

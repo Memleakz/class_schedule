@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Days;
+package Business_Logic.Days;
 
-import Common.Period;
-import IServices.DayInterface;
+import Business_Logic.Common.Period;
+import Business_Logic.IServices.ClasificationInterface;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -18,7 +18,7 @@ import java.util.Date;
  * @author lawar15
  */
 
-public class Day implements DayInterface{
+public class Day implements ClasificationInterface{
     private final Period bestPeriod;
     private final Period mediumPeriod;
     private final Period emergencyPeriod;
