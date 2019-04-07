@@ -38,14 +38,14 @@ public class ClassShedule {
 	studentsForMaintance.add(it);
 	studentsForMaintance.add(software);
 
-	TeacherInterface adam = new Lecturer("00001", "Adam Adamsen", new ArrayList<Period>());
+	TeacherInterface adam = new Lecturer("00001", "Adam Adamsen", new ArrayList<Period>(), new ArrayList<CourseInterface>());
 	List<TeacherInterface> lecturersForMaintance = new ArrayList<TeacherInterface>();
 	lecturersForMaintance.add(adam);
 
-	Course sM = new Course("0001", "Software Maintance", studentsForMaintance, lecturersForMaintance, 48, 4, 1);
-	Course sM1 = new Course("0001", "Software Maintance2", studentsForMaintance, lecturersForMaintance, 48, 4, 1);
-	Course sM2 = new Course("0001", "Software Maintance3", studentsForMaintance, lecturersForMaintance, 48, 4, 1);
-	Course sM3 = new Course("0001", "Software Maintance4", studentsForMaintance, lecturersForMaintance, 48, 4, 1);
+	Course sM = new Course("0001", "Software Maintance", studentsForMaintance, 48, 4, 1);
+	Course sM1 = new Course("0001", "Software Maintance2", studentsForMaintance, 48, 4, 1);
+	Course sM2 = new Course("0001", "Software Maintance3", studentsForMaintance, 48, 4, 1);
+	Course sM3 = new Course("0001", "Software Maintance4", studentsForMaintance, 48, 4, 1);
 	
 	Period f19 = new Period("01/02/2019 08:00:00", "31/05/2019 22:00:00");
 	// lists of objects
