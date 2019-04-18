@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.GUI.ClientFXMLController">
+   <children>
+      <Pane fx:id="classSchedulerWelcomePane" prefHeight="440.0" prefWidth="640.0" style="-fx-background-color: #E0FFFF;" visible="false">
+         <children>
+            <TextArea editable="false" layoutX="153.0" layoutY="30.0" prefHeight="41.0" prefWidth="186.0" text="Hello! How can I help You?" />
+            <Button fx:id="makeNewscheduleWelcomeButton" layoutX="56.0" layoutY="110.0" mnemonicParsing="false" text="Make new schedule" />
+            <Button fx:id="changeCurrentScheduleWelcomeButton" layoutX="56.0" layoutY="161.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" text="Change schedule" />
+            <Button fx:id="addNewTeacherButton" layoutX="56.0" layoutY="220.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="117.0" text="Add new Teacher" />
+            <Button fx:id="signoutschedulerwelcomeButton" layoutX="468.0" layoutY="294.0" mnemonicParsing="false" text="Sign out" />
+         </children>
+      </Pane>
+      <Pane fx:id="loginPane" prefHeight="440.0" prefWidth="640.0" style="-fx-background-color: #E0FFFF;" visible="false">
+         <children>
+            <TextArea fx:id="communityArea" editable="false" layoutX="57.0" layoutY="26.0" prefHeight="41.0" prefWidth="495.0" text="Hello! Nice to see you again in out class scheduling system. Please, sign in to work with us!" />
+            <TextField fx:id="inputLogin" layoutX="90.0" layoutY="108.0" />
+            <TextField fx:id="inputPassword" layoutX="90.0" layoutY="169.0" />
+            <TextField editable="false" layoutX="90.0" layoutY="83.0" prefHeight="25.0" prefWidth="66.0" text="Login:" />
+            <TextField editable="false" layoutX="90.0" layoutY="144.0" prefHeight="25.0" prefWidth="73.0" text="Password:" />
+           
+	    <Button fx:id="signInButton" layoutX="239.0" layoutY="220.0" mnemonicParsing="false" onAction="#handleSignInButton" text="Sign in" />
+         </children>
+      </Pane>
+      <Pane fx:id="changingPaneScheduler" layoutX="-2.0" prefHeight="440.0" prefWidth="640.0" style="-fx-background-color: #E0FFFF;" visible="false">
+         <children>
+            <Text layoutX="96.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="What is the reason to changes?" wrappingWidth="203.13671875" />
+            <RadioButton fx:id="teachersFaultRButton" layoutX="96.0" layoutY="48.0" mnemonicParsing="false" text="Teacher's absence">
+               <toggleGroup>
+                  <ToggleGroup fx:id="changeReasonGroup" />
+               </toggleGroup>
+            </RadioButton>
+            <RadioButton fx:id="studentsFaultRButton" layoutX="96.0" layoutY="76.0" mnemonicParsing="false" text="Classe's trip" toggleGroup="$changeReasonGroup" />
+            <RadioButton fx:id="newDataRButton" layoutX="96.0" layoutY="103.0" mnemonicParsing="false" text="New Data" toggleGroup="$changeReasonGroup" />
+            <Text fx:id="startquestiondate" layoutX="90.0" layoutY="197.0" strokeType="OUTSIDE" strokeWidth="0.0" text="What is the start date?" visible="false" wrappingWidth="157.13671875" />
+            <DatePicker fx:id="startDateOfAbsence" layoutX="92.0" layoutY="208.0" visible="false" />
+            <DatePicker fx:id="finishDateOfAbsence" layoutX="92.0" layoutY="256.0" visible="false" />
+            <Text fx:id="finishquestiondate" layoutX="92.0" layoutY="252.0" strokeType="OUTSIDE" strokeWidth="0.0" text="What is the finish date?" visible="false" />
+            <Text fx:id="questionChooseTeacher" layoutX="309.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Who is the teacher?" visible="false" />
+            <ListView fx:id="listOfTeachers" layoutX="309.0" layoutY="42.0" prefHeight="200.0" prefWidth="200.0" visible="false" />
+            <Button fx:id="backButton" layoutX="128.0" layoutY="351.0" mnemonicParsing="false" text="Back" />
+            <Button fx:id="savechangesButton" layoutX="309.0" layoutY="351.0" mnemonicParsing="false" text="Save and show new class schedule" />
+            <Text fx:id="questionChooseClass" layoutX="320.0" layoutY="98.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Which class of Students is it?" visible="false" wrappingWidth="157.13672786951065" />
+            <ListView fx:id="listOfStudents" layoutX="320.0" layoutY="108.0" prefHeight="200.0" prefWidth="200.0" visible="false" />
+         </children>
+      </Pane>
+      <Pane fx:id="changingPaneTeacher" layoutX="-1.0" layoutY="1.0" prefHeight="440.0" prefWidth="640.0" style="-fx-background-color: #E0FFFF;" visible="false">
+         <children>
+            <DatePicker fx:id="startDateOfTeachersAbsence" layoutX="28.0" layoutY="37.0" />
+            <DatePicker fx:id="finishDateOfTeachersAbsence" layoutX="28.0" layoutY="105.0" />
+            <Text layoutX="28.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="What is start date of your absence?" />
+            <Text layoutX="28.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" text="What is a finish date of your absence?" wrappingWidth="197.70508496835828" />
+            <Button fx:id="saveChangesAndSeeNewScheduleTeacher" layoutX="150.0" layoutY="173.0" mnemonicParsing="false" onAction="#handlesaveChangesAndSeeNewScheduleTeacherButtonAction" text="Save and see class schedule" />
+            <Button fx:id="signoutButtonForTeacher" layoutX="150.0" layoutY="220.0" mnemonicParsing="false" onAction="#handleTeachersignOutButtonAction" text="Sign out" />
+         </children>
+      </Pane>
+      <Pane fx:id="inputsPane" prefHeight="441.0" prefWidth="640.0" style="-fx-background-color: #E0FFFF;" visible="false">
+         <children>
+            <Button fx:id="saveAndSeeScheduleWithInputs" layoutX="331.0" layoutY="305.0" mnemonicParsing="false" text="Save " />
+            <Button fx:id="goBackToChangingPane" layoutX="268.0" layoutY="305.0" mnemonicParsing="false" text="Back" />
+            <RadioButton fx:id="addNewCourse" layoutX="245.0" layoutY="102.0" mnemonicParsing="false" text="Add new Course">
+               <toggleGroup>
+                  <ToggleGroup fx:id="inputsGroup" />
+               </toggleGroup>
+            </RadioButton>
+            <RadioButton fx:id="addNewClassOfStudents" layoutX="245.0" layoutY="137.0" mnemonicParsing="false" text="Add new ClassOfStudents" toggleGroup="$inputsGroup" />
+            <RadioButton fx:id="addNewTeacher" layoutX="245.0" layoutY="169.0" mnemonicParsing="false" text="Add new Teacher" toggleGroup="$inputsGroup" />
+            <RadioButton fx:id="addNewRoom" layoutX="245.0" layoutY="197.0" mnemonicParsing="false" text="Add new Room" toggleGroup="$inputsGroup" />
+            <RadioButton fx:id="addNewUser" layoutX="245.0" layoutY="228.0" mnemonicParsing="false" text="Add new User" toggleGroup="$inputsGroup" />
+            <Text layoutX="234.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Which data will you add?" wrappingWidth="148.50781440734863" />
+         </children>
+      </Pane>
+      <Pane fx:id="classScheduleViewPane" prefHeight="440.0" prefWidth="640.0" style="-fx-background-color: #E0FFFF;" visible="false">
+         <children>
+            <TextField fx:id="classorTeacherName" layoutX="289.0" layoutY="2.0" prefHeight="25.0" prefWidth="327.0" />
+            <TextField fx:id="weekNumber" layoutX="172.0" layoutY="34.0" prefHeight="25.0" prefWidth="281.0" />
+            <TextField layoutX="96.0" layoutY="68.0" prefHeight="25.0" prefWidth="90.0" text="TUESDAY" />
+            <TextField layoutX="185.0" layoutY="68.0" prefHeight="25.0" prefWidth="90.0" text="WEDNESDAY" />
+            <TextField layoutX="363.0" layoutY="68.0" prefHeight="25.0" prefWidth="90.0" text="FRIDAY" />
+            <TextField layoutX="453.0" layoutY="68.0" prefHeight="25.0" prefWidth="90.0" text="SATURDAY" />
+            <TextField layoutX="275.0" layoutY="68.0" prefHeight="25.0" prefWidth="90.0" text="THURSDAY" />
+            <TextField layoutX="6.0" layoutY="68.0" prefHeight="25.0" prefWidth="90.0" text="MONDAY" />
+            <TextField layoutX="543.0" layoutY="68.0" prefHeight="25.0" prefWidth="90.0" text="SUNDAY" />
+            <TextField fx:id="mondayLessonsTextField" layoutX="6.0" layoutY="93.0" prefHeight="306.0" prefWidth="90.0" />
+            <TextField fx:id="tuesdayLessonsTextField" layoutX="96.0" layoutY="93.0" prefHeight="306.0" prefWidth="90.0" />
+            <TextField fx:id="wednesdayLessonsTextField" layoutX="185.0" layoutY="93.0" prefHeight="306.0" prefWidth="90.0" />
+            <TextField fx:id="thursdayLessonsTextField" layoutX="275.0" layoutY="93.0" prefHeight="306.0" prefWidth="90.0" />
+            <TextField fx:id="fridayLessonsTextField" layoutX="363.0" layoutY="93.0" prefHeight="306.0" prefWidth="90.0" />
+            <TextField fx:id="saturdayLessonsTextField" layoutX="453.0" layoutY="93.0" prefHeight="306.0" prefWidth="90.0" />
+            <TextField fx:id="sundayLessonsTextField" layoutX="543.0" layoutY="93.0" prefHeight="306.0" prefWidth="90.0" />
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>
