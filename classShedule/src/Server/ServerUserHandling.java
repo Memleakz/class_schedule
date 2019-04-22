@@ -7,14 +7,14 @@ package Server;
 
 import Business_Logic.Bookings.BookingFactory;
 import Business_Logic.Common.Period;
-import Business_Logic.Courses.Course;
+import Business_Logic.Courses.CourseFactory;
 import Business_Logic.IServices.BookingLocationsInterface;
 import Business_Logic.IServices.CourseInterface;
 import Business_Logic.IServices.StudentsInterface;
 import Business_Logic.IServices.TeacherInterface;
 import Business_Logic.IServices.UserInterface;
-import Business_Logic.Participants.ClassOfTheStudents;
-import Business_Logic.Responsible.Lecturer;
+import Business_Logic.Participants.StudentsFactory;
+import Business_Logic.Responsible.LecturerFactory;
 import Business_Logic.User.User;
 import Server.database.DatabaseManager;
 import java.security.MessageDigest;
@@ -132,7 +132,7 @@ public class ServerUserHandling {
 	}
 	List<Period> teachersBookedPeriods = getBookedPeriodsForTeacher(teacherID);
 
-	teacher = new Lecturer(id, name, teachersBookedPeriods, possibleCcourses);
+	teacher = LecturerFactory.getTeacher(id, name, teachersBookedPeriods, possibleCcourses);
 	return teacher;
     }
 
@@ -190,7 +190,7 @@ public class ServerUserHandling {
 		cNumberHoursTogether = coursess.getInt("numberOfHoursTogether");
 		cMaximalWeek = coursess.getInt("maximalTimesOfWeek");
 		cId = coursess.getString("courses_id");
-		Course course = new Course(cId, cName, new ArrayList<StudentsInterface>(), cNumberLessons, cNumberHoursTogether, cMaximalWeek);
+		CourseInterface course = CourseFactory.getCourse(cId, cName, new ArrayList<StudentsInterface>(), cNumberLessons, cNumberHoursTogether, cMaximalWeek);
 		possibleCoursesss.add(course);
 	    }
 
@@ -213,7 +213,7 @@ public class ServerUserHandling {
 		int studentsNumber = studentss.getInt("numberOfMembers");
 		List<Period> bookedPeriodsForClass = getBookedPeriodsForClass(studentsid);
 
-		StudentsInterface classOfStudents = new ClassOfTheStudents(studentsid, studentsfield, studentsNumber, bookedPeriodsForClass);
+		StudentsInterface classOfStudents = StudentsFactory.getClassOfStudents(studentsid, studentsfield, studentsNumber, bookedPeriodsForClass);
 		classesOfStudents.add(classOfStudents);
 
 	    }
@@ -336,7 +336,6 @@ public class ServerUserHandling {
 	}
 	return maptoreturn;
     }
-
     static Integer getNumberOfWeekForPeriod(Period p) {
 	Calendar cal = Calendar.getInstance();
 	Date dateOfStart = Date.from(p.getStartDate().atZone(ZoneId.systemDefault()).toInstant());
@@ -358,7 +357,7 @@ public class ServerUserHandling {
 		int maxLecturesInWeek = courses.getInt("maximalTimesOfWeek");
 		List<StudentsInterface> studentsinCourse = getClassForCourse(courseId);
 		//, int numberOflessons, int numberOfHourstogether, int maxOnWeek
-		CourseInterface course = new Course(courseId, nameOfTheCourse, studentsinCourse, numberLessons, numberhoursTogether, maxLecturesInWeek);
+		CourseInterface course = CourseFactory.getCourse(courseId, nameOfTheCourse, studentsinCourse, numberLessons, numberhoursTogether, maxLecturesInWeek);
 		coursewithId = course;
 	    }
 	} catch (SQLException ex) {

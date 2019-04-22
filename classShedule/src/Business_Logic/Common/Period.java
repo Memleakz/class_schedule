@@ -6,6 +6,7 @@
 package Business_Logic.Common;
 
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -13,7 +14,7 @@ import java.time.format.DateTimeFormatter;
  *
  * @author lawar15
  */
-public class Period {
+public class Period implements Serializable{
     LocalDateTime startTime;
     LocalDateTime finishTime;
     public Period(String startTime,String finishTime){

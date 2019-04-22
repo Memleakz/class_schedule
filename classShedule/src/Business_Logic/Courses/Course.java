@@ -9,16 +9,18 @@ import Business_Logic.IServices.CourseInterface;
 import Business_Logic.IServices.LocationInterface;
 import Business_Logic.IServices.StudentsInterface;
 import Business_Logic.IServices.TeacherInterface;
+import java.io.Serializable;
 import java.util.List;
 
 /**
  *
  * @author lawar15
  */
-public class Course implements CourseInterface{
+public class Course implements CourseInterface, Serializable{
     String id;
     String nameOfTheCourse;
     List<StudentsInterface> students;
+    TeacherInterface assignedLecturer;
     int numberOfParticipants;
 
     int numberOflessons;
@@ -35,7 +37,7 @@ public class Course implements CourseInterface{
        this.numberOflessons = numberOflessons;
        this.numberOfHourstogether = numberOfHourstogether;
        this.maximalTimesOfWeek = maxOnWeek;
-       
+       this.assignedLecturer = null;
        for (StudentsInterface oneOfTheClasses: students){
 	  int studentsInOneClass= oneOfTheClasses.getNumberOfStuents();
 	  this.numberOfParticipants= this.numberOfParticipants+studentsInOneClass;
@@ -100,5 +102,20 @@ public class Course implements CourseInterface{
     @Override
     public String getId() {
     return this.id;
+    }
+    @Override
+    public String toString()
+    {
+	return this.nameOfTheCourse;
+    }
+
+    @Override
+    public TeacherInterface getAssignedLecturer() {
+	return this.assignedLecturer;
+    }
+
+    @Override
+    public void setAssignedLecturer(TeacherInterface Teacher) {
+	this.assignedLecturer = Teacher;
     }
 }

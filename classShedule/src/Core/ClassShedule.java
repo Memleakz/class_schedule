@@ -28,7 +28,7 @@ public class ClassShedule {
 	String tek = new String("TEK");
 	String b44 = new String("B44");
 	ArrayList<String> Areas = new ArrayList<String>();
-	Room roomie = new Room("01", "U1", tek, Areas, new ArrayList<BookingLocationsInterface>(), 200);
+	Room roomie = new Room(1, "U1", tek, Areas, new ArrayList<BookingLocationsInterface>(), 200);
 
 	StudentsInterface software = new ClassOfTheStudents("001", "SE", 80, new ArrayList<Period>());
 	StudentsInterface it = new ClassOfTheStudents("002", "IT", 15, new ArrayList<Period>());

@@ -6,8 +6,11 @@
 package Business_Logic.IServices;
 
 import Business_Logic.Common.Period;
+import Business_Logic.scheldue_result.scheldue_result;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,5 +32,10 @@ public interface ServerInterface  extends Remote {
 	public Map<Integer,Map<Period,CourseInterface>> getClassScheduleForTeacher(String teachersID)throws RemoteException;
 
 	public String getIdOfTeacherByName(String name)throws RemoteException;
-    
+	public List<TeacherInterface> getAllTeachers()throws RemoteException;
+	public int addTeacher(String login, String password, String name, String id, ArrayList<BookingLocationsInterface> arrayList, List<CourseInterface> teachersCourses) throws RemoteException;
+	public List<CourseInterface> getAllCourses()throws RemoteException;
+	public List<LocationInterface> getAllRooms()throws RemoteException;
+	public scheldue_result getNewSchelue(String semesterStart,String semesterEnd,List<LocationInterface> Rooms,List<CourseInterface> Courses)throws RemoteException;
+	//public int setTeacherInDb(String login, String password, String name, String id, List<BookingLocationsInterface> Rooms, List<CourseInterface> teachersCourses)throws RemoteException;
 }

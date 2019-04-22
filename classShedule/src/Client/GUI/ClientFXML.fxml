@@ -16,9 +16,9 @@
       <Pane fx:id="classSchedulerWelcomePane" prefHeight="440.0" prefWidth="640.0" style="-fx-background-color: #E0FFFF;" visible="false">
          <children>
             <TextArea editable="false" layoutX="153.0" layoutY="30.0" prefHeight="41.0" prefWidth="186.0" text="Hello! How can I help You?" />
-            <Button fx:id="makeNewscheduleWelcomeButton" layoutX="56.0" layoutY="110.0" mnemonicParsing="false" text="Make new schedule" />
+            <Button fx:id="makeNewscheduleWelcomeButton" layoutX="56.0" layoutY="110.0" mnemonicParsing="false" onAction="#handleMakeNewScheduleButtonAction" text="Make new schedule" />
             <Button fx:id="changeCurrentScheduleWelcomeButton" layoutX="56.0" layoutY="161.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" text="Change schedule" />
-            <Button fx:id="addNewTeacherButton" layoutX="56.0" layoutY="220.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="117.0" text="Add new Teacher" />
+            <Button fx:id="addNewTeacherButton" layoutX="56.0" layoutY="220.0" mnemonicParsing="false" onAction="#addNewTeacherButtonAction" prefHeight="25.0" prefWidth="117.0" text="Add new Teacher" />
             <Button fx:id="signoutschedulerwelcomeButton" layoutX="468.0" layoutY="294.0" mnemonicParsing="false" text="Sign out" />
          </children>
       </Pane>
@@ -99,6 +99,41 @@
             <TextField fx:id="fridayLessonsTextField" layoutX="363.0" layoutY="93.0" prefHeight="306.0" prefWidth="90.0" />
             <TextField fx:id="saturdayLessonsTextField" layoutX="453.0" layoutY="93.0" prefHeight="306.0" prefWidth="90.0" />
             <TextField fx:id="sundayLessonsTextField" layoutX="543.0" layoutY="93.0" prefHeight="306.0" prefWidth="90.0" />
+         </children>
+      </Pane>
+      <Pane fx:id="creatingNewSchedulePane" prefHeight="440.0" prefWidth="640.0" style="-fx-background-color: #E0FFFF;" visible="false">
+         <children>
+            <TextArea editable="false" layoutX="18.0" layoutY="33.0" prefHeight="38.0" prefWidth="606.0" text="This is your Pane to creating new class schedule. Choose all paramethers and click on &quot;Make Schedule&quot; Button." />
+            <Button fx:id="backfromnewScheduleButton" layoutX="18.0" layoutY="378.0" mnemonicParsing="false" text="Back" />
+            <Button fx:id="createScheduleButton" layoutX="527.0" layoutY="378.0" mnemonicParsing="false" onAction="#handleCreateAndDisplayNewScheldueButtonAction" text="Make Schedule" />
+            <TextField editable="false" layoutX="38.0" layoutY="90.0" prefHeight="25.0" prefWidth="108.0" text="Start of the term:" />
+            <TextField editable="false" layoutX="37.0" layoutY="165.0" prefHeight="25.0" prefWidth="108.0" text="End of the term:" />
+            <DatePicker fx:id="startOfTermDatePicker" layoutX="37.0" layoutY="124.0" prefHeight="25.0" prefWidth="108.0" />
+            <DatePicker fx:id="finishOfTermDatePicker" layoutX="37.0" layoutY="203.0" prefHeight="25.0" prefWidth="108.0" />
+            <TextField editable="false" layoutX="488.0" layoutY="103.0" prefHeight="25.0" prefWidth="103.0" text="Choose Couses:" />
+            <ListView fx:id="coursesListView" layoutX="488.0" layoutY="128.0" prefHeight="200.0" prefWidth="103.0" />
+            <Button fx:id="chooseAllCoursesButton" layoutX="489.0" layoutY="328.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="103.0" text="Choose All" />
+            <TextField editable="false" layoutX="372.0" layoutY="103.0" prefHeight="25.0" prefWidth="103.0" text="Choose Rooms:" />
+            <ListView fx:id="roomsListView" layoutX="372.0" layoutY="128.0" prefHeight="200.0" prefWidth="103.0" />
+            <Button fx:id="chooseAllRoomsButton" layoutX="372.0" layoutY="328.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="103.0" text="Choose All" />
+            <TextField editable="false" layoutX="252.0" layoutY="103.0" prefHeight="25.0" prefWidth="108.0" text="Choose Teachers:" />
+            <ListView fx:id="teachersInTermListView" layoutX="255.0" layoutY="128.0" prefHeight="200.0" prefWidth="103.0" />
+            <Button fx:id="chooseAllTeachersButton" layoutX="255.0" layoutY="328.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="103.0" text="Choose All" />
+         </children>
+      </Pane>
+      <Pane fx:id="addnewTeacherPane" prefHeight="440.0" prefWidth="640.0" style="-fx-background-color: #E0FFFF;" visible="false">
+         <children>
+            <TextField fx:id="loginField" layoutX="24.0" layoutY="34.0" promptText="Write login...." />
+            <TextField fx:id="passwordField" layoutX="24.0" layoutY="76.0" promptText="Write password...." />
+            <TextField fx:id="nameField" layoutX="24.0" layoutY="115.0" promptText="Write name...." />
+            <TextField fx:id="teachersIDField" layoutX="24.0" layoutY="155.0" promptText="Write teachers ID..." />
+            <Button fx:id="backToschedulerMenu" layoutX="24.0" layoutY="389.0" mnemonicParsing="false" text="Back" />
+            <Button fx:id="addToPossibleCoursesButton" layoutX="334.0" layoutY="56.0" mnemonicParsing="false" text="Add to courses" />
+            <ListView fx:id="allcoursesTochooseForNewTeacherListView" layoutX="430.0" layoutY="56.0" prefHeight="341.0" prefWidth="174.0" />
+            <Text layoutX="455.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="All courses:" />
+            <Text layoutX="24.0" layoutY="212.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Teachers courses:" />
+            <ListView fx:id="choosedCoursesToTeacherListView" layoutX="24.0" layoutY="225.0" prefHeight="142.0" prefWidth="149.0" />
+            <Button fx:id="createNewTeacherButton" layoutX="210.0" layoutY="208.0" mnemonicParsing="false" onAction="#addNewTeacherToDbButtonAction" text="Create teacher" />
          </children>
       </Pane>
    </children>

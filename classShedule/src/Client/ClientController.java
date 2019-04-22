@@ -6,14 +6,19 @@
 package Client;
 
 import Business_Logic.Common.Period;
+import Business_Logic.IServices.BookingLocationsInterface;
 import Business_Logic.IServices.CourseInterface;
+import Business_Logic.IServices.LocationInterface;
 import Business_Logic.IServices.ServerInterface;
 import Business_Logic.IServices.TeacherInterface;
 import Business_Logic.User.User;
+import Business_Logic.scheldue_result.scheldue_result;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,6 +28,12 @@ import java.util.Map;
 public class ClientController {
     ServerInterface serverController;
     private User currentUser= null;
+    private List<TeacherInterface> allTeachers = new ArrayList<TeacherInterface>();
+    private List<TeacherInterface> choosedTeachers = new ArrayList<TeacherInterface>();
+    private List<CourseInterface> choosedCourses = new ArrayList<CourseInterface>();
+    private List<CourseInterface> allCourses = new ArrayList<CourseInterface>();
+    private List<LocationInterface> choosedRooms = new ArrayList<LocationInterface>();
+    private List<LocationInterface> allRooms = new ArrayList<LocationInterface>();
     
 public ClientController() throws RemoteException {
     String hostname = "localhost"; 
@@ -44,7 +55,30 @@ public ClientController() throws RemoteException {
 	public boolean isThisATeacher(String login, String password){
 	    return ClientUserHandling.isUserATeacher(serverController, login, password);
 	}
-
+public boolean preparePaneToMakingNewSchedule(){
+    allCourses = ClientClassSchedulingHandling.getAllCourses(serverController);
+    allTeachers =ClientClassSchedulingHandling.getAllTeachers(serverController);
+    allRooms = ClientClassSchedulingHandling.getAllRooms(serverController);
+    if(allCourses!=null && allTeachers!=null &&allRooms!=null){
+	return true;
+    }
+   return false; 
+}
+public List<CourseInterface> getAllCourses()
+{
+    //check if prepared.
+    return this.allCourses;
+}
+public List<TeacherInterface> getAllTeachers()
+{
+    //check if prepared.
+    return this.allTeachers;
+}
+public List<LocationInterface> getAllRooms()
+{
+    //check if prepared.
+    return this.allRooms;
+}
 public void handlesignoutAction(){
     currentUser = null;
 }
@@ -66,6 +100,14 @@ public void handlesignoutAction(){
     }
     public String getTeachersIdByName(String name){
 	return ClientUserHandling.getUsersIdByName(serverController, name);
+    }
+
+    public void addNewTeacher(String login, String password, String name, String id, ArrayList<BookingLocationsInterface> arrayList, List<CourseInterface> teachersCourses) {
+	ClientClassSchedulingHandling.addNewTeacherToDb(serverController,login, password, name, id, arrayList, teachersCourses);
+    }
+    public scheldue_result createNewScheldue(String semesterStart,String semesterEnd,ArrayList<LocationInterface> Rooms,ArrayList<CourseInterface> Courses)
+    {
+	return ClientClassSchedulingHandling.createNewScheldue(serverController,semesterStart,semesterEnd,Rooms,Courses);
     }
 }
 

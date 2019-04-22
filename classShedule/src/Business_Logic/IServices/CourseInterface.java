@@ -27,4 +27,6 @@ public interface CourseInterface {
     public List<StudentsInterface> getParticipants();
     public int getDeseiredDaysBetweenLectures();
     public CourseInterface getCourseByName(List<CourseInterface> list,String name);
+    public TeacherInterface getAssignedLecturer();
+    public void setAssignedLecturer(TeacherInterface Teacher);
 }

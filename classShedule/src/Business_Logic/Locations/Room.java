@@ -9,6 +9,7 @@ import Business_Logic.Common.Period;
 import Business_Logic.IServices.BookingLocationsInterface;
 import Business_Logic.IServices.CourseInterface;
 import Business_Logic.IServices.LocationInterface;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,9 +21,9 @@ import java.util.Map;
  *
  * @author lawar15
  */
-public class Room implements LocationInterface{
+public class Room implements LocationInterface, Serializable{
 
-    String id;
+    int id;
     String nameOfTheRoom;
     String area;
     List<String> closeNeighborAreas;
@@ -30,7 +31,7 @@ public class Room implements LocationInterface{
     List<Period> bookedPeriods;
     int numberOfPlaces;
 
-    public Room(String id, String nameOfTheRoom, String area, List<String> closeNeighborAreas, List<BookingLocationsInterface> bookings, int numberOfPlaces) {
+    public Room(int id, String nameOfTheRoom, String area, List<String> closeNeighborAreas, List<BookingLocationsInterface> bookings, int numberOfPlaces) {
 	this.id = id;
 	this.nameOfTheRoom = nameOfTheRoom;
 	this.area = area;
@@ -141,6 +142,11 @@ public class Room implements LocationInterface{
 
     @Override
     public String getNameOfTheLocation() {
+	return this.nameOfTheRoom;
+    }
+        @Override
+    public String toString()
+    {
 	return this.nameOfTheRoom;
     }
 }

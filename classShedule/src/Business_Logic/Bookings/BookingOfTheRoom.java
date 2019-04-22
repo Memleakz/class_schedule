@@ -11,13 +11,14 @@ import Business_Logic.IServices.BookingLocationsInterface;
 import Business_Logic.IServices.CourseInterface;
 import Business_Logic.IServices.StudentsInterface;
 import Business_Logic.IServices.TeacherInterface;
+import java.io.Serializable;
 import java.util.List;
 
 /**
  *
  * @author lawar15
  */
-public class BookingOfTheRoom implements BookingLocationsInterface{
+public class BookingOfTheRoom implements BookingLocationsInterface,Serializable{
     String id;
     TeacherInterface lecturer;
     List<StudentsInterface> students;

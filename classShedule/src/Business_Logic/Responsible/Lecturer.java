@@ -79,6 +79,10 @@ public class Lecturer implements TeacherInterface, Serializable {
     public String getTeachersId() {
     return this.id;
     }
-
+    @Override
+    public String toString()
+    {
+	return this.name;
+    }
 
 }

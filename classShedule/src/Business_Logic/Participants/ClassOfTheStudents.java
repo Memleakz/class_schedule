@@ -7,13 +7,14 @@ package Business_Logic.Participants;
 
 import Business_Logic.Common.Period;
 import Business_Logic.IServices.StudentsInterface;
+import java.io.Serializable;
 import java.util.List;
 
 /**
  *
  * @author lawar15
  */
-public class ClassOfTheStudents implements StudentsInterface {
+public class ClassOfTheStudents implements StudentsInterface, Serializable {
     String id;
     String fieldOfStudy;
     int numberOfMembers;

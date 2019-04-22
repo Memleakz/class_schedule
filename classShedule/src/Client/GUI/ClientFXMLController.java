@@ -6,8 +6,11 @@
 package Client.GUI;
 
 import Business_Logic.Common.Period;
+import Business_Logic.IServices.BookingLocationsInterface;
 import Business_Logic.IServices.CourseInterface;
+import Business_Logic.IServices.LocationInterface;
 import Business_Logic.IServices.TeacherInterface;
+import Business_Logic.scheldue_result.scheldue_result;
 import Client.ClientController;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
@@ -18,8 +21,10 @@ import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -158,6 +163,52 @@ public class ClientFXMLController implements Initializable {
     private TextField saturdayLessonsTextField;
     @FXML
     private TextField sundayLessonsTextField;
+    // Make new Schedule Pane
+    @FXML
+    private Pane creatingNewSchedulePane;
+    @FXML
+    private Button backfromnewScheduleButton;
+    @FXML
+    private Button createScheduleButton;
+    @FXML
+    private Button chooseAllCoursesButton;
+    @FXML
+    private Button chooseAllRoomsButton;
+    @FXML
+    private Button chooseAllTeachersButton;
+    @FXML
+    private Button signoutfromcreatingnewscheduleButton;
+    @FXML
+    private DatePicker startOfTermDatePicker;
+    @FXML
+    private DatePicker finishOfTermDatePicker;
+    @FXML
+    private ListView teachersInTermListView;
+    @FXML
+    private ListView coursesListView;
+    @FXML
+    private ListView roomsListView;
+//add new teacher Pane
+    @FXML
+    private Pane addnewTeacherPane;
+    @FXML
+    private TextField loginField;
+    @FXML
+    private TextField passwordField;
+    @FXML
+    private TextField nameField;
+    @FXML
+    private TextField teachersIDField;
+    @FXML
+    private ListView allcoursesTochooseForNewTeacherListView;
+    @FXML
+    private ListView choosedCoursesToTeacherListView;
+    @FXML
+    private Button createNewTeacherButton;
+    @FXML
+    private Button backToschedulerMenu;
+    @FXML
+    private Button addToPossibleCoursesButton;
 
     private ClientController clientController;
 
@@ -381,4 +432,151 @@ private TextField sundayLessonsTextField;
 	    }
 	}
     }
+
+    //Class Scheduler pane
+    /*
+     @FXML
+    private Pane creatingNewSchedulePane;
+    @FXML
+    private Button backfromnewScheduleButton;
+    @FXML
+    private Button createScheduleButton;
+    @FXML
+    private Button chooseAllCoursesButton;
+    @FXML
+    private Button chooseAllRoomsButton;
+    @FXML
+    private Button chooseAllTeachersButton;
+    @FXML
+    private Button signoutfromcreatingnewscheduleButton;
+    @FXML
+    private DatePicker startOfTermDatePicker;
+    @FXML
+    private DatePicker finishOfTermDatePicker;
+    @FXML
+    private ListView teachersInTermListView;
+    @FXML
+    private ListView coursesListView;
+    @FXML
+    private ListView roomsListView;
+     */
+    @FXML
+    private void handleMakeNewScheduleButtonAction(ActionEvent event) {
+
+	boolean canMakeSchedule = clientController.preparePaneToMakingNewSchedule();
+	if (canMakeSchedule == true) {
+	    classSchedulerWelcomePane.setVisible(false);
+	    creatingNewSchedulePane.setVisible(true);
+	    List<CourseInterface> allCourses = clientController.getAllCourses();
+	    coursesListView.getItems().clear();
+	    coursesListView.getItems().addAll(allCourses); //uses overwritten toString on course to show name.
+
+	    List<LocationInterface> allRooms = clientController.getAllRooms();
+	    roomsListView.getItems().clear();
+	    roomsListView.getItems().addAll(allRooms); //uses overwritten toString on course to show name.
+
+	    List<TeacherInterface> allTeachers = clientController.getAllTeachers();
+	    teachersInTermListView.getItems().clear();
+	    teachersInTermListView.getItems().addAll(allTeachers); //uses overwritten toString on course to show name.
+
+	    teachersInTermListView.getSelectionModel().select(0);//select index 0 *love*
+	    teachersInTermListView.getSelectionModel().selectAll(); //virker ikke her , måske senere?
+	    teachersInTermListView.refresh();
+	    List<TeacherInterface> selectedTeachers = teachersInTermListView.getSelectionModel().getSelectedItems(); //get only selected
+	    List<TeacherInterface> allobjTeachers = teachersInTermListView.getItems(); // get all objects...selected or not.
+	    String test = "";
+
+	}
+    }
+
+    /*
+    //add new teacher Pane
+    @FXML
+    private Pane addnewTeacherPane;
+    @FXML
+    private TextField loginField;
+    @FXML
+    private TextField passwordField;
+    @FXML
+    private TextField nameField;
+    @FXML
+    private TextField teachersIDField;
+    @FXML
+    private ListView allcoursesTochooseForNewTeacherListView;
+    @FXML
+    private ListView choosedCoursesToTeacherListView;
+    @FXML
+    private Button addToPossibleCoursesButton
+    @FXML
+    private Button createNewTeacherButton;
+    @FXML
+    private Button backToschedulerMenu;
+     */
+    @FXML
+    private void addNewTeacherButtonAction(ActionEvent event) {
+	changingPaneScheduler.setVisible(false);
+	List<CourseInterface> allCourses = clientController.getAllCourses();
+	allcoursesTochooseForNewTeacherListView.getItems().clear();
+	allcoursesTochooseForNewTeacherListView.getItems().addAll(allCourses);
+	addnewTeacherPane.setVisible(true);
+    }
+
+    @FXML
+    private void addNewTeacherToDbButtonAction(ActionEvent event) {
+	String login = loginField.getText();
+	String password = passwordField.getText();
+	String name = nameField.getText();
+	String id = teachersIDField.getText();
+	List<CourseInterface> teachersCourses =choosedCoursesToTeacherListView.getItems();
+	clientController.addNewTeacher(login,password,name,id,new ArrayList<BookingLocationsInterface>(),teachersCourses );
+    }
+
+    @FXML
+    private void handleaddcoursestonewteacherButtonAction(ActionEvent event) {
+	boolean isAllereadyOnList = false;
+	CourseInterface coursetoadd = (CourseInterface) allcoursesTochooseForNewTeacherListView.getSelectionModel().getSelectedItem();
+	List<CourseInterface> allCoursesFromListView = allcoursesTochooseForNewTeacherListView.getSelectionModel().getSelectedItems();
+	for (CourseInterface ci : allCoursesFromListView) {
+	    if (ci.getId().equals(coursetoadd.getId())) {
+		isAllereadyOnList = true;
+	    }
+	}
+	if (isAllereadyOnList = false) {
+	    choosedCoursesToTeacherListView.getSelectionModel().getSelectedItems().add(coursetoadd);
+	}
+    }
+
+    @FXML
+    private void handleCreateAndDisplayNewScheldueButtonAction(ActionEvent event) {
+	List<TeacherInterface> selectedTeachers = teachersInTermListView.getSelectionModel().getSelectedItems(); //get only selected
+	//check if 0 selected , get all if 0.
+	selectedTeachers = teachersInTermListView.getItems(); // get all objects...selected or not.
+
+	List<CourseInterface> selectedCourses = coursesListView.getSelectionModel().getSelectedItems(); //get only selected
+	//check if 0 selected , get all if 0.
+	selectedCourses = coursesListView.getItems(); // get all objects...selected or not.
+
+	List<LocationInterface> selectedRooms = roomsListView.getSelectionModel().getSelectedItems(); //get only selected
+	//check if 0 selected , get all if 0.
+	selectedRooms = roomsListView.getItems(); // get all objects...selected or not.
+
+	String SemesterStat = "01/02/2019 08:00:00";
+	String SemesterEnd = "31/05/2019 22:00:00";
+	ArrayList<CourseInterface> rmi_courses = new ArrayList<CourseInterface>();
+	ArrayList<LocationInterface> rmi_rooms = new ArrayList<LocationInterface>();
+	
+	for(CourseInterface c : selectedCourses)
+	{
+	    rmi_courses.add(c);
+	}
+	for(LocationInterface r : selectedRooms)
+	{
+	    rmi_rooms.add(r);
+	}
+	scheldue_result new_scheldue = clientController.createNewScheldue(SemesterStat, SemesterEnd, rmi_rooms, rmi_courses);
+	creatingNewSchedulePane.setVisible(false);
+	//fillScheduleForWeek(SemesterStat);
+    }
+    
+
 }
