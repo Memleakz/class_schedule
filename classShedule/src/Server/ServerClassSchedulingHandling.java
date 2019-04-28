@@ -43,7 +43,7 @@ public class ServerClassSchedulingHandling {
 
     private List<CourseInterface> Courses;
     List<LocationInterface> Rooms;
-    List<Period> specialClosePeriod = new ArrayList<Period>();
+    static List<Period> specialClosePeriod = new ArrayList<Period>();
     //String SemesterStart = "01/02/2019 08:00:00";
     //String SemesterEnd = "31/05/2019 22:00:00";
     //TeacherInterface adam = new Lecturer("00001", "Adam Adamsen", new ArrayList<Period>(), new ArrayList<CourseInterface>());
@@ -60,15 +60,14 @@ public class ServerClassSchedulingHandling {
 	this.Courses.add(c);
     }
 
-    public scheldue_result AssignRoomsForCourses(String SemesterStart, String SemesterEnd, List<LocationInterface> Rooms, List<CourseInterface> Courses) {
+    static scheldue_result AssignRoomsForCourses(String SemesterStart, String SemesterEnd, List<LocationInterface> Rooms, List<CourseInterface> Courses) {
 	List<CourseInterface> bookedCourses = new ArrayList<CourseInterface>();
 	List<CourseInterface> BookingFails = new ArrayList<CourseInterface>();
-	this.Rooms = Rooms;
-	this.Courses = Courses;
+	
 	Period BookingPeriod = new Period(SemesterStart, SemesterEnd);
-	for (CourseInterface c : this.Courses) {
+	for (CourseInterface c : Courses) {
 	    //Find best match room ?
-	    List<LocationInterface> allPossibleRooms = findAllPossibleRoomsToCourse(c, this.Rooms);
+	    List<LocationInterface> allPossibleRooms = findAllPossibleRoomsToCourse(c, Rooms);
 	    int Total_needed_bookings = c.getNumberOfLessons() / c.getNumberOfHourstogether();
 
 	    List<BookingLocationsInterface> bookings = new ArrayList<BookingLocationsInterface>();
@@ -143,11 +142,12 @@ public class ServerClassSchedulingHandling {
 	scheldue_result ret_obj = new scheldue_result();
 	ret_obj.BookingFails = BookingFails;
 	ret_obj.bookedCourses = bookedCourses;
-	print_table(); //debug
+	
+	//print_table(); //debug
 	return ret_obj;
     }
 
-    private CourseInterface finalizeBookings(CourseInterface c, Map<LocationInterface, List<BookingLocationsInterface>> bookings) {
+    private static CourseInterface finalizeBookings(CourseInterface c, Map<LocationInterface, List<BookingLocationsInterface>> bookings) {
 	List<LocationInterface> bookedRooms = new ArrayList<LocationInterface>();
 	for (Map.Entry<LocationInterface, List<BookingLocationsInterface>> entry : bookings.entrySet()) {
 	    LocationInterface r = entry.getKey();
@@ -162,7 +162,7 @@ public class ServerClassSchedulingHandling {
 	return c;
     }
 
-    public int helperCountBookings(Map<LocationInterface, List<BookingLocationsInterface>> bookings) {
+    public static int helperCountBookings(Map<LocationInterface, List<BookingLocationsInterface>> bookings) {
 	int totalBookings = 0;
 	for (Map.Entry<LocationInterface, List<BookingLocationsInterface>> entry : bookings.entrySet()) {
 	    List<BookingLocationsInterface> booklist = entry.getValue();
@@ -184,7 +184,7 @@ public class ServerClassSchedulingHandling {
 	return selected_room; // no rooms matched
     }
 
-    public List<LocationInterface> findAllPossibleRoomsToCourse(CourseInterface c, List<LocationInterface> rooms) {
+    public static List<LocationInterface> findAllPossibleRoomsToCourse(CourseInterface c, List<LocationInterface> rooms) {
 	List<LocationInterface> possible_rooms = new ArrayList<LocationInterface>();
 	for (LocationInterface r : rooms) {
 	    if (r.getNumberOfPlaces() >= c.getNumberOfParticipants()) {
@@ -195,7 +195,7 @@ public class ServerClassSchedulingHandling {
 	return possible_rooms; // no rooms matched
     }
 
-    public List<BookingLocationsInterface> AttemBookCourseTimes(TeacherInterface adam, CourseInterface c, LocationInterface r, String target_periode, int Total_needed_bookings, Period BookingPeriod) {
+    public static List<BookingLocationsInterface> AttemBookCourseTimes(TeacherInterface adam, CourseInterface c, LocationInterface r, String target_periode, int Total_needed_bookings, Period BookingPeriod) {
 
 	List<BookingLocationsInterface> return_data = new ArrayList<BookingLocationsInterface>();
 	while (Total_needed_bookings != 0) {
@@ -293,9 +293,9 @@ public class ServerClassSchedulingHandling {
 	}
     }
 
-    private boolean isSpecialCloseDay(BookingLocationsInterface b) {
+    private static boolean isSpecialCloseDay(BookingLocationsInterface b) {
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-	for (Period p : this.specialClosePeriod) {
+	for (Period p : specialClosePeriod) {
 	    String f = p.getStartDate().format(formatter);
 	    if (f.equals(b.getPeriodOfBooking().getStartDate().format(formatter))) {
 		return true;
@@ -338,7 +338,12 @@ public class ServerClassSchedulingHandling {
 	booking2.setCourse(c1);
 	return true;
     }
-
+    public BookingLocationsInterface scheldueRebookBooking(CourseInterface c,BookingLocationsInterface b,Period LockedPeriod)
+    {
+	//Find next available date for the booking.
+	LocationInterface room = c.getRoomReferencedByBooking(b);
+	return null;
+    }
     static List<TeacherInterface> getAllTeachers() {
 	List<TeacherInterface> allteachers = new ArrayList<TeacherInterface>();
 	String query = "SELECT \"teachers_id\" FROM \"Teachers\";";
@@ -605,7 +610,7 @@ public class ServerClassSchedulingHandling {
 	int cMaximalWeek = 0;
 	int cDesiredDays = 0;
 	String cId = "";
-	String query2 = "SELECT \"courseName\", \"courses_id\", \"numberOfParticipants\", \"numberOfLessons\", \"numberOfHoursTogether\",\"maximalTimesOfWeek\" FROM \"Courses\" NATURAL JOIN \"PossibleCoursesForTeacher\" WHERE \"teacher_to_possible\" = \'" + teachersID + "\' ;";
+	String query2 = "SELECT \"courseName\", \"courses_id\", \"numberOfParticipants\", \"numberOfLessons\", \"numberOfHoursTogether\",\"maximalTimesOfWeek\",\"assigned_teacher\",\"desiredDaysBetweenLectures\" FROM \"Courses\" NATURAL JOIN \"PossibleCoursesForTeacher\" WHERE \"teacher_to_possible\" = \'" + teachersID + "\' ;";
 	try {
 	    ResultSet coursess = dbm.executeQuery(query2);
 
@@ -615,7 +620,10 @@ public class ServerClassSchedulingHandling {
 		cNumberHoursTogether = coursess.getInt("numberOfHoursTogether");
 		cMaximalWeek = coursess.getInt("maximalTimesOfWeek");
 		cId = coursess.getString("courses_id");
-		CourseInterface course = CourseFactory.getCourse(cId, cName, new ArrayList<StudentsInterface>(), cNumberLessons, cNumberHoursTogether, cMaximalWeek);
+		
+		TeacherInterface t= null;
+		int desiredDaysBetweenLectures = coursess.getInt("desiredDaysBetweenLectures");
+		CourseInterface course = CourseFactory.getCourse(cId, cName, new ArrayList<StudentsInterface>(), cNumberLessons, cNumberHoursTogether, cMaximalWeek,t,desiredDaysBetweenLectures);
 		possibleCoursesss.add(course);
 	    }
 
@@ -678,8 +686,11 @@ public class ServerClassSchedulingHandling {
 		int numberLessons = courses.getInt("numberOfLessons");
 		int numberhoursTogether = courses.getInt("numberOfHoursTogether");
 		int maxLecturesInWeek = courses.getInt("maximalTimesOfWeek");
+		int desiredDaysBetweenLectures = courses.getInt("desiredDaysBetweenLectures");
+		String teachersID = courses.getString("assigned_teacher");
+		TeacherInterface teacher = getTeacher(teachersID);
 		List<StudentsInterface> studentsinCourse = getClassForCourse(courseId);
-		CourseInterface course = CourseFactory.getCourse(courseId, nameOfTheCourse, studentsinCourse, numberLessons, numberhoursTogether, maxLecturesInWeek);
+		CourseInterface course = CourseFactory.getCourse(courseId, nameOfTheCourse, studentsinCourse, numberLessons, numberhoursTogether, maxLecturesInWeek,teacher,desiredDaysBetweenLectures);
 		coursewithId = course;
 	    }
 	} catch (SQLException ex) {

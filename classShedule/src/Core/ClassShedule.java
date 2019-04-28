@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class ClassShedule {
 
-    public static void main(String[] args) {
+   /* public static void main(String[] args) {
 	String tek = new String("TEK");
 	String b44 = new String("B44");
 	ArrayList<String> Areas = new ArrayList<String>();
@@ -82,5 +82,5 @@ public class ClassShedule {
 	BookingLocationsInterface swap2 = c1.getBookedRooms().get(0).getBookings().get(c1).get(0);
 	sys.swapCourseBookings(swap1, swap2);
 	sys.print_table();
-    }
+    }*/
 }

@@ -20,7 +20,9 @@ public interface LocationInterface {
   public boolean isAvailable(BookingLocationsInterface b);
   public List<BookingLocationsInterface> getCourseBookings(CourseInterface c);
   public List<BookingLocationsInterface> getAllBookings();
-  public boolean cancelBooking(BookingLocationsInterface booking);
+  public boolean cancelBooking(BookingLocationsInterface b);
   public String getNameOfTheLocation();
   public Map <CourseInterface,List<BookingLocationsInterface>> getBookings();
+  public Map<Integer, List<BookingLocationsInterface>> getBookingsForWeek(int weeknr);
+  public List<BookingLocationsInterface> getAllBookingsForTeacher(TeacherInterface t,Period p);
 }

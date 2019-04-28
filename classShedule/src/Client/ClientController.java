@@ -83,13 +83,71 @@ public void handlesignoutAction(){
     currentUser = null;
 }
     public boolean handleTeachersAbsence(String startDateOfAbsence, String finishDateOfAbsence) {
-	TeacherInterface teacherForAbsence= null;
+	/*TeacherInterface teacherForAbsence= null;
 	String usersId = currentUser.getTeachersID();
 	teacherForAbsence =ClientUserHandling.handleTeachersAbsence(serverController, usersId , startDateOfAbsence, finishDateOfAbsence);
 	    if(teacherForAbsence !=null){
 		return true;
 	    }
-	    return false;
+	    return false;*/
+	
+	//GEt retardo lecturer obj
+	TeacherInterface lecturer = null;
+	List<TeacherInterface> Teachers =ClientClassSchedulingHandling.getAllTeachers(serverController);
+	for(TeacherInterface t : Teachers)
+	    {
+		if(t.getTeachersId().equals(this.currentUser.getTeachersID()))
+		{
+		    lecturer = t;
+		    break;
+		}
+	    }
+	//Get teachers courses.
+	Period p = new Period(startDateOfAbsence,finishDateOfAbsence);
+	List<CourseInterface> tcourses = new ArrayList<CourseInterface>();
+	List<CourseInterface> courses = ClientClassSchedulingHandling.getAllCourses(serverController);
+	/*for(CourseInterface c : courses)
+	    {
+		if(c.getAssignedLecturer().getTeachersId().equals(currentUser.getTeachersID()))
+		{
+		    tcourses.add(c);
+		}
+	    }*/
+	//Find affected bookings
+	scheldue_result active = ClientClassSchedulingHandling.getCurrentActiveScheldue(serverController);
+	List<BookingLocationsInterface> bookings = new ArrayList<BookingLocationsInterface>();
+	List<LocationInterface> rooms = new ArrayList<LocationInterface>();
+	List<CourseInterface> bookedcourses = active.getBookedCourses();
+	//replace this with a server call to get all rooms , once scheldue is saved.
+	for(CourseInterface c : bookedcourses)
+	{
+	   List<LocationInterface> b = c.getBookedRooms();
+	   boolean match_found = false;
+	   for(LocationInterface broom : b)
+	   {
+	       for(LocationInterface r: rooms)
+	       {
+		   if(r.getNameOfTheLocation().compareTo(broom.getNameOfTheLocation()) == 0)
+		   {
+		       match_found = true;
+		       break;
+		   }
+	       }
+	       if(match_found == false)
+	       {
+		   rooms.add(broom);
+	       }
+	   }
+	}
+
+	for(LocationInterface r : rooms)
+	{
+	    List<BookingLocationsInterface> affected_bookings = r.getAllBookingsForTeacher(lecturer, p);
+	    bookings.addAll(affected_bookings);
+	}
+	
+	ClientClassSchedulingHandling.AttemptreBookBooking(serverController,finishDateOfAbsence,bookings);
+	return true;
     }
     public String getUsersNameByLogin(String login){
 	return currentUser.getname();
@@ -108,6 +166,14 @@ public void handlesignoutAction(){
     public scheldue_result createNewScheldue(String semesterStart,String semesterEnd,ArrayList<LocationInterface> Rooms,ArrayList<CourseInterface> Courses)
     {
 	return ClientClassSchedulingHandling.createNewScheldue(serverController,semesterStart,semesterEnd,Rooms,Courses);
+    }
+    public scheldue_result getCurrentScheldue()
+    {
+	return ClientClassSchedulingHandling.getCurrentActiveScheldue(serverController);
+    }
+    public List<BookingLocationsInterface> AttemptreBookBooking(String startBookingFrom,List<BookingLocationsInterface> booking)
+    {
+	return ClientClassSchedulingHandling.AttemptreBookBooking(serverController,startBookingFrom,booking);
     }
 }
 

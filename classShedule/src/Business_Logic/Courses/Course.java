@@ -5,6 +5,7 @@
  */
 package Business_Logic.Courses;
 
+import Business_Logic.IServices.BookingLocationsInterface;
 import Business_Logic.IServices.CourseInterface;
 import Business_Logic.IServices.LocationInterface;
 import Business_Logic.IServices.StudentsInterface;
@@ -29,7 +30,7 @@ public class Course implements CourseInterface, Serializable{
     int deseiredDaysBetweenLectures;
     List<LocationInterface> bookedRooms;
     
-   public Course(String id, String nameOfTheCourse,List<StudentsInterface> students, int numberOflessons, int numberOfHourstogether, int maxOnWeek ) {
+   public Course(String id, String nameOfTheCourse,List<StudentsInterface> students, int numberOflessons, int numberOfHourstogether, int maxOnWeek, TeacherInterface assignedLecturer ) {
        this.id = id;
        this.nameOfTheCourse = nameOfTheCourse;
        this.students = students;
@@ -37,7 +38,7 @@ public class Course implements CourseInterface, Serializable{
        this.numberOflessons = numberOflessons;
        this.numberOfHourstogether = numberOfHourstogether;
        this.maximalTimesOfWeek = maxOnWeek;
-       this.assignedLecturer = null;
+       this.assignedLecturer = assignedLecturer;
        for (StudentsInterface oneOfTheClasses: students){
 	  int studentsInOneClass= oneOfTheClasses.getNumberOfStuents();
 	  this.numberOfParticipants= this.numberOfParticipants+studentsInOneClass;
@@ -117,5 +118,30 @@ public class Course implements CourseInterface, Serializable{
     @Override
     public void setAssignedLecturer(TeacherInterface Teacher) {
 	this.assignedLecturer = Teacher;
+    }
+    @Override
+    public LocationInterface getRoomReferencedByBooking(BookingLocationsInterface booking)
+    {
+	for(LocationInterface l : this.bookedRooms)
+	{
+	    if(l.getAllBookings().contains(booking))
+	    {
+		return l;
+	    }
+	}
+	return null;
+    }
+    @Override
+    public void updateRoom(LocationInterface room)
+    {
+	for(LocationInterface l : this.bookedRooms)
+	{
+	    if(l.getNameOfTheLocation().equals(room.getNameOfTheLocation()))
+	    {
+		this.bookedRooms.remove(l);
+		this.bookedRooms.add(l);
+		break;
+	    }
+	}
     }
 }

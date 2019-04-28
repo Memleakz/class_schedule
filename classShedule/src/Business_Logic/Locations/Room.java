@@ -9,12 +9,18 @@ import Business_Logic.Common.Period;
 import Business_Logic.IServices.BookingLocationsInterface;
 import Business_Logic.IServices.CourseInterface;
 import Business_Logic.IServices.LocationInterface;
+import Business_Logic.IServices.TeacherInterface;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 
 /**
@@ -86,16 +92,28 @@ public class Room implements LocationInterface, Serializable{
 	return all;
     }
     @Override
-    public boolean cancelBooking(BookingLocationsInterface booking)
+    public boolean cancelBooking(BookingLocationsInterface b)
     {
-	List<BookingLocationsInterface> bookings = this.bookings.get(booking.getCourse());
+	List<BookingLocationsInterface> bookings = this.bookings.get(b.getCourse());
+	for( BookingLocationsInterface booking : bookings)
+	{
+	    if(booking.getPeriodOfBooking().getStartDate().compareTo(b.getPeriodOfBooking().getStartDate()) == 0
+	    && booking.getPeriodOfBooking().getEndDate().compareTo(b.getPeriodOfBooking().getEndDate()) == 0)
+	    {
+		bookings.remove(booking);
+		this.bookings.put(booking.getCourse(), bookings);
+	        return true;
+	    }
+	}
+	return false;
+	/*List<BookingLocationsInterface> bookings = this.bookings.get(booking.getCourse());
 	if(bookings.contains(booking))
 	{
 	    bookings.remove(booking);
 	    this.bookings.put(booking.getCourse(), bookings);
 	    return true;
 	}
-	return false;
+	return false;*/
     }
 
     @Override
@@ -144,9 +162,102 @@ public class Room implements LocationInterface, Serializable{
     public String getNameOfTheLocation() {
 	return this.nameOfTheRoom;
     }
-        @Override
+    @Override
     public String toString()
     {
 	return this.nameOfTheRoom;
+    }
+    @Override
+    public Map<Integer, List<BookingLocationsInterface>> getBookingsForWeek(int weeknr)
+    {
+	SimpleDateFormat sdf = new SimpleDateFormat("MM dd yyyy");
+	Calendar cal = Calendar.getInstance();
+	cal.set(Calendar.WEEK_OF_YEAR, weeknr);        
+	cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+	
+	List<BookingLocationsInterface> all = new ArrayList<BookingLocationsInterface>();
+	List<BookingLocationsInterface> booklist = new ArrayList<BookingLocationsInterface>();
+	for (Map.Entry<CourseInterface, List<BookingLocationsInterface>> entry : this.bookings.entrySet())
+	{
+	     booklist.addAll(entry.getValue());
+	    
+	}
+	all.addAll(booklist);
+	Map<String, List<BookingLocationsInterface>> hour_sortet_bookings = new TreeMap<String, List<BookingLocationsInterface>>();
+	Map<Integer, List<BookingLocationsInterface>> day_sortet_bookings = new TreeMap<Integer,List<BookingLocationsInterface>>(); 
+	//Sort all bookings by weekday and exclude by weeknr
+	
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM dd yyyy");
+	for(int i = 0;i < 7;i++)
+	{
+	
+	for(BookingLocationsInterface b : all)
+	{
+	    String date = sdf.format(cal.getTime());
+	    String date1 = b.getPeriodOfBooking().getStartDate().format(formatter);
+	    if(date.equals(date1))
+	    {
+		int dayOFWeek = b.getPeriodOfBooking().getStartDate().getDayOfWeek().getValue();
+		List<BookingLocationsInterface> bookingsfordate = day_sortet_bookings.get(dayOFWeek);
+		if(bookingsfordate == null)
+		{
+		  bookingsfordate = new ArrayList<BookingLocationsInterface>();
+		}
+		bookingsfordate.add(b);
+		day_sortet_bookings.put(dayOFWeek, bookingsfordate);
+	    }	
+	}
+	    cal.add(Calendar.DAY_OF_WEEK, 1);
+	}
+	    
+	
+	//sort all weekdays by hour start
+	
+	return day_sortet_bookings;
+    }
+    public boolean cancel_booking(BookingLocationsInterface b)
+    {
+	/*List<BookingLocationsInterface> bookings = this.bookings.get(b.getCourse());
+	for( BookingLocationsInterface booking : bookings)
+	{
+	    if(booking.getPeriodOfBooking().getStartDate().compareTo(b.getPeriodOfBooking().getStartDate()) == 0
+	    && booking.getPeriodOfBooking().getEndDate().compareTo(b.getPeriodOfBooking().getEndDate()) == 0)
+	    {
+		bookings.remove(booking);
+	    }
+	}
+	return bookings.remove(b);*/
+	return false;
+    }
+    public List<BookingLocationsInterface> getAllBookingsForTeacher(TeacherInterface t,Period p)
+    {
+	List<BookingLocationsInterface> all = new ArrayList<BookingLocationsInterface>();
+	for (Map.Entry<CourseInterface, List<BookingLocationsInterface>> entry : this.bookings.entrySet())
+	{
+	    List<BookingLocationsInterface> booklist = entry.getValue();
+	    for(BookingLocationsInterface b :booklist)
+	    {
+		if(b.getTeacher().getTeachersId().equals(t.getTeachersId()))
+		{
+		    if(p != null)
+		    {
+			//filter on period also.
+			if(b.getPeriodOfBooking().getStartDate().compareTo(p.getStartDate()) >= 0
+			&& b.getPeriodOfBooking().getEndDate().compareTo(p.getEndDate()) <= 0)
+			{
+			    all.add(b);
+			}
+		    }
+		    else
+		    {
+			all.add(b);
+		    }
+		}
+	    }
+	    
+	}
+	
+	Collections.sort(all);
+	return all;
     }
 }

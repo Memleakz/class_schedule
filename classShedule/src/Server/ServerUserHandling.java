@@ -180,7 +180,7 @@ public class ServerUserHandling {
 	int cMaximalWeek = 0;
 	int cDesiredDays = 0;
 	String cId = "";
-	String query2 = "SELECT \"courseName\", \"courses_id\", \"numberOfParticipants\", \"numberOfLessons\", \"numberOfHoursTogether\",\"maximalTimesOfWeek\" FROM \"Courses\" NATURAL JOIN \"PossibleCoursesForTeacher\" WHERE \"teacher_to_possible\" = \'" + teachersID + "\' ;";
+	String query2 = "SELECT \"courseName\", \"courses_id\", \"numberOfParticipants\", \"numberOfLessons\", \"numberOfHoursTogether\",\"maximalTimesOfWeek\",\"desiredDaysBetweenLectures\",\"assigned_teacher\" FROM \"Courses\" NATURAL JOIN \"PossibleCoursesForTeacher\" WHERE \"teacher_to_possible\" = \'" + teachersID + "\' ;";
 	try {
 	    ResultSet coursess = dbm.executeQuery(query2);
 
@@ -190,7 +190,10 @@ public class ServerUserHandling {
 		cNumberHoursTogether = coursess.getInt("numberOfHoursTogether");
 		cMaximalWeek = coursess.getInt("maximalTimesOfWeek");
 		cId = coursess.getString("courses_id");
-		CourseInterface course = CourseFactory.getCourse(cId, cName, new ArrayList<StudentsInterface>(), cNumberLessons, cNumberHoursTogether, cMaximalWeek);
+		//String tID = coursess.getString("assigned_teacher");
+		//TeacherInterface teacherForCourse = getTeacher(tID);
+		int desiredDaysBetweenLectures = coursess.getInt("desiredDaysBetweenLectures");
+		CourseInterface course = CourseFactory.getCourse(cId, cName, new ArrayList<StudentsInterface>(), cNumberLessons, cNumberHoursTogether, cMaximalWeek,null,desiredDaysBetweenLectures);
 		possibleCoursesss.add(course);
 	    }
 
@@ -356,8 +359,12 @@ public class ServerUserHandling {
 		int numberhoursTogether = courses.getInt("numberOfHoursTogether");
 		int maxLecturesInWeek = courses.getInt("maximalTimesOfWeek");
 		List<StudentsInterface> studentsinCourse = getClassForCourse(courseId);
+		int desiredDaysBetweenLectures = courses.getInt("desiredDaysBetweenLectures");
+		String tID = courses.getString("assigned_teacher");
+		TeacherInterface teachertocourse = getTeacher(tID);
 		//, int numberOflessons, int numberOfHourstogether, int maxOnWeek
-		CourseInterface course = CourseFactory.getCourse(courseId, nameOfTheCourse, studentsinCourse, numberLessons, numberhoursTogether, maxLecturesInWeek);
+		CourseInterface course = CourseFactory.getCourse(courseId, nameOfTheCourse, studentsinCourse, numberLessons, numberhoursTogether, maxLecturesInWeek,teachertocourse,
+			desiredDaysBetweenLectures);
 		coursewithId = course;
 	    }
 	} catch (SQLException ex) {

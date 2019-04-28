@@ -18,4 +18,30 @@ import java.util.List;
 public class scheldue_result implements Serializable {
     public List<CourseInterface> bookedCourses = new ArrayList<CourseInterface>();
     public List<CourseInterface> BookingFails = new ArrayList<CourseInterface>();
+   
+    public List<CourseInterface> getBookedCourses (){
+	return this.bookedCourses;
+    }
+    public CourseInterface getBookedCourse (String CourseName){
+	for(CourseInterface c : bookedCourses)
+	{
+	    if(c.getNameOfTheCourse().equals(CourseName))
+	    {
+		return c;
+	    }
+	}
+	return null;
+    }
+    public void replaceBookedCourse (String CourseName,CourseInterface course){
+	for(CourseInterface c : this.bookedCourses)
+	{
+	    if(c.getNameOfTheCourse().equals(CourseName))
+	    {
+		this.bookedCourses.remove(c);
+		this.bookedCourses.add(course);
+	    }
+	}
+	return;
+    }
+    
 }

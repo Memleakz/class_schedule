@@ -29,4 +29,6 @@ public interface CourseInterface {
     public CourseInterface getCourseByName(List<CourseInterface> list,String name);
     public TeacherInterface getAssignedLecturer();
     public void setAssignedLecturer(TeacherInterface Teacher);
+    public LocationInterface getRoomReferencedByBooking(BookingLocationsInterface booking);
+    public void updateRoom(LocationInterface room);
 }

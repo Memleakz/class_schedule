@@ -37,5 +37,7 @@ public interface ServerInterface  extends Remote {
 	public List<CourseInterface> getAllCourses()throws RemoteException;
 	public List<LocationInterface> getAllRooms()throws RemoteException;
 	public scheldue_result getNewSchelue(String semesterStart,String semesterEnd,List<LocationInterface> Rooms,List<CourseInterface> Courses)throws RemoteException;
-	//public int setTeacherInDb(String login, String password, String name, String id, List<BookingLocationsInterface> Rooms, List<CourseInterface> teachersCourses)throws RemoteException;
+	public List<BookingLocationsInterface> AttemptreBookBooking(String startBookingFrom,List<BookingLocationsInterface> bookings)throws RemoteException;
+	public scheldue_result getCurrentSchelue() throws RemoteException;
+//public int setTeacherInDb(String login, String password, String name, String id, List<BookingLocationsInterface> Rooms, List<CourseInterface> teachersCourses)throws RemoteException;
 }

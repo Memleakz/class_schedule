@@ -24,9 +24,18 @@ import java.util.Map;
  * @author lawar15
  */
 public class ServerControllerImplementation extends UnicastRemoteObject implements ServerInterface {
-
+    scheldue_result current_scheldue = null;
+    String semester_end = "31/05/2019 22:00:00";
+    String semester_start = "03/02/2019 08:00:00";
     public ServerControllerImplementation() throws RemoteException {
-
+	//Load current active scheldue from db , we need this for making changes.
+	
+	//TEST - create stadard a new scheldue.
+	String semesterStart = "03/02/2019 08:00:00";
+	String semesterEnd = "31/05/2019 22:00:00";
+	List<LocationInterface> Rooms = ServerClassSchedulingHandling.getAllRooms();
+	List<CourseInterface> Courses = ServerClassSchedulingHandling.getAllCourses();
+	this.current_scheldue = this.getNewSchelue(semesterStart, semesterEnd, Rooms, Courses);
     }
 
     @Override
@@ -81,9 +90,43 @@ public class ServerControllerImplementation extends UnicastRemoteObject implemen
 
     @Override
     public scheldue_result getNewSchelue(String semesterStart, String semesterEnd, List<LocationInterface> Rooms, List<CourseInterface> Courses) throws RemoteException {
-	ServerClassSchedulingHandling s = new ServerClassSchedulingHandling();
 	//save to db now ? or first when user accepts ?
-	return s.AssignRoomsForCourses(semesterStart,semesterEnd,Rooms,Courses);
+	return ServerClassSchedulingHandling.AssignRoomsForCourses(semesterStart,semesterEnd,Rooms,Courses);
+    }
+     @Override
+    public scheldue_result getCurrentSchelue() throws RemoteException {
+	//save to db now ? or first when user accepts ?
+	return this.current_scheldue;
+    }
+    @Override
+    public List<BookingLocationsInterface> AttemptreBookBooking(String startBookingFrom,List<BookingLocationsInterface> bookings)
+    {
+	List<BookingLocationsInterface> new_booking_result = new ArrayList<BookingLocationsInterface>();
+	List<CourseInterface> update_me = new ArrayList<CourseInterface>();
+	for(BookingLocationsInterface b : bookings)
+	{   
+	    Period targetPeriode = new Period(startBookingFrom,this.semester_end);
+	    //Get a new date
+	    CourseInterface c = this.current_scheldue.getBookedCourse(b.getCourse().getNameOfTheCourse());
+	    LocationInterface cr = b.getCourse().getRoomReferencedByBooking(b);
+	    LocationInterface room = null;
+	    for(LocationInterface lroom : c.getBookedRooms())
+		{
+		    if(lroom.getNameOfTheLocation().equals(cr.getNameOfTheLocation()))
+		    {
+			room = lroom;
+		    }
+		}
+	    List<BookingLocationsInterface> new_Booking = ServerClassSchedulingHandling.AttemBookCourseTimes(null,c,room,"bedst",1,targetPeriode);
+	    if(new_Booking.size() != 0)
+	    {
+		b.setCourse(c);
+		room.cancelBooking(b); // remove old or mark as cancelled
+		room.addNewBooking(new_Booking.get(0), c); // add new
+	    }
+	}
+
+	return new_booking_result;
     }
     @Override
     public int addTeacher(String login, String password, String name, String id, ArrayList<BookingLocationsInterface> arrayList, List<CourseInterface> teachersCourses) throws RemoteException {

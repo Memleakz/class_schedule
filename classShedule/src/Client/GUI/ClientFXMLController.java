@@ -21,12 +21,14 @@ import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXML;
@@ -77,33 +79,17 @@ public class ClientFXMLController implements Initializable {
     @FXML
     private RadioButton teachersFaultRButton;
     @FXML
-    private RadioButton studentsFaultRButton;
-    @FXML
-    private RadioButton roomsFaultRButton;
-    @FXML
-    private RadioButton newDataRButton;
-    @FXML
     private ToggleGroup changeReasonGroup;
-    @FXML
-    private Text startquestiondate;
-    @FXML
-    private Text finishquestiondate;
     @FXML
     private DatePicker startDateOfAbsence;
     @FXML
     private DatePicker finishDateOfAbsence;
-    @FXML
-    private Text questionChooseTeacher;
     @FXML
     ListView listOfTeachers;
     @FXML
     Button backButton;
     @FXML
     Button savechangesButton;
-    @FXML
-    private Text questionChooseClass;
-    @FXML
-    ListView listOfStudents;
 
     @FXML
     private Pane changingPaneTeacher;
@@ -116,27 +102,9 @@ public class ClientFXMLController implements Initializable {
     @FXML
     private Button saveChangesAndSeeNewScheduleTeacher;
 
-    @FXML
-    private Pane inputsPane;
-    @FXML
-    private Button saveAndSeeScheduleWithInputs;
-    @FXML
-    private Button goBackToChangingPane;
-    @FXML
-    private Text whichToAdd;
-    @FXML
-    private RadioButton addNewTeacher;
-    @FXML
-    private RadioButton addNewClassOfStudents;
-    @FXML
-    private RadioButton addNewRoom;
-    @FXML
-    private RadioButton addNewCourse;
-    @FXML
-    private RadioButton addNewUser;
-    @FXML
-    private ToggleGroup inputsGroup;
 
+    @FXML
+    private Button backToSchedulerPaneButton;
     @FXML
     private Pane classScheduleViewPane;
     @FXML
@@ -150,19 +118,19 @@ public class ClientFXMLController implements Initializable {
     @FXML
     private Button previousWeekButton;
     @FXML
-    private TextField mondayLessonsTextField;
+    private ListView mondayLessonsListView;
     @FXML
-    private TextField tuesdayLessonsTextField;
+    private ListView tuesdayLessonsListView;
     @FXML
-    private TextField wednesdayLessonsTextField;
+    private ListView wednesdayLessonsListView;
     @FXML
-    private TextField thursdayLessonsTextField;
+    private ListView thursdayLessonsListView;
     @FXML
-    private TextField fridayLessonsTextField;
+    private ListView fridayLessonsListView;
     @FXML
-    private TextField saturdayLessonsTextField;
+    private ListView saturdayLessonsListView;
     @FXML
-    private TextField sundayLessonsTextField;
+    private ListView sundayLessonsListView;
     // Make new Schedule Pane
     @FXML
     private Pane creatingNewSchedulePane;
@@ -329,39 +297,14 @@ public class ClientFXMLController implements Initializable {
 
 //Teacher functionality Pane actions
 
-    /*
-@FXML
-private Pane classScheduleViewPane;
-@FXML
-private TextField weekNumber;
-@FXML
-private TextField classorTeacherName;
-@FXML
-private Button nextWeekTeacherButton;
-@FXML
-private Button signOutTeacherFromViewButton;
-@FXML
-private Button previousWeekButton;
-@FXML
-private TextField mondayLessonsTextField;
-@FXML
-private TextField tuesdayLessonsTextField;
-@FXML
-private TextField wednesdayLessonsTextField;
-@FXML
-private TextField thursdayLessonsTextField;
-@FXML
-private TextField fridayLessonsTextField;
-@FXML
-private TextField saturdayLessonsTextField;
-@FXML
-private TextField sundayLessonsTextField;
-     */
     @FXML
     private void handlesaveChangesAndSeeNewScheduleTeacherButtonAction(ActionEvent event) {
-	String startDateOfAbsence = startDateOfTeachersAbsence.getValue().toString();
-	String finishDateOfAbsence = finishDateOfTeachersAbsence.getValue().toString();
-	clientController.handleTeachersAbsence(startDateOfAbsence, finishDateOfAbsence);
+	//String startDateOfAbsence = startDateOfTeachersAbsence.getValue().toString();
+	//String finishDateOfAbsence = finishDateOfTeachersAbsence.getValue().toString();
+	
+	String startDateOfAbsence = "04/02/2019 08:00:00";
+	String finishDateOfAbsence = "09/02/2019 22:00:00";
+	
 	changingPaneTeacher.setVisible(false);
 	classScheduleViewPane.setVisible(true);
 	String nameOfTeacher = classorTeacherName.getText();
@@ -369,97 +312,27 @@ private TextField sundayLessonsTextField;
 	String teachersname = parts[1];
 	String teachersId = clientController.getTeachersIdByName(teachersname);
 	Map<Integer, Map<Period, CourseInterface>> mapForTeacher = clientController.getClassScheduleForTeacher(teachersId);
-	Map.Entry<Integer, Map<Period, CourseInterface>> entry = mapForTeacher.entrySet().iterator().next();
-	int week = entry.getKey();
-	fillScheduleForWeek(week, mapForTeacher);
+
+	
+	clientController.handleTeachersAbsence(startDateOfAbsence, finishDateOfAbsence);
+	scheldue_result res = clientController.getCurrentScheldue();
+	displayNewScheldue(res);
+	
+	//fillScheduleForWeek(week, mapForTeacher);
 
     }
 
     @FXML
     private void handleTeachersignOutButtonAction(ActionEvent event) {
 	changingPaneTeacher.setVisible(false);
+	classScheduleViewPane.setVisible(false);
 	clientController.handlesignoutAction();
 	loginPane.setVisible(true);
 
     }
 
-    private void fillScheduleForWeek(int weeknr, Map<Integer, Map<Period, CourseInterface>> mapForTeacher) {
-	for (Map.Entry<Integer, Map<Period, CourseInterface>> entry : mapForTeacher.entrySet()) {
-	    if (entry.getKey() == weeknr) {
-		weekNumber.setText("This is your schedule for week " + weeknr + ":");
-		Map<Period, CourseInterface> value = entry.getValue();
-		for (Map.Entry<Period, CourseInterface> entry2 : value.entrySet()) {
-		    Period timeOfLesson = entry2.getKey();
-		    CourseInterface coursetoSchedule = entry2.getValue();
-		    Calendar cal = Calendar.getInstance();
-		    Date dateOfLecture = Date.from((timeOfLesson.getStartDate()).atZone(ZoneId.systemDefault()).toInstant());
-
-		    cal.setTime(dateOfLecture);
-		    boolean monday = cal.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY;
-		    boolean tuesday = cal.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY;
-		    boolean wednesday = cal.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY;
-		    boolean thurday = cal.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY;
-		    boolean friday = cal.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY;
-		    boolean saturday = cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY;
-		    boolean sunday = cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY;
-		    if (monday == true) {
-			String currenttext = mondayLessonsTextField.getText();
-			mondayLessonsTextField.setText(currenttext + '\n' + entry2.getKey().toString() + "-" + coursetoSchedule + '\n');
-		    } else if (tuesday == true) {
-			String currenttext = tuesdayLessonsTextField.getText();
-			tuesdayLessonsTextField.setText(currenttext + '\n' + entry2.getKey().toString() + "-" + coursetoSchedule + '\n');
-		    } else if (wednesday == true) {
-			String currenttext = wednesdayLessonsTextField.getText();
-			wednesdayLessonsTextField.setText(currenttext + '\n' + entry2.getKey().toString() + "-" + coursetoSchedule + '\n');
-		    } else if (thurday == true) {
-			String currenttext = thursdayLessonsTextField.getText();
-			thursdayLessonsTextField.setText(currenttext + '\n' + entry2.getKey().toString() + "-" + coursetoSchedule + '\n');
-
-		    } else if (friday == true) {
-			String currenttext = fridayLessonsTextField.getText();
-			fridayLessonsTextField.setText(currenttext + '\n' + entry2.getKey().toString() + "-" + coursetoSchedule + '\n');
-
-		    } else if (saturday == true) {
-			String currenttext = saturdayLessonsTextField.getText();
-			saturdayLessonsTextField.setText(currenttext + '\n' + entry2.getKey().toString() + "-" + coursetoSchedule + '\n');
-
-		    } else if (sunday == true) {
-			String currenttext = sundayLessonsTextField.getText();
-			sundayLessonsTextField.setText(currenttext + '\n' + entry2.getKey().toString() + "-" + coursetoSchedule + '\n');
-
-		    }
-		}
-	    }
-	}
-    }
-
     //Class Scheduler pane
-    /*
-     @FXML
-    private Pane creatingNewSchedulePane;
-    @FXML
-    private Button backfromnewScheduleButton;
-    @FXML
-    private Button createScheduleButton;
-    @FXML
-    private Button chooseAllCoursesButton;
-    @FXML
-    private Button chooseAllRoomsButton;
-    @FXML
-    private Button chooseAllTeachersButton;
-    @FXML
-    private Button signoutfromcreatingnewscheduleButton;
-    @FXML
-    private DatePicker startOfTermDatePicker;
-    @FXML
-    private DatePicker finishOfTermDatePicker;
-    @FXML
-    private ListView teachersInTermListView;
-    @FXML
-    private ListView coursesListView;
-    @FXML
-    private ListView roomsListView;
-     */
+
     @FXML
     private void handleMakeNewScheduleButtonAction(ActionEvent event) {
 
@@ -488,30 +361,9 @@ private TextField sundayLessonsTextField;
 
 	}
     }
+    
 
-    /*
-    //add new teacher Pane
-    @FXML
-    private Pane addnewTeacherPane;
-    @FXML
-    private TextField loginField;
-    @FXML
-    private TextField passwordField;
-    @FXML
-    private TextField nameField;
-    @FXML
-    private TextField teachersIDField;
-    @FXML
-    private ListView allcoursesTochooseForNewTeacherListView;
-    @FXML
-    private ListView choosedCoursesToTeacherListView;
-    @FXML
-    private Button addToPossibleCoursesButton
-    @FXML
-    private Button createNewTeacherButton;
-    @FXML
-    private Button backToschedulerMenu;
-     */
+
     @FXML
     private void addNewTeacherButtonAction(ActionEvent event) {
 	changingPaneScheduler.setVisible(false);
@@ -560,7 +412,7 @@ private TextField sundayLessonsTextField;
 	//check if 0 selected , get all if 0.
 	selectedRooms = roomsListView.getItems(); // get all objects...selected or not.
 
-	String SemesterStat = "01/02/2019 08:00:00";
+	String SemesterStat = "03/02/2019 08:00:00";
 	String SemesterEnd = "31/05/2019 22:00:00";
 	ArrayList<CourseInterface> rmi_courses = new ArrayList<CourseInterface>();
 	ArrayList<LocationInterface> rmi_rooms = new ArrayList<LocationInterface>();
@@ -576,6 +428,104 @@ private TextField sundayLessonsTextField;
 	scheldue_result new_scheldue = clientController.createNewScheldue(SemesterStat, SemesterEnd, rmi_rooms, rmi_courses);
 	creatingNewSchedulePane.setVisible(false);
 	//fillScheduleForWeek(SemesterStat);
+	classScheduleViewPane.setVisible(true);
+	displayNewScheldue(new_scheldue);
+    }
+    private void displayNewScheldue(scheldue_result new_scheldue)
+    {
+	//start from first week ? start from the first week of the term
+	
+	//we show scheldue from start always , for easyness yep
+	//extract booked rooms :)
+	List<LocationInterface> rooms = new ArrayList<LocationInterface>();
+	List<CourseInterface> bookedcourses = new_scheldue.getBookedCourses();
+	//replace this with a server call to get all rooms , once scheldue is saved.
+	for(CourseInterface c : bookedcourses)
+	{
+	   List<LocationInterface> b = c.getBookedRooms();
+	   boolean match_found = false;
+	   for(LocationInterface broom : b)
+	   {
+	       for(LocationInterface r: rooms)
+	       {
+		   if(r.getNameOfTheLocation().compareTo(broom.getNameOfTheLocation()) == 0)
+		   {
+		       match_found = true;
+		       break;
+		   }
+	       }
+	       if(match_found == false)
+	       {
+		   rooms.add(broom);
+	       }
+	   }
+	}
+	Map<Integer, List<BookingLocationsInterface>> All_Bookins = new TreeMap<Integer, List<BookingLocationsInterface>>();
+	for(LocationInterface l : rooms)
+	{
+	    Map<Integer, List<BookingLocationsInterface>> day_sortet = l.getBookingsForWeek(6);
+	    for (Map.Entry<Integer, List<BookingLocationsInterface>> entry : day_sortet.entrySet())
+	    {
+		int key = entry.getKey();
+		List<BookingLocationsInterface> booklist = entry.getValue();
+		List<BookingLocationsInterface> day_entries = All_Bookins.get(key);
+		if(day_entries == null)
+		{
+		    day_entries = new ArrayList<BookingLocationsInterface>();
+		}
+		day_entries.addAll(booklist);
+		All_Bookins.put(key, day_entries);
+	    }
+	}
+	
+	//Sort all bookings by start time during their day
+	
+	//Display!
+	
+	for (Map.Entry<Integer, List<BookingLocationsInterface>> entry : All_Bookins.entrySet())
+	{
+	    int dayOfWeek = entry.getKey()+1; // account for diffrerence i calendar and our system
+	    List<BookingLocationsInterface> bookings = entry.getValue();
+	    for(BookingLocationsInterface booking: bookings)
+	    {
+		
+		    LocationInterface r = booking.getCourse().getRoomReferencedByBooking(booking);
+		    String Booking_info = booking.getPeriodOfBooking().getStartDate().getHour() + " - " + booking.getPeriodOfBooking().getEndDate().getHour();
+		    //Booking_info += " - " + booking.getCourse() != null ? booking.getCourse().getNameOfTheCourse() : "" + " - " + r != null ? r.getNameOfTheLocation() : "";
+		    Booking_info += " - " + booking.getCourse().getNameOfTheCourse() +" - " + r.getNameOfTheLocation();
+		    if(dayOfWeek == Calendar.MONDAY)
+		    {
+			mondayLessonsListView.getItems().add(Booking_info);
+		    }
+		    else if(dayOfWeek == Calendar.TUESDAY)
+		    {
+			tuesdayLessonsListView.getItems().add(Booking_info);	
+		    }
+		    else if(dayOfWeek == Calendar.WEDNESDAY)
+		    {
+			wednesdayLessonsListView.getItems().add(Booking_info);	
+		    }
+		    else if(dayOfWeek == Calendar.THURSDAY)
+		    {
+			thursdayLessonsListView.getItems().add(Booking_info);
+		    }
+		    else if(dayOfWeek == Calendar.FRIDAY)
+		    {
+			fridayLessonsListView.getItems().add(Booking_info);
+		    }
+		    else if(dayOfWeek == Calendar.SATURDAY)
+		    {
+			saturdayLessonsListView.getItems().add(Booking_info);
+		    }
+		    else if(dayOfWeek == Calendar.SUNDAY)
+		    {
+			sundayLessonsListView.getItems().add(Booking_info);	
+		    }
+		    
+	    }
+	}
+	    
+	
     }
     
 
