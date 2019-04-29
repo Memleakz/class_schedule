@@ -106,14 +106,6 @@ public class Room implements LocationInterface, Serializable{
 	    }
 	}
 	return false;
-	/*List<BookingLocationsInterface> bookings = this.bookings.get(booking.getCourse());
-	if(bookings.contains(booking))
-	{
-	    bookings.remove(booking);
-	    this.bookings.put(booking.getCourse(), bookings);
-	    return true;
-	}
-	return false;*/
     }
 
     @Override

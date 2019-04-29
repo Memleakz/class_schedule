@@ -4,7 +4,7 @@
 
 -- Dumped from database version 9.2.19
 -- Dumped by pg_dump version 9.2.19
--- Started on 2019-04-07 23:32:12
+-- Started on 2019-04-29 13:25:13
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
@@ -21,7 +21,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- TOC entry 2103 (class 0 OID 0)
+-- TOC entry 2157 (class 0 OID 0)
 -- Dependencies: 1
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
@@ -41,13 +41,37 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE "BookedCoursesForRoom" (
-    id text NOT NULL,
     courses_to_room text,
-    bookings_for_room text
+    id integer NOT NULL,
+    bookings_for_room integer
 );
 
 
 ALTER TABLE public."BookedCoursesForRoom" OWNER TO gruppe03;
+
+--
+-- TOC entry 191 (class 1259 OID 50032)
+-- Name: BookedCoursesForRoom_id_seq; Type: SEQUENCE; Schema: public; Owner: gruppe03
+--
+
+CREATE SEQUENCE "BookedCoursesForRoom_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."BookedCoursesForRoom_id_seq" OWNER TO gruppe03;
+
+--
+-- TOC entry 2158 (class 0 OID 0)
+-- Dependencies: 191
+-- Name: BookedCoursesForRoom_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: gruppe03
+--
+
+ALTER SEQUENCE "BookedCoursesForRoom_id_seq" OWNED BY "BookedCoursesForRoom".id;
+
 
 --
 -- TOC entry 175 (class 1259 OID 49670)
@@ -55,13 +79,37 @@ ALTER TABLE public."BookedCoursesForRoom" OWNER TO gruppe03;
 --
 
 CREATE TABLE "BookedPeriodsForClassesOfStudents" (
-    id_booking_students text NOT NULL,
     "bookingsPeriod" text,
-    "classOfStudents" text
+    "classOfStudents" text,
+    id_booking_students integer NOT NULL
 );
 
 
 ALTER TABLE public."BookedPeriodsForClassesOfStudents" OWNER TO gruppe03;
+
+--
+-- TOC entry 188 (class 1259 OID 49993)
+-- Name: BookedPeriodsForClassesOfStudents_id_booking_students_seq; Type: SEQUENCE; Schema: public; Owner: gruppe03
+--
+
+CREATE SEQUENCE "BookedPeriodsForClassesOfStudents_id_booking_students_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."BookedPeriodsForClassesOfStudents_id_booking_students_seq" OWNER TO gruppe03;
+
+--
+-- TOC entry 2159 (class 0 OID 0)
+-- Dependencies: 188
+-- Name: BookedPeriodsForClassesOfStudents_id_booking_students_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: gruppe03
+--
+
+ALTER SEQUENCE "BookedPeriodsForClassesOfStudents_id_booking_students_seq" OWNED BY "BookedPeriodsForClassesOfStudents".id_booking_students;
+
 
 --
 -- TOC entry 182 (class 1259 OID 49827)
@@ -69,13 +117,37 @@ ALTER TABLE public."BookedPeriodsForClassesOfStudents" OWNER TO gruppe03;
 --
 
 CREATE TABLE "BookedPeriodsForRoom" (
-    id_booked_period text NOT NULL,
     period_for_booking text,
-    room_for_period text
+    id_booked_period integer NOT NULL,
+    room_for_period integer
 );
 
 
 ALTER TABLE public."BookedPeriodsForRoom" OWNER TO gruppe03;
+
+--
+-- TOC entry 187 (class 1259 OID 49981)
+-- Name: BookedPeriodsForRoom_id_booked_period_seq; Type: SEQUENCE; Schema: public; Owner: gruppe03
+--
+
+CREATE SEQUENCE "BookedPeriodsForRoom_id_booked_period_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."BookedPeriodsForRoom_id_booked_period_seq" OWNER TO gruppe03;
+
+--
+-- TOC entry 2160 (class 0 OID 0)
+-- Dependencies: 187
+-- Name: BookedPeriodsForRoom_id_booked_period_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: gruppe03
+--
+
+ALTER SEQUENCE "BookedPeriodsForRoom_id_booked_period_seq" OWNED BY "BookedPeriodsForRoom".id_booked_period;
+
 
 --
 -- TOC entry 176 (class 1259 OID 49692)
@@ -83,13 +155,37 @@ ALTER TABLE public."BookedPeriodsForRoom" OWNER TO gruppe03;
 --
 
 CREATE TABLE "BookedPeriodsForTeachers" (
-    bookings_teachers_id text NOT NULL,
     periods_bookings_teacher text,
-    teacher_of_booking text
+    teacher_of_booking text,
+    bookings_teachers_id integer NOT NULL
 );
 
 
 ALTER TABLE public."BookedPeriodsForTeachers" OWNER TO gruppe03;
+
+--
+-- TOC entry 186 (class 1259 OID 49970)
+-- Name: BookedPeriodsForTeachers_bookings_teachers_id_seq; Type: SEQUENCE; Schema: public; Owner: gruppe03
+--
+
+CREATE SEQUENCE "BookedPeriodsForTeachers_bookings_teachers_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."BookedPeriodsForTeachers_bookings_teachers_id_seq" OWNER TO gruppe03;
+
+--
+-- TOC entry 2161 (class 0 OID 0)
+-- Dependencies: 186
+-- Name: BookedPeriodsForTeachers_bookings_teachers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: gruppe03
+--
+
+ALTER SEQUENCE "BookedPeriodsForTeachers_bookings_teachers_id_seq" OWNED BY "BookedPeriodsForTeachers".bookings_teachers_id;
+
 
 --
 -- TOC entry 185 (class 1259 OID 49906)
@@ -97,13 +193,37 @@ ALTER TABLE public."BookedPeriodsForTeachers" OWNER TO gruppe03;
 --
 
 CREATE TABLE "BookedRoomsForCourse" (
-    "id_bookedRoomsCourse" text NOT NULL,
-    fk_room text,
-    "courseInRoom" text
+    "courseInRoom" text,
+    "id_bookedRoomsCourse" integer NOT NULL,
+    fk_room integer
 );
 
 
 ALTER TABLE public."BookedRoomsForCourse" OWNER TO gruppe03;
+
+--
+-- TOC entry 189 (class 1259 OID 50004)
+-- Name: BookedRoomsForCourse_id_bookedRoomsCourse_seq; Type: SEQUENCE; Schema: public; Owner: gruppe03
+--
+
+CREATE SEQUENCE "BookedRoomsForCourse_id_bookedRoomsCourse_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."BookedRoomsForCourse_id_bookedRoomsCourse_seq" OWNER TO gruppe03;
+
+--
+-- TOC entry 2162 (class 0 OID 0)
+-- Dependencies: 189
+-- Name: BookedRoomsForCourse_id_bookedRoomsCourse_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: gruppe03
+--
+
+ALTER SEQUENCE "BookedRoomsForCourse_id_bookedRoomsCourse_seq" OWNED BY "BookedRoomsForCourse"."id_bookedRoomsCourse";
+
 
 --
 -- TOC entry 179 (class 1259 OID 49750)
@@ -111,15 +231,39 @@ ALTER TABLE public."BookedRoomsForCourse" OWNER TO gruppe03;
 --
 
 CREATE TABLE "Bookings" (
-    bookings_id text NOT NULL,
     teacher_for_booking text,
-    "studentsForBooking" text,
-    period_for_booking text,
-    course_for_booking text
+    course_for_booking text,
+    bookings_id integer NOT NULL,
+    period_for_booking integer,
+    "studentsForBooking" integer
 );
 
 
 ALTER TABLE public."Bookings" OWNER TO gruppe03;
+
+--
+-- TOC entry 190 (class 1259 OID 50015)
+-- Name: Bookings_bookings_id_seq; Type: SEQUENCE; Schema: public; Owner: gruppe03
+--
+
+CREATE SEQUENCE "Bookings_bookings_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."Bookings_bookings_id_seq" OWNER TO gruppe03;
+
+--
+-- TOC entry 2163 (class 0 OID 0)
+-- Dependencies: 190
+-- Name: Bookings_bookings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: gruppe03
+--
+
+ALTER SEQUENCE "Bookings_bookings_id_seq" OWNED BY "Bookings".bookings_id;
+
 
 --
 -- TOC entry 174 (class 1259 OID 49664)
@@ -127,9 +271,9 @@ ALTER TABLE public."Bookings" OWNER TO gruppe03;
 --
 
 CREATE TABLE "ClassesOfStudents" (
-    classes_id text NOT NULL,
     field_of_study text,
-    "numberOfMembers" integer
+    "numberOfMembers" integer,
+    classes_id text NOT NULL
 );
 
 
@@ -142,12 +286,13 @@ ALTER TABLE public."ClassesOfStudents" OWNER TO gruppe03;
 
 CREATE TABLE "Courses" (
     "courseName" text,
-    courses_id text NOT NULL,
     "numberOfParticipants" integer,
     "numberOfLessons" integer,
     "numberOfHoursTogether" integer,
     "maximalTimesOfWeek" integer,
-    "desiredDaysBetweenLectures" integer
+    "desiredDaysBetweenLectures" integer,
+    courses_id text NOT NULL,
+    assigned_teacher text
 );
 
 
@@ -175,13 +320,37 @@ ALTER TABLE public."Days" OWNER TO gruppe03;
 --
 
 CREATE TABLE "NeighborAreasForRoom" (
-    id_neighbors text NOT NULL,
-    room_for_areas text,
-    areas_for_room text
+    areas_for_room text,
+    id_neighbors integer NOT NULL,
+    room_for_areas integer
 );
 
 
 ALTER TABLE public."NeighborAreasForRoom" OWNER TO gruppe03;
+
+--
+-- TOC entry 192 (class 1259 OID 50061)
+-- Name: NeighborAreasForRoom_id_neighbors_seq; Type: SEQUENCE; Schema: public; Owner: gruppe03
+--
+
+CREATE SEQUENCE "NeighborAreasForRoom_id_neighbors_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."NeighborAreasForRoom_id_neighbors_seq" OWNER TO gruppe03;
+
+--
+-- TOC entry 2164 (class 0 OID 0)
+-- Dependencies: 192
+-- Name: NeighborAreasForRoom_id_neighbors_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: gruppe03
+--
+
+ALTER SEQUENCE "NeighborAreasForRoom_id_neighbors_seq" OWNED BY "NeighborAreasForRoom".id_neighbors;
+
 
 --
 -- TOC entry 171 (class 1259 OID 49633)
@@ -191,11 +360,35 @@ ALTER TABLE public."NeighborAreasForRoom" OWNER TO gruppe03;
 CREATE TABLE "Periods" (
     "StartDate" date,
     "FinishDate" date,
-    periods_id text NOT NULL
+    periods_id integer NOT NULL
 );
 
 
 ALTER TABLE public."Periods" OWNER TO gruppe03;
+
+--
+-- TOC entry 193 (class 1259 OID 50072)
+-- Name: Periods_periods_id_seq; Type: SEQUENCE; Schema: public; Owner: gruppe03
+--
+
+CREATE SEQUENCE "Periods_periods_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."Periods_periods_id_seq" OWNER TO gruppe03;
+
+--
+-- TOC entry 2165 (class 0 OID 0)
+-- Dependencies: 193
+-- Name: Periods_periods_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: gruppe03
+--
+
+ALTER SEQUENCE "Periods_periods_id_seq" OWNED BY "Periods".periods_id;
+
 
 --
 -- TOC entry 177 (class 1259 OID 49712)
@@ -203,13 +396,37 @@ ALTER TABLE public."Periods" OWNER TO gruppe03;
 --
 
 CREATE TABLE "PossibleCoursesForTeacher" (
-    id_of_couse_to_teacher text NOT NULL,
     teacher_to_possible text,
-    course_possible text
+    course_possible text,
+    id_of_couse_to_teacher integer NOT NULL
 );
 
 
 ALTER TABLE public."PossibleCoursesForTeacher" OWNER TO gruppe03;
+
+--
+-- TOC entry 194 (class 1259 OID 50078)
+-- Name: PossibleCoursesForTeacher_id_of_couse_to_teacher_seq; Type: SEQUENCE; Schema: public; Owner: gruppe03
+--
+
+CREATE SEQUENCE "PossibleCoursesForTeacher_id_of_couse_to_teacher_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."PossibleCoursesForTeacher_id_of_couse_to_teacher_seq" OWNER TO gruppe03;
+
+--
+-- TOC entry 2166 (class 0 OID 0)
+-- Dependencies: 194
+-- Name: PossibleCoursesForTeacher_id_of_couse_to_teacher_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: gruppe03
+--
+
+ALTER SEQUENCE "PossibleCoursesForTeacher_id_of_couse_to_teacher_seq" OWNED BY "PossibleCoursesForTeacher".id_of_couse_to_teacher;
+
 
 --
 -- TOC entry 173 (class 1259 OID 49649)
@@ -218,9 +435,9 @@ ALTER TABLE public."PossibleCoursesForTeacher" OWNER TO gruppe03;
 
 CREATE TABLE "Rooms" (
     rooms_name text,
-    rooms_id text NOT NULL,
     area text,
-    "numberOfPlaces" integer
+    "numberOfPlaces" integer,
+    rooms_id integer NOT NULL
 );
 
 
@@ -232,13 +449,99 @@ ALTER TABLE public."Rooms" OWNER TO gruppe03;
 --
 
 CREATE TABLE "RoomsAndBookings" (
-    id_rooms_for_bookings text NOT NULL,
-    room_for_courses text,
-    booked_courses text
+    booked_courses text,
+    id_rooms_for_bookings integer NOT NULL,
+    room_for_courses integer
 );
 
 
 ALTER TABLE public."RoomsAndBookings" OWNER TO gruppe03;
+
+--
+-- TOC entry 196 (class 1259 OID 50098)
+-- Name: RoomsAndBookings_id_rooms_for_bookings_seq; Type: SEQUENCE; Schema: public; Owner: gruppe03
+--
+
+CREATE SEQUENCE "RoomsAndBookings_id_rooms_for_bookings_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."RoomsAndBookings_id_rooms_for_bookings_seq" OWNER TO gruppe03;
+
+--
+-- TOC entry 2167 (class 0 OID 0)
+-- Dependencies: 196
+-- Name: RoomsAndBookings_id_rooms_for_bookings_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: gruppe03
+--
+
+ALTER SEQUENCE "RoomsAndBookings_id_rooms_for_bookings_seq" OWNED BY "RoomsAndBookings".id_rooms_for_bookings;
+
+
+--
+-- TOC entry 195 (class 1259 OID 50089)
+-- Name: Rooms_rooms_id_seq; Type: SEQUENCE; Schema: public; Owner: gruppe03
+--
+
+CREATE SEQUENCE "Rooms_rooms_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."Rooms_rooms_id_seq" OWNER TO gruppe03;
+
+--
+-- TOC entry 2168 (class 0 OID 0)
+-- Dependencies: 195
+-- Name: Rooms_rooms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: gruppe03
+--
+
+ALTER SEQUENCE "Rooms_rooms_id_seq" OWNED BY "Rooms".rooms_id;
+
+
+--
+-- TOC entry 198 (class 1259 OID 50221)
+-- Name: StudentsForBookings; Type: TABLE; Schema: public; Owner: lawar15; Tablespace: 
+--
+
+CREATE TABLE "StudentsForBookings" (
+    id integer NOT NULL,
+    "classOfStudents" text,
+    "bookingForstudents" integer
+);
+
+
+ALTER TABLE public."StudentsForBookings" OWNER TO lawar15;
+
+--
+-- TOC entry 199 (class 1259 OID 50224)
+-- Name: StudentsForBookings_id_seq; Type: SEQUENCE; Schema: public; Owner: lawar15
+--
+
+CREATE SEQUENCE "StudentsForBookings_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."StudentsForBookings_id_seq" OWNER TO lawar15;
+
+--
+-- TOC entry 2169 (class 0 OID 0)
+-- Dependencies: 199
+-- Name: StudentsForBookings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: lawar15
+--
+
+ALTER SEQUENCE "StudentsForBookings_id_seq" OWNED BY "StudentsForBookings".id;
+
 
 --
 -- TOC entry 184 (class 1259 OID 49880)
@@ -246,13 +549,37 @@ ALTER TABLE public."RoomsAndBookings" OWNER TO gruppe03;
 --
 
 CREATE TABLE "StudentsForCourses" (
-    id_students_to_courses text NOT NULL,
     student text,
-    course text
+    course text,
+    id_students_to_courses integer NOT NULL
 );
 
 
 ALTER TABLE public."StudentsForCourses" OWNER TO gruppe03;
+
+--
+-- TOC entry 197 (class 1259 OID 50109)
+-- Name: StudentsForCourses_id_students_to_courses_seq; Type: SEQUENCE; Schema: public; Owner: gruppe03
+--
+
+CREATE SEQUENCE "StudentsForCourses_id_students_to_courses_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."StudentsForCourses_id_students_to_courses_seq" OWNER TO gruppe03;
+
+--
+-- TOC entry 2170 (class 0 OID 0)
+-- Dependencies: 197
+-- Name: StudentsForCourses_id_students_to_courses_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: gruppe03
+--
+
+ALTER SEQUENCE "StudentsForCourses_id_students_to_courses_seq" OWNED BY "StudentsForCourses".id_students_to_courses;
+
 
 --
 -- TOC entry 170 (class 1259 OID 49627)
@@ -284,87 +611,251 @@ CREATE TABLE "Users" (
 ALTER TABLE public."Users" OWNER TO gruppe03;
 
 --
--- TOC entry 2090 (class 0 OID 49787)
+-- TOC entry 1926 (class 2604 OID 50034)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: gruppe03
+--
+
+ALTER TABLE ONLY "BookedCoursesForRoom" ALTER COLUMN id SET DEFAULT nextval('"BookedCoursesForRoom_id_seq"'::regclass);
+
+
+--
+-- TOC entry 1921 (class 2604 OID 49995)
+-- Name: id_booking_students; Type: DEFAULT; Schema: public; Owner: gruppe03
+--
+
+ALTER TABLE ONLY "BookedPeriodsForClassesOfStudents" ALTER COLUMN id_booking_students SET DEFAULT nextval('"BookedPeriodsForClassesOfStudents_id_booking_students_seq"'::regclass);
+
+
+--
+-- TOC entry 1928 (class 2604 OID 49983)
+-- Name: id_booked_period; Type: DEFAULT; Schema: public; Owner: gruppe03
+--
+
+ALTER TABLE ONLY "BookedPeriodsForRoom" ALTER COLUMN id_booked_period SET DEFAULT nextval('"BookedPeriodsForRoom_id_booked_period_seq"'::regclass);
+
+
+--
+-- TOC entry 1922 (class 2604 OID 49972)
+-- Name: bookings_teachers_id; Type: DEFAULT; Schema: public; Owner: gruppe03
+--
+
+ALTER TABLE ONLY "BookedPeriodsForTeachers" ALTER COLUMN bookings_teachers_id SET DEFAULT nextval('"BookedPeriodsForTeachers_bookings_teachers_id_seq"'::regclass);
+
+
+--
+-- TOC entry 1930 (class 2604 OID 50006)
+-- Name: id_bookedRoomsCourse; Type: DEFAULT; Schema: public; Owner: gruppe03
+--
+
+ALTER TABLE ONLY "BookedRoomsForCourse" ALTER COLUMN "id_bookedRoomsCourse" SET DEFAULT nextval('"BookedRoomsForCourse_id_bookedRoomsCourse_seq"'::regclass);
+
+
+--
+-- TOC entry 1925 (class 2604 OID 50017)
+-- Name: bookings_id; Type: DEFAULT; Schema: public; Owner: gruppe03
+--
+
+ALTER TABLE ONLY "Bookings" ALTER COLUMN bookings_id SET DEFAULT nextval('"Bookings_bookings_id_seq"'::regclass);
+
+
+--
+-- TOC entry 1924 (class 2604 OID 50063)
+-- Name: id_neighbors; Type: DEFAULT; Schema: public; Owner: gruppe03
+--
+
+ALTER TABLE ONLY "NeighborAreasForRoom" ALTER COLUMN id_neighbors SET DEFAULT nextval('"NeighborAreasForRoom_id_neighbors_seq"'::regclass);
+
+
+--
+-- TOC entry 1919 (class 2604 OID 50074)
+-- Name: periods_id; Type: DEFAULT; Schema: public; Owner: gruppe03
+--
+
+ALTER TABLE ONLY "Periods" ALTER COLUMN periods_id SET DEFAULT nextval('"Periods_periods_id_seq"'::regclass);
+
+
+--
+-- TOC entry 1923 (class 2604 OID 50080)
+-- Name: id_of_couse_to_teacher; Type: DEFAULT; Schema: public; Owner: gruppe03
+--
+
+ALTER TABLE ONLY "PossibleCoursesForTeacher" ALTER COLUMN id_of_couse_to_teacher SET DEFAULT nextval('"PossibleCoursesForTeacher_id_of_couse_to_teacher_seq"'::regclass);
+
+
+--
+-- TOC entry 1920 (class 2604 OID 50091)
+-- Name: rooms_id; Type: DEFAULT; Schema: public; Owner: gruppe03
+--
+
+ALTER TABLE ONLY "Rooms" ALTER COLUMN rooms_id SET DEFAULT nextval('"Rooms_rooms_id_seq"'::regclass);
+
+
+--
+-- TOC entry 1927 (class 2604 OID 50100)
+-- Name: id_rooms_for_bookings; Type: DEFAULT; Schema: public; Owner: gruppe03
+--
+
+ALTER TABLE ONLY "RoomsAndBookings" ALTER COLUMN id_rooms_for_bookings SET DEFAULT nextval('"RoomsAndBookings_id_rooms_for_bookings_seq"'::regclass);
+
+
+--
+-- TOC entry 1931 (class 2604 OID 50226)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: lawar15
+--
+
+ALTER TABLE ONLY "StudentsForBookings" ALTER COLUMN id SET DEFAULT nextval('"StudentsForBookings_id_seq"'::regclass);
+
+
+--
+-- TOC entry 1929 (class 2604 OID 50111)
+-- Name: id_students_to_courses; Type: DEFAULT; Schema: public; Owner: gruppe03
+--
+
+ALTER TABLE ONLY "StudentsForCourses" ALTER COLUMN id_students_to_courses SET DEFAULT nextval('"StudentsForCourses_id_students_to_courses_seq"'::regclass);
+
+
+--
+-- TOC entry 2130 (class 0 OID 49787)
 -- Dependencies: 180
 -- Data for Name: BookedCoursesForRoom; Type: TABLE DATA; Schema: public; Owner: gruppe03
 --
 
-COPY "BookedCoursesForRoom" (id, courses_to_room, bookings_for_room) FROM stdin;
+COPY "BookedCoursesForRoom" (courses_to_room, id, bookings_for_room) FROM stdin;
 \.
 
 
 --
--- TOC entry 2085 (class 0 OID 49670)
+-- TOC entry 2171 (class 0 OID 0)
+-- Dependencies: 191
+-- Name: BookedCoursesForRoom_id_seq; Type: SEQUENCE SET; Schema: public; Owner: gruppe03
+--
+
+SELECT pg_catalog.setval('"BookedCoursesForRoom_id_seq"', 1, false);
+
+
+--
+-- TOC entry 2125 (class 0 OID 49670)
 -- Dependencies: 175
 -- Data for Name: BookedPeriodsForClassesOfStudents; Type: TABLE DATA; Schema: public; Owner: gruppe03
 --
 
-COPY "BookedPeriodsForClassesOfStudents" (id_booking_students, "bookingsPeriod", "classOfStudents") FROM stdin;
+COPY "BookedPeriodsForClassesOfStudents" ("bookingsPeriod", "classOfStudents", id_booking_students) FROM stdin;
 \.
 
 
 --
--- TOC entry 2092 (class 0 OID 49827)
+-- TOC entry 2172 (class 0 OID 0)
+-- Dependencies: 188
+-- Name: BookedPeriodsForClassesOfStudents_id_booking_students_seq; Type: SEQUENCE SET; Schema: public; Owner: gruppe03
+--
+
+SELECT pg_catalog.setval('"BookedPeriodsForClassesOfStudents_id_booking_students_seq"', 1, false);
+
+
+--
+-- TOC entry 2132 (class 0 OID 49827)
 -- Dependencies: 182
 -- Data for Name: BookedPeriodsForRoom; Type: TABLE DATA; Schema: public; Owner: gruppe03
 --
 
-COPY "BookedPeriodsForRoom" (id_booked_period, period_for_booking, room_for_period) FROM stdin;
+COPY "BookedPeriodsForRoom" (period_for_booking, id_booked_period, room_for_period) FROM stdin;
 \.
 
 
 --
--- TOC entry 2086 (class 0 OID 49692)
+-- TOC entry 2173 (class 0 OID 0)
+-- Dependencies: 187
+-- Name: BookedPeriodsForRoom_id_booked_period_seq; Type: SEQUENCE SET; Schema: public; Owner: gruppe03
+--
+
+SELECT pg_catalog.setval('"BookedPeriodsForRoom_id_booked_period_seq"', 1, false);
+
+
+--
+-- TOC entry 2126 (class 0 OID 49692)
 -- Dependencies: 176
 -- Data for Name: BookedPeriodsForTeachers; Type: TABLE DATA; Schema: public; Owner: gruppe03
 --
 
-COPY "BookedPeriodsForTeachers" (bookings_teachers_id, periods_bookings_teacher, teacher_of_booking) FROM stdin;
+COPY "BookedPeriodsForTeachers" (periods_bookings_teacher, teacher_of_booking, bookings_teachers_id) FROM stdin;
 \.
 
 
 --
--- TOC entry 2095 (class 0 OID 49906)
+-- TOC entry 2174 (class 0 OID 0)
+-- Dependencies: 186
+-- Name: BookedPeriodsForTeachers_bookings_teachers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: gruppe03
+--
+
+SELECT pg_catalog.setval('"BookedPeriodsForTeachers_bookings_teachers_id_seq"', 1, false);
+
+
+--
+-- TOC entry 2135 (class 0 OID 49906)
 -- Dependencies: 185
 -- Data for Name: BookedRoomsForCourse; Type: TABLE DATA; Schema: public; Owner: gruppe03
 --
 
-COPY "BookedRoomsForCourse" ("id_bookedRoomsCourse", fk_room, "courseInRoom") FROM stdin;
+COPY "BookedRoomsForCourse" ("courseInRoom", "id_bookedRoomsCourse", fk_room) FROM stdin;
 \.
 
 
 --
--- TOC entry 2089 (class 0 OID 49750)
+-- TOC entry 2175 (class 0 OID 0)
+-- Dependencies: 189
+-- Name: BookedRoomsForCourse_id_bookedRoomsCourse_seq; Type: SEQUENCE SET; Schema: public; Owner: gruppe03
+--
+
+SELECT pg_catalog.setval('"BookedRoomsForCourse_id_bookedRoomsCourse_seq"', 1, false);
+
+
+--
+-- TOC entry 2129 (class 0 OID 49750)
 -- Dependencies: 179
 -- Data for Name: Bookings; Type: TABLE DATA; Schema: public; Owner: gruppe03
 --
 
-COPY "Bookings" (bookings_id, teacher_for_booking, "studentsForBooking", period_for_booking, course_for_booking) FROM stdin;
+COPY "Bookings" (teacher_for_booking, course_for_booking, bookings_id, period_for_booking, "studentsForBooking") FROM stdin;
 \.
 
 
 --
--- TOC entry 2084 (class 0 OID 49664)
+-- TOC entry 2176 (class 0 OID 0)
+-- Dependencies: 190
+-- Name: Bookings_bookings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: gruppe03
+--
+
+SELECT pg_catalog.setval('"Bookings_bookings_id_seq"', 1, false);
+
+
+--
+-- TOC entry 2124 (class 0 OID 49664)
 -- Dependencies: 174
 -- Data for Name: ClassesOfStudents; Type: TABLE DATA; Schema: public; Owner: gruppe03
 --
 
-COPY "ClassesOfStudents" (classes_id, field_of_study, "numberOfMembers") FROM stdin;
+COPY "ClassesOfStudents" (field_of_study, "numberOfMembers", classes_id) FROM stdin;
+Software Enginering	100	SE
+Software Teknologi	30	IT
+KemiTeknologi	40	Kemi
 \.
 
 
 --
--- TOC entry 2082 (class 0 OID 49643)
+-- TOC entry 2122 (class 0 OID 49643)
 -- Dependencies: 172
 -- Data for Name: Courses; Type: TABLE DATA; Schema: public; Owner: gruppe03
 --
 
-COPY "Courses" ("courseName", courses_id, "numberOfParticipants", "numberOfLessons", "numberOfHoursTogether", "maximalTimesOfWeek", "desiredDaysBetweenLectures") FROM stdin;
+COPY "Courses" ("courseName", "numberOfParticipants", "numberOfLessons", "numberOfHoursTogether", "maximalTimesOfWeek", "desiredDaysBetweenLectures", courses_id, assigned_teacher) FROM stdin;
+Laboratorie	40	48	4	1	4	LAB	jan001
+Project management	130	48	4	1	7	PM	jan001
+Software Maintance	130	48	4	1	7	SM	jan001
 \.
 
 
 --
--- TOC entry 2093 (class 0 OID 49847)
+-- TOC entry 2133 (class 0 OID 49847)
 -- Dependencies: 183
 -- Data for Name: Days; Type: TABLE DATA; Schema: public; Owner: gruppe03
 --
@@ -374,17 +865,27 @@ COPY "Days" ("dateOfDay", "isHollyDay", "bestPeriod", "mediumPeriod", "emergency
 
 
 --
--- TOC entry 2088 (class 0 OID 49736)
+-- TOC entry 2128 (class 0 OID 49736)
 -- Dependencies: 178
 -- Data for Name: NeighborAreasForRoom; Type: TABLE DATA; Schema: public; Owner: gruppe03
 --
 
-COPY "NeighborAreasForRoom" (id_neighbors, room_for_areas, areas_for_room) FROM stdin;
+COPY "NeighborAreasForRoom" (areas_for_room, id_neighbors, room_for_areas) FROM stdin;
+HovedIndgang	1	\N
 \.
 
 
 --
--- TOC entry 2081 (class 0 OID 49633)
+-- TOC entry 2177 (class 0 OID 0)
+-- Dependencies: 192
+-- Name: NeighborAreasForRoom_id_neighbors_seq; Type: SEQUENCE SET; Schema: public; Owner: gruppe03
+--
+
+SELECT pg_catalog.setval('"NeighborAreasForRoom_id_neighbors_seq"', 1, false);
+
+
+--
+-- TOC entry 2121 (class 0 OID 49633)
 -- Dependencies: 171
 -- Data for Name: Periods; Type: TABLE DATA; Schema: public; Owner: gruppe03
 --
@@ -394,47 +895,122 @@ COPY "Periods" ("StartDate", "FinishDate", periods_id) FROM stdin;
 
 
 --
--- TOC entry 2087 (class 0 OID 49712)
+-- TOC entry 2178 (class 0 OID 0)
+-- Dependencies: 193
+-- Name: Periods_periods_id_seq; Type: SEQUENCE SET; Schema: public; Owner: gruppe03
+--
+
+SELECT pg_catalog.setval('"Periods_periods_id_seq"', 1, false);
+
+
+--
+-- TOC entry 2127 (class 0 OID 49712)
 -- Dependencies: 177
 -- Data for Name: PossibleCoursesForTeacher; Type: TABLE DATA; Schema: public; Owner: gruppe03
 --
 
-COPY "PossibleCoursesForTeacher" (id_of_couse_to_teacher, teacher_to_possible, course_possible) FROM stdin;
+COPY "PossibleCoursesForTeacher" (teacher_to_possible, course_possible, id_of_couse_to_teacher) FROM stdin;
+jan001	SM	1
+jan001	LAB	2
 \.
 
 
 --
--- TOC entry 2083 (class 0 OID 49649)
+-- TOC entry 2179 (class 0 OID 0)
+-- Dependencies: 194
+-- Name: PossibleCoursesForTeacher_id_of_couse_to_teacher_seq; Type: SEQUENCE SET; Schema: public; Owner: gruppe03
+--
+
+SELECT pg_catalog.setval('"PossibleCoursesForTeacher_id_of_couse_to_teacher_seq"', 1, false);
+
+
+--
+-- TOC entry 2123 (class 0 OID 49649)
 -- Dependencies: 173
 -- Data for Name: Rooms; Type: TABLE DATA; Schema: public; Owner: gruppe03
 --
 
-COPY "Rooms" (rooms_name, rooms_id, area, "numberOfPlaces") FROM stdin;
+COPY "Rooms" (rooms_name, area, "numberOfPlaces", rooms_id) FROM stdin;
+u180	TEK	100	1
+u181	TEK	100	2
+u74	HovedIndgang	40	3
+u1	IndgangC	200	4
 \.
 
 
 --
--- TOC entry 2091 (class 0 OID 49807)
+-- TOC entry 2131 (class 0 OID 49807)
 -- Dependencies: 181
 -- Data for Name: RoomsAndBookings; Type: TABLE DATA; Schema: public; Owner: gruppe03
 --
 
-COPY "RoomsAndBookings" (id_rooms_for_bookings, room_for_courses, booked_courses) FROM stdin;
+COPY "RoomsAndBookings" (booked_courses, id_rooms_for_bookings, room_for_courses) FROM stdin;
+SM	1	\N
+Kemi	2	\N
 \.
 
 
 --
--- TOC entry 2094 (class 0 OID 49880)
+-- TOC entry 2180 (class 0 OID 0)
+-- Dependencies: 196
+-- Name: RoomsAndBookings_id_rooms_for_bookings_seq; Type: SEQUENCE SET; Schema: public; Owner: gruppe03
+--
+
+SELECT pg_catalog.setval('"RoomsAndBookings_id_rooms_for_bookings_seq"', 1, false);
+
+
+--
+-- TOC entry 2181 (class 0 OID 0)
+-- Dependencies: 195
+-- Name: Rooms_rooms_id_seq; Type: SEQUENCE SET; Schema: public; Owner: gruppe03
+--
+
+SELECT pg_catalog.setval('"Rooms_rooms_id_seq"', 1, false);
+
+
+--
+-- TOC entry 2148 (class 0 OID 50221)
+-- Dependencies: 198
+-- Data for Name: StudentsForBookings; Type: TABLE DATA; Schema: public; Owner: lawar15
+--
+
+COPY "StudentsForBookings" (id, "classOfStudents", "bookingForstudents") FROM stdin;
+\.
+
+
+--
+-- TOC entry 2182 (class 0 OID 0)
+-- Dependencies: 199
+-- Name: StudentsForBookings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: lawar15
+--
+
+SELECT pg_catalog.setval('"StudentsForBookings_id_seq"', 1, false);
+
+
+--
+-- TOC entry 2134 (class 0 OID 49880)
 -- Dependencies: 184
 -- Data for Name: StudentsForCourses; Type: TABLE DATA; Schema: public; Owner: gruppe03
 --
 
-COPY "StudentsForCourses" (id_students_to_courses, student, course) FROM stdin;
+COPY "StudentsForCourses" (student, course, id_students_to_courses) FROM stdin;
+SE	SM	1
+IT	SM	2
+Kemi	LAB	3
 \.
 
 
 --
--- TOC entry 2080 (class 0 OID 49627)
+-- TOC entry 2183 (class 0 OID 0)
+-- Dependencies: 197
+-- Name: StudentsForCourses_id_students_to_courses_seq; Type: SEQUENCE SET; Schema: public; Owner: gruppe03
+--
+
+SELECT pg_catalog.setval('"StudentsForCourses_id_students_to_courses_seq"', 1, false);
+
+
+--
+-- TOC entry 2120 (class 0 OID 49627)
 -- Dependencies: 170
 -- Data for Name: Teachers; Type: TABLE DATA; Schema: public; Owner: gruppe03
 --
@@ -445,7 +1021,7 @@ jan001	Jan Corfixen Sørensen
 
 
 --
--- TOC entry 2079 (class 0 OID 41436)
+-- TOC entry 2119 (class 0 OID 41436)
 -- Dependencies: 169
 -- Data for Name: Users; Type: TABLE DATA; Schema: public; Owner: gruppe03
 --
@@ -457,16 +1033,7 @@ laura	tobias	\N	Laura Frisendahl Petersen	t
 
 
 --
--- TOC entry 1895 (class 2606 OID 49642)
--- Name: Periods_pkey; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
---
-
-ALTER TABLE ONLY "Periods"
-    ADD CONSTRAINT "Periods_pkey" PRIMARY KEY (periods_id);
-
-
---
--- TOC entry 1893 (class 2606 OID 49640)
+-- TOC entry 1936 (class 2606 OID 49640)
 -- Name: Teachers_pkey; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -475,7 +1042,7 @@ ALTER TABLE ONLY "Teachers"
 
 
 --
--- TOC entry 1890 (class 2606 OID 41443)
+-- TOC entry 1933 (class 2606 OID 41443)
 -- Name: Users_pkey; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -484,70 +1051,79 @@ ALTER TABLE ONLY "Users"
 
 
 --
--- TOC entry 1897 (class 2606 OID 49727)
--- Name: courses_id_pk; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
---
-
-ALTER TABLE ONLY "Courses"
-    ADD CONSTRAINT courses_id_pk PRIMARY KEY (courses_id);
-
-
---
--- TOC entry 1934 (class 2606 OID 49834)
--- Name: pk_booked_rooms; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
---
-
-ALTER TABLE ONLY "BookedPeriodsForRoom"
-    ADD CONSTRAINT pk_booked_rooms PRIMARY KEY (id_booked_period);
-
-
---
--- TOC entry 1922 (class 2606 OID 49757)
--- Name: pk_booking; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
---
-
-ALTER TABLE ONLY "Bookings"
-    ADD CONSTRAINT pk_booking PRIMARY KEY (bookings_id);
-
-
---
--- TOC entry 1905 (class 2606 OID 49677)
--- Name: pk_booking_students; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
---
-
-ALTER TABLE ONLY "BookedPeriodsForClassesOfStudents"
-    ADD CONSTRAINT pk_booking_students PRIMARY KEY (id_booking_students);
-
-
---
--- TOC entry 1909 (class 2606 OID 49699)
--- Name: pk_booking_teacher; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
---
-
-ALTER TABLE ONLY "BookedPeriodsForTeachers"
-    ADD CONSTRAINT pk_booking_teacher PRIMARY KEY (bookings_teachers_id);
-
-
---
--- TOC entry 1901 (class 2606 OID 49679)
--- Name: pk_class; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
---
-
-ALTER TABLE ONLY "ClassesOfStudents"
-    ADD CONSTRAINT pk_class PRIMARY KEY (classes_id);
-
-
---
--- TOC entry 1926 (class 2606 OID 49794)
--- Name: pk_courses_room; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
+-- TOC entry 1973 (class 2606 OID 50150)
+-- Name: pk_bookedcourses; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
 ALTER TABLE ONLY "BookedCoursesForRoom"
-    ADD CONSTRAINT pk_courses_room PRIMARY KEY (id);
+    ADD CONSTRAINT pk_bookedcourses PRIMARY KEY (id);
 
 
 --
--- TOC entry 1939 (class 2606 OID 49851)
+-- TOC entry 1949 (class 2606 OID 50148)
+-- Name: pk_bookedperiodsclass; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
+--
+
+ALTER TABLE ONLY "BookedPeriodsForClassesOfStudents"
+    ADD CONSTRAINT pk_bookedperiodsclass PRIMARY KEY (id_booking_students);
+
+
+--
+-- TOC entry 1981 (class 2606 OID 50146)
+-- Name: pk_bookedperiodsroom; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
+--
+
+ALTER TABLE ONLY "BookedPeriodsForRoom"
+    ADD CONSTRAINT pk_bookedperiodsroom PRIMARY KEY (id_booked_period);
+
+
+--
+-- TOC entry 1953 (class 2606 OID 50144)
+-- Name: pk_bookedperiodsteacher; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
+--
+
+ALTER TABLE ONLY "BookedPeriodsForTeachers"
+    ADD CONSTRAINT pk_bookedperiodsteacher PRIMARY KEY (bookings_teachers_id);
+
+
+--
+-- TOC entry 1994 (class 2606 OID 50142)
+-- Name: pk_bookedrooms; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
+--
+
+ALTER TABLE ONLY "BookedRoomsForCourse"
+    ADD CONSTRAINT pk_bookedrooms PRIMARY KEY ("id_bookedRoomsCourse");
+
+
+--
+-- TOC entry 1968 (class 2606 OID 50140)
+-- Name: pk_bookings; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
+--
+
+ALTER TABLE ONLY "Bookings"
+    ADD CONSTRAINT pk_bookings PRIMARY KEY (bookings_id);
+
+
+--
+-- TOC entry 1945 (class 2606 OID 50138)
+-- Name: pk_classOfstudents; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
+--
+
+ALTER TABLE ONLY "ClassesOfStudents"
+    ADD CONSTRAINT "pk_classOfstudents" PRIMARY KEY (classes_id);
+
+
+--
+-- TOC entry 1941 (class 2606 OID 50135)
+-- Name: pk_courses; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
+--
+
+ALTER TABLE ONLY "Courses"
+    ADD CONSTRAINT pk_courses PRIMARY KEY (courses_id);
+
+
+--
+-- TOC entry 1986 (class 2606 OID 49851)
 -- Name: pk_day; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -556,34 +1132,34 @@ ALTER TABLE ONLY "Days"
 
 
 --
--- TOC entry 1916 (class 2606 OID 49743)
--- Name: pk_neighbor_areas; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
+-- TOC entry 1960 (class 2606 OID 50131)
+-- Name: pk_neighbor; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
 ALTER TABLE ONLY "NeighborAreasForRoom"
-    ADD CONSTRAINT pk_neighbor_areas PRIMARY KEY (id_neighbors);
+    ADD CONSTRAINT pk_neighbor PRIMARY KEY (id_neighbors);
 
 
 --
--- TOC entry 1913 (class 2606 OID 49719)
--- Name: pk_possible_coures_to_teacher; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
+-- TOC entry 1938 (class 2606 OID 50129)
+-- Name: pk_periods; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
+--
+
+ALTER TABLE ONLY "Periods"
+    ADD CONSTRAINT pk_periods PRIMARY KEY (periods_id);
+
+
+--
+-- TOC entry 1957 (class 2606 OID 50127)
+-- Name: pk_possiblecoursesForTeacher; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
 ALTER TABLE ONLY "PossibleCoursesForTeacher"
-    ADD CONSTRAINT pk_possible_coures_to_teacher PRIMARY KEY (id_of_couse_to_teacher);
+    ADD CONSTRAINT "pk_possiblecoursesForTeacher" PRIMARY KEY (id_of_couse_to_teacher);
 
 
 --
--- TOC entry 1947 (class 2606 OID 49913)
--- Name: pk_romms_courses; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
---
-
-ALTER TABLE ONLY "BookedRoomsForCourse"
-    ADD CONSTRAINT pk_romms_courses PRIMARY KEY ("id_bookedRoomsCourse");
-
-
---
--- TOC entry 1899 (class 2606 OID 49735)
+-- TOC entry 1943 (class 2606 OID 50121)
 -- Name: pk_room; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -592,25 +1168,34 @@ ALTER TABLE ONLY "Rooms"
 
 
 --
--- TOC entry 1930 (class 2606 OID 49814)
--- Name: pk_roomsandbookings; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
+-- TOC entry 1977 (class 2606 OID 50125)
+-- Name: pk_roomsandbokings; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
 ALTER TABLE ONLY "RoomsAndBookings"
-    ADD CONSTRAINT pk_roomsandbookings PRIMARY KEY (id_rooms_for_bookings);
+    ADD CONSTRAINT pk_roomsandbokings PRIMARY KEY (id_rooms_for_bookings);
 
 
 --
--- TOC entry 1943 (class 2606 OID 49887)
--- Name: pk_studentstocourse; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
+-- TOC entry 1990 (class 2606 OID 50123)
+-- Name: pk_students; Type: CONSTRAINT; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
 ALTER TABLE ONLY "StudentsForCourses"
-    ADD CONSTRAINT pk_studentstocourse PRIMARY KEY (id_students_to_courses);
+    ADD CONSTRAINT pk_students PRIMARY KEY (id_students_to_courses);
 
 
 --
--- TOC entry 1935 (class 1259 OID 49867)
+-- TOC entry 1998 (class 2606 OID 50234)
+-- Name: pk_studentsForBookings; Type: CONSTRAINT; Schema: public; Owner: lawar15; Tablespace: 
+--
+
+ALTER TABLE ONLY "StudentsForBookings"
+    ADD CONSTRAINT "pk_studentsForBookings" PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1982 (class 1259 OID 49867)
 -- Name: fki_best_period; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -618,7 +1203,7 @@ CREATE INDEX fki_best_period ON "Days" USING btree ("bestPeriod");
 
 
 --
--- TOC entry 1902 (class 1259 OID 49685)
+-- TOC entry 1946 (class 1259 OID 49685)
 -- Name: fki_booking_class; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -626,7 +1211,7 @@ CREATE INDEX fki_booking_class ON "BookedPeriodsForClassesOfStudents" USING btre
 
 
 --
--- TOC entry 1903 (class 1259 OID 49691)
+-- TOC entry 1947 (class 1259 OID 49691)
 -- Name: fki_booking_students_period; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -634,15 +1219,31 @@ CREATE INDEX fki_booking_students_period ON "BookedPeriodsForClassesOfStudents" 
 
 
 --
--- TOC entry 1923 (class 1259 OID 49806)
--- Name: fki_booking_to_courses_room; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
+-- TOC entry 1969 (class 1259 OID 50186)
+-- Name: fki_booking_to_course; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
-CREATE INDEX fki_booking_to_courses_room ON "BookedCoursesForRoom" USING btree (bookings_for_room);
+CREATE INDEX fki_booking_to_course ON "BookedCoursesForRoom" USING btree (bookings_for_room);
 
 
 --
--- TOC entry 1944 (class 1259 OID 49925)
+-- TOC entry 1970 (class 1259 OID 50180)
+-- Name: fki_bookings_roomscourses; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
+--
+
+CREATE INDEX fki_bookings_roomscourses ON "BookedCoursesForRoom" USING btree (courses_to_room);
+
+
+--
+-- TOC entry 1995 (class 1259 OID 50251)
+-- Name: fki_bookings_students; Type: INDEX; Schema: public; Owner: lawar15; Tablespace: 
+--
+
+CREATE INDEX fki_bookings_students ON "StudentsForBookings" USING btree ("bookingForstudents");
+
+
+--
+-- TOC entry 1991 (class 1259 OID 49925)
 -- Name: fki_courseInRoom; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -650,7 +1251,7 @@ CREATE INDEX "fki_courseInRoom" ON "BookedRoomsForCourse" USING btree ("courseIn
 
 
 --
--- TOC entry 1917 (class 1259 OID 49786)
+-- TOC entry 1961 (class 1259 OID 49786)
 -- Name: fki_course_for_booking; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -658,7 +1259,15 @@ CREATE INDEX fki_course_for_booking ON "Bookings" USING btree (course_for_bookin
 
 
 --
--- TOC entry 1927 (class 1259 OID 49826)
+-- TOC entry 1962 (class 1259 OID 50220)
+-- Name: fki_course_for_bookings; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
+--
+
+CREATE INDEX fki_course_for_bookings ON "Bookings" USING btree (course_for_booking);
+
+
+--
+-- TOC entry 1974 (class 1259 OID 49826)
 -- Name: fki_coursesWithBookingsToRoom; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -666,7 +1275,7 @@ CREATE INDEX "fki_coursesWithBookingsToRoom" ON "RoomsAndBookings" USING btree (
 
 
 --
--- TOC entry 1940 (class 1259 OID 49899)
+-- TOC entry 1987 (class 1259 OID 49899)
 -- Name: fki_courses_students; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -674,7 +1283,7 @@ CREATE INDEX fki_courses_students ON "StudentsForCourses" USING btree (course);
 
 
 --
--- TOC entry 1924 (class 1259 OID 49800)
+-- TOC entry 1971 (class 1259 OID 49800)
 -- Name: fki_couses_booking_room; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -682,7 +1291,7 @@ CREATE INDEX fki_couses_booking_room ON "BookedCoursesForRoom" USING btree (cour
 
 
 --
--- TOC entry 1936 (class 1259 OID 49879)
+-- TOC entry 1983 (class 1259 OID 49879)
 -- Name: fki_emergency_period; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -690,7 +1299,7 @@ CREATE INDEX fki_emergency_period ON "Days" USING btree ("emergencyPeriod");
 
 
 --
--- TOC entry 1918 (class 1259 OID 49768)
+-- TOC entry 1963 (class 1259 OID 49768)
 -- Name: fki_fkTeacherBooking; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -698,7 +1307,7 @@ CREATE INDEX "fki_fkTeacherBooking" ON "Bookings" USING btree (teacher_for_booki
 
 
 --
--- TOC entry 1937 (class 1259 OID 49873)
+-- TOC entry 1984 (class 1259 OID 49873)
 -- Name: fki_medium_period; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -706,7 +1315,7 @@ CREATE INDEX fki_medium_period ON "Days" USING btree ("mediumPeriod");
 
 
 --
--- TOC entry 1931 (class 1259 OID 49846)
+-- TOC entry 1978 (class 1259 OID 49846)
 -- Name: fki_periodToRoom; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -714,15 +1323,15 @@ CREATE INDEX "fki_periodToRoom" ON "BookedPeriodsForRoom" USING btree (period_fo
 
 
 --
--- TOC entry 1919 (class 1259 OID 49780)
--- Name: fki_period_booking; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
+-- TOC entry 1964 (class 1259 OID 50192)
+-- Name: fki_period_for_booking; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
-CREATE INDEX fki_period_booking ON "Bookings" USING btree (period_for_booking);
+CREATE INDEX fki_period_for_booking ON "Bookings" USING btree (period_for_booking);
 
 
 --
--- TOC entry 1906 (class 1259 OID 49705)
+-- TOC entry 1950 (class 1259 OID 49705)
 -- Name: fki_pk_period_teacher_booking; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -730,7 +1339,7 @@ CREATE INDEX fki_pk_period_teacher_booking ON "BookedPeriodsForTeachers" USING b
 
 
 --
--- TOC entry 1910 (class 1259 OID 49733)
+-- TOC entry 1954 (class 1259 OID 49733)
 -- Name: fki_possible_courses; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -738,15 +1347,15 @@ CREATE INDEX fki_possible_courses ON "PossibleCoursesForTeacher" USING btree (co
 
 
 --
--- TOC entry 1928 (class 1259 OID 49820)
--- Name: fki_roomTocourses; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
+-- TOC entry 1979 (class 1259 OID 50174)
+-- Name: fki_room_booked; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
-CREATE INDEX "fki_roomTocourses" ON "RoomsAndBookings" USING btree (room_for_courses);
+CREATE INDEX fki_room_booked ON "BookedPeriodsForRoom" USING btree (room_for_period);
 
 
 --
--- TOC entry 1914 (class 1259 OID 49749)
+-- TOC entry 1958 (class 1259 OID 50162)
 -- Name: fki_room_for_neighbor; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -754,23 +1363,23 @@ CREATE INDEX fki_room_for_neighbor ON "NeighborAreasForRoom" USING btree (room_f
 
 
 --
--- TOC entry 1932 (class 1259 OID 49840)
--- Name: fki_room_to_periods; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
+-- TOC entry 1992 (class 1259 OID 50168)
+-- Name: fki_room_periods; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
-CREATE INDEX fki_room_to_periods ON "BookedPeriodsForRoom" USING btree (room_for_period);
-
-
---
--- TOC entry 1945 (class 1259 OID 49919)
--- Name: fki_rooms; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
---
-
-CREATE INDEX fki_rooms ON "BookedRoomsForCourse" USING btree (fk_room);
+CREATE INDEX fki_room_periods ON "BookedRoomsForCourse" USING btree (fk_room);
 
 
 --
--- TOC entry 1941 (class 1259 OID 49893)
+-- TOC entry 1975 (class 1259 OID 50156)
+-- Name: fki_room_to_bookings; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
+--
+
+CREATE INDEX fki_room_to_bookings ON "RoomsAndBookings" USING btree (room_for_courses);
+
+
+--
+-- TOC entry 1988 (class 1259 OID 49893)
 -- Name: fki_students; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -778,7 +1387,7 @@ CREATE INDEX fki_students ON "StudentsForCourses" USING btree (student);
 
 
 --
--- TOC entry 1920 (class 1259 OID 49774)
+-- TOC entry 1965 (class 1259 OID 50257)
 -- Name: fki_students_booking; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -786,7 +1395,15 @@ CREATE INDEX fki_students_booking ON "Bookings" USING btree ("studentsForBooking
 
 
 --
--- TOC entry 1891 (class 1259 OID 49663)
+-- TOC entry 1996 (class 1259 OID 50245)
+-- Name: fki_students_bookings; Type: INDEX; Schema: public; Owner: lawar15; Tablespace: 
+--
+
+CREATE INDEX fki_students_bookings ON "StudentsForBookings" USING btree ("classOfStudents");
+
+
+--
+-- TOC entry 1934 (class 1259 OID 49663)
 -- Name: fki_teacher; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -794,7 +1411,7 @@ CREATE INDEX fki_teacher ON "Users" USING btree (users_teacher);
 
 
 --
--- TOC entry 1907 (class 1259 OID 49711)
+-- TOC entry 1951 (class 1259 OID 49711)
 -- Name: fki_teacher_booking; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -802,7 +1419,23 @@ CREATE INDEX fki_teacher_booking ON "BookedPeriodsForTeachers" USING btree (teac
 
 
 --
--- TOC entry 1911 (class 1259 OID 49725)
+-- TOC entry 1939 (class 1259 OID 50263)
+-- Name: fki_teacher_course; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
+--
+
+CREATE INDEX fki_teacher_course ON "Courses" USING btree (assigned_teacher);
+
+
+--
+-- TOC entry 1966 (class 1259 OID 50203)
+-- Name: fki_teacher_for_booking; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
+--
+
+CREATE INDEX fki_teacher_for_booking ON "Bookings" USING btree (teacher_for_booking);
+
+
+--
+-- TOC entry 1955 (class 1259 OID 49725)
 -- Name: fki_teacher_to_possible; Type: INDEX; Schema: public; Owner: gruppe03; Tablespace: 
 --
 
@@ -810,151 +1443,61 @@ CREATE INDEX fki_teacher_to_possible ON "PossibleCoursesForTeacher" USING btree 
 
 
 --
--- TOC entry 1959 (class 2606 OID 49781)
--- Name: course_for_booking; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
---
-
-ALTER TABLE ONLY "Bookings"
-    ADD CONSTRAINT course_for_booking FOREIGN KEY (course_for_booking) REFERENCES "Courses"(courses_id);
-
-
---
--- TOC entry 1956 (class 2606 OID 49763)
--- Name: fkTeacherBooking; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
---
-
-ALTER TABLE ONLY "Bookings"
-    ADD CONSTRAINT "fkTeacherBooking" FOREIGN KEY (teacher_for_booking) REFERENCES "Teachers"(teachers_id);
-
-
---
--- TOC entry 1966 (class 2606 OID 49862)
--- Name: fk_best_period; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
---
-
-ALTER TABLE ONLY "Days"
-    ADD CONSTRAINT fk_best_period FOREIGN KEY ("bestPeriod") REFERENCES "Periods"(periods_id);
-
-
---
--- TOC entry 1949 (class 2606 OID 49680)
--- Name: fk_booking_class; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
---
-
-ALTER TABLE ONLY "BookedPeriodsForClassesOfStudents"
-    ADD CONSTRAINT fk_booking_class FOREIGN KEY ("classOfStudents") REFERENCES "ClassesOfStudents"(classes_id);
-
-
---
--- TOC entry 1950 (class 2606 OID 49686)
--- Name: fk_booking_students_period; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
---
-
-ALTER TABLE ONLY "BookedPeriodsForClassesOfStudents"
-    ADD CONSTRAINT fk_booking_students_period FOREIGN KEY ("bookingsPeriod") REFERENCES "Periods"(periods_id);
-
-
---
--- TOC entry 1961 (class 2606 OID 49801)
--- Name: fk_booking_to_courses_room; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
+-- TOC entry 2007 (class 2606 OID 50181)
+-- Name: fk_booking_to_course; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
 --
 
 ALTER TABLE ONLY "BookedCoursesForRoom"
-    ADD CONSTRAINT fk_booking_to_courses_room FOREIGN KEY (bookings_for_room) REFERENCES "Bookings"(bookings_id);
+    ADD CONSTRAINT fk_booking_to_course FOREIGN KEY (bookings_for_room) REFERENCES "Bookings"(bookings_id);
 
 
 --
--- TOC entry 1972 (class 2606 OID 49920)
--- Name: fk_courseInRoom; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
---
-
-ALTER TABLE ONLY "BookedRoomsForCourse"
-    ADD CONSTRAINT "fk_courseInRoom" FOREIGN KEY ("courseInRoom") REFERENCES "Courses"(courses_id);
-
-
---
--- TOC entry 1963 (class 2606 OID 49821)
--- Name: fk_coursesWithBookingsToRoom; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
---
-
-ALTER TABLE ONLY "RoomsAndBookings"
-    ADD CONSTRAINT "fk_coursesWithBookingsToRoom" FOREIGN KEY (booked_courses) REFERENCES "BookedCoursesForRoom"(id);
-
-
---
--- TOC entry 1970 (class 2606 OID 49894)
--- Name: fk_courses_students; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
---
-
-ALTER TABLE ONLY "StudentsForCourses"
-    ADD CONSTRAINT fk_courses_students FOREIGN KEY (course) REFERENCES "Courses"(courses_id);
-
-
---
--- TOC entry 1960 (class 2606 OID 49795)
--- Name: fk_couses_booking_room; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
+-- TOC entry 2006 (class 2606 OID 50175)
+-- Name: fk_bookings_roomscourses; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
 --
 
 ALTER TABLE ONLY "BookedCoursesForRoom"
-    ADD CONSTRAINT fk_couses_booking_room FOREIGN KEY (courses_to_room) REFERENCES "Courses"(courses_id);
+    ADD CONSTRAINT fk_bookings_roomscourses FOREIGN KEY (courses_to_room) REFERENCES "Courses"(courses_id);
 
 
 --
--- TOC entry 1968 (class 2606 OID 49874)
--- Name: fk_emergency_period; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
+-- TOC entry 2012 (class 2606 OID 50246)
+-- Name: fk_bookings_students; Type: FK CONSTRAINT; Schema: public; Owner: lawar15
 --
 
-ALTER TABLE ONLY "Days"
-    ADD CONSTRAINT fk_emergency_period FOREIGN KEY ("emergencyPeriod") REFERENCES "Periods"(periods_id);
-
-
---
--- TOC entry 1967 (class 2606 OID 49868)
--- Name: fk_medium_period; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
---
-
-ALTER TABLE ONLY "Days"
-    ADD CONSTRAINT fk_medium_period FOREIGN KEY ("mediumPeriod") REFERENCES "Periods"(periods_id);
+ALTER TABLE ONLY "StudentsForBookings"
+    ADD CONSTRAINT fk_bookings_students FOREIGN KEY ("bookingForstudents") REFERENCES "Bookings"(bookings_id);
 
 
 --
--- TOC entry 1965 (class 2606 OID 49841)
--- Name: fk_periodToRoom; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
+-- TOC entry 2004 (class 2606 OID 50215)
+-- Name: fk_course_for_bookings; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
+--
+
+ALTER TABLE ONLY "Bookings"
+    ADD CONSTRAINT fk_course_for_bookings FOREIGN KEY (course_for_booking) REFERENCES "Courses"(courses_id);
+
+
+--
+-- TOC entry 2002 (class 2606 OID 50187)
+-- Name: fk_period_for_booking; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
+--
+
+ALTER TABLE ONLY "Bookings"
+    ADD CONSTRAINT fk_period_for_booking FOREIGN KEY (period_for_booking) REFERENCES "Periods"(periods_id);
+
+
+--
+-- TOC entry 2009 (class 2606 OID 50169)
+-- Name: fk_room_booked; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
 --
 
 ALTER TABLE ONLY "BookedPeriodsForRoom"
-    ADD CONSTRAINT "fk_periodToRoom" FOREIGN KEY (period_for_booking) REFERENCES "Periods"(periods_id);
+    ADD CONSTRAINT fk_room_booked FOREIGN KEY (room_for_period) REFERENCES "Rooms"(rooms_id);
 
 
 --
--- TOC entry 1958 (class 2606 OID 49775)
--- Name: fk_period_booking; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
---
-
-ALTER TABLE ONLY "Bookings"
-    ADD CONSTRAINT fk_period_booking FOREIGN KEY (period_for_booking) REFERENCES "Periods"(periods_id);
-
-
---
--- TOC entry 1954 (class 2606 OID 49728)
--- Name: fk_possible_courses; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
---
-
-ALTER TABLE ONLY "PossibleCoursesForTeacher"
-    ADD CONSTRAINT fk_possible_courses FOREIGN KEY (course_possible) REFERENCES "Courses"(courses_id);
-
-
---
--- TOC entry 1962 (class 2606 OID 49815)
--- Name: fk_roomTocourses; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
---
-
-ALTER TABLE ONLY "RoomsAndBookings"
-    ADD CONSTRAINT "fk_roomTocourses" FOREIGN KEY (room_for_courses) REFERENCES "Rooms"(rooms_id);
-
-
---
--- TOC entry 1955 (class 2606 OID 49744)
+-- TOC entry 2001 (class 2606 OID 50157)
 -- Name: fk_room_for_neighbor; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
 --
 
@@ -963,70 +1506,61 @@ ALTER TABLE ONLY "NeighborAreasForRoom"
 
 
 --
--- TOC entry 1964 (class 2606 OID 49835)
--- Name: fk_room_to_periods; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
---
-
-ALTER TABLE ONLY "BookedPeriodsForRoom"
-    ADD CONSTRAINT fk_room_to_periods FOREIGN KEY (room_for_period) REFERENCES "Rooms"(rooms_id);
-
-
---
--- TOC entry 1971 (class 2606 OID 49914)
--- Name: fk_rooms; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
+-- TOC entry 2010 (class 2606 OID 50163)
+-- Name: fk_room_periods; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
 --
 
 ALTER TABLE ONLY "BookedRoomsForCourse"
-    ADD CONSTRAINT fk_rooms FOREIGN KEY (fk_room) REFERENCES "Rooms"(rooms_id);
+    ADD CONSTRAINT fk_room_periods FOREIGN KEY (fk_room) REFERENCES "Rooms"(rooms_id);
 
 
 --
--- TOC entry 1969 (class 2606 OID 49888)
--- Name: fk_students; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
+-- TOC entry 2008 (class 2606 OID 50151)
+-- Name: fk_room_to_bookings; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
 --
 
-ALTER TABLE ONLY "StudentsForCourses"
-    ADD CONSTRAINT fk_students FOREIGN KEY (student) REFERENCES "ClassesOfStudents"(classes_id);
+ALTER TABLE ONLY "RoomsAndBookings"
+    ADD CONSTRAINT fk_room_to_bookings FOREIGN KEY (room_for_courses) REFERENCES "Rooms"(rooms_id);
 
 
 --
--- TOC entry 1957 (class 2606 OID 49769)
+-- TOC entry 2005 (class 2606 OID 50252)
 -- Name: fk_students_booking; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
 --
 
 ALTER TABLE ONLY "Bookings"
-    ADD CONSTRAINT fk_students_booking FOREIGN KEY ("studentsForBooking") REFERENCES "ClassesOfStudents"(classes_id);
+    ADD CONSTRAINT fk_students_booking FOREIGN KEY ("studentsForBooking") REFERENCES "StudentsForBookings"(id);
 
 
 --
--- TOC entry 1952 (class 2606 OID 49706)
--- Name: fk_teacher_booking; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
+-- TOC entry 2011 (class 2606 OID 50240)
+-- Name: fk_students_bookings; Type: FK CONSTRAINT; Schema: public; Owner: lawar15
 --
 
-ALTER TABLE ONLY "BookedPeriodsForTeachers"
-    ADD CONSTRAINT fk_teacher_booking FOREIGN KEY (teacher_of_booking) REFERENCES "Teachers"(teachers_id);
-
-
---
--- TOC entry 1953 (class 2606 OID 49720)
--- Name: fk_teacher_to_possible; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
---
-
-ALTER TABLE ONLY "PossibleCoursesForTeacher"
-    ADD CONSTRAINT fk_teacher_to_possible FOREIGN KEY (teacher_to_possible) REFERENCES "Teachers"(teachers_id);
+ALTER TABLE ONLY "StudentsForBookings"
+    ADD CONSTRAINT fk_students_bookings FOREIGN KEY ("classOfStudents") REFERENCES "ClassesOfStudents"(classes_id);
 
 
 --
--- TOC entry 1951 (class 2606 OID 49700)
--- Name: pk_period_teacher_booking; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
+-- TOC entry 2000 (class 2606 OID 50258)
+-- Name: fk_teacher_course; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
 --
 
-ALTER TABLE ONLY "BookedPeriodsForTeachers"
-    ADD CONSTRAINT pk_period_teacher_booking FOREIGN KEY (periods_bookings_teacher) REFERENCES "Periods"(periods_id);
+ALTER TABLE ONLY "Courses"
+    ADD CONSTRAINT fk_teacher_course FOREIGN KEY (assigned_teacher) REFERENCES "Teachers"(teachers_id);
 
 
 --
--- TOC entry 1948 (class 2606 OID 49658)
+-- TOC entry 2003 (class 2606 OID 50198)
+-- Name: fk_teacher_for_booking; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
+--
+
+ALTER TABLE ONLY "Bookings"
+    ADD CONSTRAINT fk_teacher_for_booking FOREIGN KEY (teacher_for_booking) REFERENCES "Teachers"(teachers_id);
+
+
+--
+-- TOC entry 1999 (class 2606 OID 49658)
 -- Name: teacher; Type: FK CONSTRAINT; Schema: public; Owner: gruppe03
 --
 
@@ -1035,7 +1569,7 @@ ALTER TABLE ONLY "Users"
 
 
 --
--- TOC entry 2102 (class 0 OID 0)
+-- TOC entry 2156 (class 0 OID 0)
 -- Dependencies: 6
 -- Name: public; Type: ACL; Schema: -; Owner: postgres
 --
@@ -1046,7 +1580,7 @@ GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2019-04-07 23:32:13
+-- Completed on 2019-04-29 13:25:14
 
 --
 -- PostgreSQL database dump complete

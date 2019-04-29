@@ -44,9 +44,6 @@ public class ServerClassSchedulingHandling {
     private List<CourseInterface> Courses;
     List<LocationInterface> Rooms;
     static List<Period> specialClosePeriod = new ArrayList<Period>();
-    //String SemesterStart = "01/02/2019 08:00:00";
-    //String SemesterEnd = "31/05/2019 22:00:00";
-    //TeacherInterface adam = new Lecturer("00001", "Adam Adamsen", new ArrayList<Period>(), new ArrayList<CourseInterface>());
 
     public void addSpecialClosePeriod(String start, String end) {
 
@@ -63,7 +60,7 @@ public class ServerClassSchedulingHandling {
     static scheldue_result AssignRoomsForCourses(String SemesterStart, String SemesterEnd, List<LocationInterface> Rooms, List<CourseInterface> Courses) {
 	List<CourseInterface> bookedCourses = new ArrayList<CourseInterface>();
 	List<CourseInterface> BookingFails = new ArrayList<CourseInterface>();
-	
+
 	Period BookingPeriod = new Period(SemesterStart, SemesterEnd);
 	for (CourseInterface c : Courses) {
 	    //Find best match room ?
@@ -85,7 +82,6 @@ public class ServerClassSchedulingHandling {
 		    l.put(r, known_bookings);
 		}
 
-		//bookings.addAll();
 		if (helperCountBookings(l) == Total_needed_bookings) {
 		    //we booked all the rooms we needed.
 		    BookingDone = true;
@@ -142,7 +138,7 @@ public class ServerClassSchedulingHandling {
 	scheldue_result ret_obj = new scheldue_result();
 	ret_obj.BookingFails = BookingFails;
 	ret_obj.bookedCourses = bookedCourses;
-	
+
 	//print_table(); //debug
 	return ret_obj;
     }
@@ -278,8 +274,6 @@ public class ServerClassSchedulingHandling {
 		    hour_sortet_bookings.put(key, known);
 		}
 	    }
-
-	    //room_bookings.add(b);
 	}
 	System.out.println();
 
@@ -333,17 +327,17 @@ public class ServerClassSchedulingHandling {
 	//do swap
 	CourseInterface c1 = booking1.getCourse();
 	CourseInterface c2 = booking2.getCourse();
-	//Forslag: Booking1.setCourse(c2)
 	booking1.setCourse(c2);
 	booking2.setCourse(c1);
 	return true;
     }
-    public BookingLocationsInterface scheldueRebookBooking(CourseInterface c,BookingLocationsInterface b,Period LockedPeriod)
-    {
+
+    public BookingLocationsInterface scheldueRebookBooking(CourseInterface c, BookingLocationsInterface b, Period LockedPeriod) {
 	//Find next available date for the booking.
 	LocationInterface room = c.getRoomReferencedByBooking(b);
 	return null;
     }
+
     static List<TeacherInterface> getAllTeachers() {
 	List<TeacherInterface> allteachers = new ArrayList<TeacherInterface>();
 	String query = "SELECT \"teachers_id\" FROM \"Teachers\";";
@@ -620,10 +614,10 @@ public class ServerClassSchedulingHandling {
 		cNumberHoursTogether = coursess.getInt("numberOfHoursTogether");
 		cMaximalWeek = coursess.getInt("maximalTimesOfWeek");
 		cId = coursess.getString("courses_id");
-		
-		TeacherInterface t= null;
+
+		TeacherInterface t = null;
 		int desiredDaysBetweenLectures = coursess.getInt("desiredDaysBetweenLectures");
-		CourseInterface course = CourseFactory.getCourse(cId, cName, new ArrayList<StudentsInterface>(), cNumberLessons, cNumberHoursTogether, cMaximalWeek,t,desiredDaysBetweenLectures);
+		CourseInterface course = CourseFactory.getCourse(cId, cName, new ArrayList<StudentsInterface>(), cNumberLessons, cNumberHoursTogether, cMaximalWeek, t, desiredDaysBetweenLectures);
 		possibleCoursesss.add(course);
 	    }
 
@@ -690,7 +684,7 @@ public class ServerClassSchedulingHandling {
 		String teachersID = courses.getString("assigned_teacher");
 		TeacherInterface teacher = getTeacher(teachersID);
 		List<StudentsInterface> studentsinCourse = getClassForCourse(courseId);
-		CourseInterface course = CourseFactory.getCourse(courseId, nameOfTheCourse, studentsinCourse, numberLessons, numberhoursTogether, maxLecturesInWeek,teacher,desiredDaysBetweenLectures);
+		CourseInterface course = CourseFactory.getCourse(courseId, nameOfTheCourse, studentsinCourse, numberLessons, numberhoursTogether, maxLecturesInWeek, teacher, desiredDaysBetweenLectures);
 		coursewithId = course;
 	    }
 	} catch (SQLException ex) {
@@ -703,24 +697,14 @@ public class ServerClassSchedulingHandling {
     static int setTeacherInDb(String login, String password, String name, String id, ArrayList<BookingLocationsInterface> arrayList, List<CourseInterface> teachersCourses) {
 
 	if (login != null && password != null && id != null && teachersCourses != null) {
-	    String newTeacerQuery = "INSERT INTO \"Teachers\" NATURAL JOIN \"Users\" (\"teachers_id\",\"teachersName\",\"name\",\"users_teacher\",\"isClassScheduler\",\"Login\",\"Password\") VALUES ( " + id + ", " + name + ", " + name + ", " + id + ", " + false + ", " + login + ", " + password + "?)";
-	    return dbm.executeInsertAndGetId(newTeacerQuery);
+	    String newTeacerQuery = "INSERT INTO \"Teachers\" (\"teachers_id\",\"teachersName\") VALUES ( '" + id + "', '" + name + "')";
+	    String newUserQuery = "INSERT INTO \"Users\" (\"name\",\"users_teacher\",\"isClassScheduler\",\"Login\",\"Password\") VALUES ( '" + name + "', '" + id + "', " + false + ", '" + login + "', '" + password + "')";
+	    dbm.execute(newTeacerQuery);
+	    dbm.execute(newUserQuery);
+
+	    return 1;
+
 	}
 	return -1;
     }
-
-    /*
-	if (newPeriod == null || newPeriod.getStartDate() == null || newPeriod.getEndDate() == null) {
-	    throw new IllegalArgumentException("Period is null or empty.");
-	}
-	String teachersId = "null";
-	if (teachersID != null && !teachersID.isEmpty()) {
-	    teachersId = "'" + teachersID + "'";
-	}
-    String periodQuery = "INSERT INTO \"Periods\" (\"StartDate\",\"FinishDate\",\"periods_id\") VALUES ( " + newPeriod.getStartDate() + ", " + newPeriod.getEndDate() + ", " + "DEFAULT" + "?)";
-	
-	int periodsid = dbm.executeInsertAndGetId(periodQuery);
-	String periodTeacherQuery = "INSERT INTO \"BookedPeriodsForTeachers\" (\"bookings_teachers_id\", \"periods_bookings_teacher\", \"teacher_of_booking\") VALUES (DEFAULT, " + periodsid + ", /" + teachersID + "\' ;";
-	return dbm.executeInsertAndGetId(periodTeacherQuery);
-	}*/
 }

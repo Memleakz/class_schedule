@@ -5,7 +5,6 @@
  */
 package Client;
 
-import Business_Logic.Common.Period;
 import Business_Logic.IServices.BookingLocationsInterface;
 import Business_Logic.IServices.CourseInterface;
 import Business_Logic.IServices.LocationInterface;
@@ -13,7 +12,6 @@ import Business_Logic.IServices.ServerInterface;
 import Business_Logic.IServices.TeacherInterface;
 import Business_Logic.scheldue_result.scheldue_result;
 import java.rmi.RemoteException;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;

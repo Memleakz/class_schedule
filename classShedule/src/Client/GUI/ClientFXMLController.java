@@ -14,18 +14,20 @@ import Business_Logic.scheldue_result.scheldue_result;
 import Client.ClientController;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
-//import java.awt.event.ActionEvent;
 import javafx.event.ActionEvent;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
@@ -81,9 +83,15 @@ public class ClientFXMLController implements Initializable {
     @FXML
     private ToggleGroup changeReasonGroup;
     @FXML
-    private DatePicker startDateOfAbsence;
+    private DatePicker startDateOfAbsenceDP;
     @FXML
-    private DatePicker finishDateOfAbsence;
+    private DatePicker finishDateOfAbsenceDP;
+    @FXML
+    private Text startquestiondate;
+    @FXML
+    private Text finishquestiondate;
+    @FXML
+    private Text questionChooseTeacher;
     @FXML
     ListView listOfTeachers;
     @FXML
@@ -101,7 +109,6 @@ public class ClientFXMLController implements Initializable {
     private Button signoutButtonForTeacher;
     @FXML
     private Button saveChangesAndSeeNewScheduleTeacher;
-
 
     @FXML
     private Button backToSchedulerPaneButton;
@@ -139,11 +146,11 @@ public class ClientFXMLController implements Initializable {
     @FXML
     private Button createScheduleButton;
     @FXML
-    private Button chooseAllCoursesButton;
+    private Button removeFromAllCoursesButton;
     @FXML
-    private Button chooseAllRoomsButton;
+    private Button removeFromAllRoomsButton;
     @FXML
-    private Button chooseAllTeachersButton;
+    private Button removeFromAllTeachersButton;
     @FXML
     private Button signoutfromcreatingnewscheduleButton;
     @FXML
@@ -171,6 +178,8 @@ public class ClientFXMLController implements Initializable {
     private ListView allcoursesTochooseForNewTeacherListView;
     @FXML
     private ListView choosedCoursesToTeacherListView;
+    @FXML
+    private TextArea schedulerArea;
     @FXML
     private Button createNewTeacherButton;
     @FXML
@@ -225,6 +234,7 @@ public class ClientFXMLController implements Initializable {
 		changingPaneTeacher.setVisible(true);
 	    } else {
 		resetLogInPane();
+		backToSchedulerPaneButton.setVisible(true);
 		classSchedulerWelcomePane.setVisible(true);
 	    }
 
@@ -296,15 +306,17 @@ public class ClientFXMLController implements Initializable {
     }
 
 //Teacher functionality Pane actions
-
     @FXML
-    private void handlesaveChangesAndSeeNewScheduleTeacherButtonAction(ActionEvent event) {
-	//String startDateOfAbsence = startDateOfTeachersAbsence.getValue().toString();
-	//String finishDateOfAbsence = finishDateOfTeachersAbsence.getValue().toString();
-	
-	String startDateOfAbsence = "04/02/2019 08:00:00";
-	String finishDateOfAbsence = "09/02/2019 22:00:00";
-	
+    private void handlesaveChangesAndSeeNewScheduleTeacherButtonAction(ActionEvent event) throws ParseException {
+	LocalDate startlocaldate = startDateOfTeachersAbsence.getValue();
+	String startDateOfAbsence = clientController.makeDatePickerDateToString(startlocaldate, true);
+	LocalDate finishlocaldate = finishDateOfTeachersAbsence.getValue();
+	String finishDateOfAbsence = clientController.makeDatePickerDateToString(finishlocaldate, false);
+
+	Calendar cal = Calendar.getInstance();
+	Date dateOfstart = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").parse(startDateOfAbsence);
+	cal.setTime(dateOfstart);
+	int startWeekOfabsence = cal.get(Calendar.WEEK_OF_YEAR);
 	changingPaneTeacher.setVisible(false);
 	classScheduleViewPane.setVisible(true);
 	String nameOfTeacher = classorTeacherName.getText();
@@ -313,12 +325,9 @@ public class ClientFXMLController implements Initializable {
 	String teachersId = clientController.getTeachersIdByName(teachersname);
 	Map<Integer, Map<Period, CourseInterface>> mapForTeacher = clientController.getClassScheduleForTeacher(teachersId);
 
-	
-	clientController.handleTeachersAbsence(startDateOfAbsence, finishDateOfAbsence);
+	clientController.handleTeachersAbsence(startDateOfAbsence, finishDateOfAbsence, null);
 	scheldue_result res = clientController.getCurrentScheldue();
-	displayNewScheldue(res);
-	
-	//fillScheduleForWeek(week, mapForTeacher);
+	displayNewScheldue(res, startWeekOfabsence);
 
     }
 
@@ -332,7 +341,6 @@ public class ClientFXMLController implements Initializable {
     }
 
     //Class Scheduler pane
-
     @FXML
     private void handleMakeNewScheduleButtonAction(ActionEvent event) {
 
@@ -351,18 +359,80 @@ public class ClientFXMLController implements Initializable {
 	    List<TeacherInterface> allTeachers = clientController.getAllTeachers();
 	    teachersInTermListView.getItems().clear();
 	    teachersInTermListView.getItems().addAll(allTeachers); //uses overwritten toString on course to show name.
-
-	    teachersInTermListView.getSelectionModel().select(0);//select index 0 *love*
-	    teachersInTermListView.getSelectionModel().selectAll(); //virker ikke her , måske senere?
-	    teachersInTermListView.refresh();
 	    List<TeacherInterface> selectedTeachers = teachersInTermListView.getSelectionModel().getSelectedItems(); //get only selected
 	    List<TeacherInterface> allobjTeachers = teachersInTermListView.getItems(); // get all objects...selected or not.
 	    String test = "";
 
 	}
     }
-    
 
+    @FXML
+    private void handleremoveFromAllCoursesButton(ActionEvent event) {
+	coursesListView.getItems().remove(coursesListView.getSelectionModel().getSelectedItem());
+    }
+
+    @FXML
+    private void handleremoveFromAllRoomsButton(ActionEvent event) {
+	roomsListView.getItems().remove(roomsListView.getSelectionModel().getSelectedItem());
+    }
+
+    @FXML
+    private void handleremoveFromAllTeachersButton(ActionEvent event) {
+	teachersInTermListView.getItems().remove(teachersInTermListView.getSelectionModel().getSelectedItem());
+    }
+
+    @FXML
+    private void handleTeachersAbsenceClassScheduler() {
+	RadioButton selectedRadioButton = (RadioButton) changeReasonGroup.getSelectedToggle();
+	String toogleGroupValue = selectedRadioButton.getText();
+	if (toogleGroupValue.compareTo(teachersFaultRButton.getText()) == 0) {
+	    startquestiondate.setVisible(true);
+	    finishquestiondate.setVisible(true);
+	    questionChooseTeacher.setVisible(true);
+	    listOfTeachers.setVisible(true);
+	    List<TeacherInterface> allTeachers = clientController.getAllTeachers();
+	    listOfTeachers.getItems().addAll(allTeachers);
+	    startDateOfAbsenceDP.setVisible(true);
+	    finishDateOfAbsenceDP.setVisible(true);
+	}
+    }
+
+    @FXML
+    private void handlechangeScheduleButtonToPane(ActionEvent event) {
+	classSchedulerWelcomePane.setVisible(false);
+	changingPaneScheduler.setVisible(true);
+    }
+
+    @FXML
+    private void handlesavechangesButton(ActionEvent event) {
+
+	TeacherInterface teacher = (TeacherInterface) listOfTeachers.getSelectionModel().getSelectedItem();
+	LocalDate localDate = startDateOfAbsenceDP.getValue();
+	String startdate = clientController.makeDatePickerDateToString(localDate, true);
+	LocalDate finishLocalDate = finishDateOfAbsenceDP.getValue();
+	String finishDate = clientController.makeDatePickerDateToString(finishLocalDate, false);
+
+	clientController.handleTeachersAbsence(startdate, finishDate, teacher);
+
+	scheldue_result res = clientController.getCurrentScheldue();
+	WeekFields weekFields = WeekFields.of(Locale.getDefault());
+	int weekNumber = localDate.get(weekFields.weekOfWeekBasedYear());
+	changingPaneScheduler.setVisible(false);
+	classScheduleViewPane.setVisible(true);
+
+	displayNewScheldue(res, weekNumber);
+
+    }
+
+    @FXML
+    private void handlebackToSchedulerPaneButton(ActionEvent event) {
+	classScheduleViewPane.setVisible(false);
+	addnewTeacherPane.setVisible(false);
+	changingPaneScheduler.setVisible(false);
+	creatingNewSchedulePane.setVisible(false);
+	classSchedulerWelcomePane.setVisible(true);
+
+    }
 
     @FXML
     private void addNewTeacherButtonAction(ActionEvent event) {
@@ -379,27 +449,37 @@ public class ClientFXMLController implements Initializable {
 	String password = passwordField.getText();
 	String name = nameField.getText();
 	String id = teachersIDField.getText();
-	List<CourseInterface> teachersCourses =choosedCoursesToTeacherListView.getItems();
-	clientController.addNewTeacher(login,password,name,id,new ArrayList<BookingLocationsInterface>(),teachersCourses );
+	List<CourseInterface> teachersCourses = choosedCoursesToTeacherListView.getItems();
+
+	List<CourseInterface> teacherCourses_rmi = new ArrayList<CourseInterface>();
+	for (CourseInterface c : teachersCourses) {
+	    teacherCourses_rmi.add(c);
+	}
+	clientController.addNewTeacher(login, password, name, id, new ArrayList<BookingLocationsInterface>(), teacherCourses_rmi);
+	addnewTeacherPane.setVisible(false);
+	classSchedulerWelcomePane.setVisible(true);
+	schedulerArea.clear();
+	schedulerArea.setText("Teacher " + name + " has been successfully added to database. How can I help You now?");
     }
 
     @FXML
     private void handleaddcoursestonewteacherButtonAction(ActionEvent event) {
 	boolean isAllereadyOnList = false;
 	CourseInterface coursetoadd = (CourseInterface) allcoursesTochooseForNewTeacherListView.getSelectionModel().getSelectedItem();
-	List<CourseInterface> allCoursesFromListView = allcoursesTochooseForNewTeacherListView.getSelectionModel().getSelectedItems();
+
+	List<CourseInterface> allCoursesFromListView = choosedCoursesToTeacherListView.getItems();
 	for (CourseInterface ci : allCoursesFromListView) {
 	    if (ci.getId().equals(coursetoadd.getId())) {
 		isAllereadyOnList = true;
 	    }
 	}
-	if (isAllereadyOnList = false) {
-	    choosedCoursesToTeacherListView.getSelectionModel().getSelectedItems().add(coursetoadd);
+	if (isAllereadyOnList == false) {
+	    choosedCoursesToTeacherListView.getItems().add(coursetoadd);
 	}
     }
 
     @FXML
-    private void handleCreateAndDisplayNewScheldueButtonAction(ActionEvent event) {
+    private void handleCreateAndDisplayNewScheldueButtonAction(ActionEvent event) throws ParseException {
 	List<TeacherInterface> selectedTeachers = teachersInTermListView.getSelectionModel().getSelectedItems(); //get only selected
 	//check if 0 selected , get all if 0.
 	selectedTeachers = teachersInTermListView.getItems(); // get all objects...selected or not.
@@ -411,122 +491,133 @@ public class ClientFXMLController implements Initializable {
 	List<LocationInterface> selectedRooms = roomsListView.getSelectionModel().getSelectedItems(); //get only selected
 	//check if 0 selected , get all if 0.
 	selectedRooms = roomsListView.getItems(); // get all objects...selected or not.
-
-	String SemesterStat = "03/02/2019 08:00:00";
-	String SemesterEnd = "31/05/2019 22:00:00";
+	LocalDate startlocalDate = startOfTermDatePicker.getValue();
+	String SemesterStat = clientController.makeDatePickerDateToString(startlocalDate, true);
+	LocalDate finishlocalDate = finishOfTermDatePicker.getValue();
+	String SemesterEnd = clientController.makeDatePickerDateToString(finishlocalDate, false);
+	Date dateOfstart = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").parse(SemesterStat);
+	Calendar cal = Calendar.getInstance();
+	cal.setTime(dateOfstart);
+	int startWeekOfTerm = cal.get(Calendar.WEEK_OF_YEAR);
 	ArrayList<CourseInterface> rmi_courses = new ArrayList<CourseInterface>();
 	ArrayList<LocationInterface> rmi_rooms = new ArrayList<LocationInterface>();
-	
-	for(CourseInterface c : selectedCourses)
-	{
+
+	for (CourseInterface c : selectedCourses) {
 	    rmi_courses.add(c);
 	}
-	for(LocationInterface r : selectedRooms)
-	{
+	for (LocationInterface r : selectedRooms) {
 	    rmi_rooms.add(r);
 	}
 	scheldue_result new_scheldue = clientController.createNewScheldue(SemesterStat, SemesterEnd, rmi_rooms, rmi_courses);
 	creatingNewSchedulePane.setVisible(false);
 	//fillScheduleForWeek(SemesterStat);
 	classScheduleViewPane.setVisible(true);
-	displayNewScheldue(new_scheldue);
+	displayNewScheldue(new_scheldue, startWeekOfTerm);
     }
-    private void displayNewScheldue(scheldue_result new_scheldue)
-    {
+
+    private void displayNewScheldue(scheldue_result new_scheldue, int startWeekOfTerm) {
 	//start from first week ? start from the first week of the term
-	
+
 	//we show scheldue from start always , for easyness yep
 	//extract booked rooms :)
 	List<LocationInterface> rooms = new ArrayList<LocationInterface>();
 	List<CourseInterface> bookedcourses = new_scheldue.getBookedCourses();
 	//replace this with a server call to get all rooms , once scheldue is saved.
-	for(CourseInterface c : bookedcourses)
-	{
-	   List<LocationInterface> b = c.getBookedRooms();
-	   boolean match_found = false;
-	   for(LocationInterface broom : b)
-	   {
-	       for(LocationInterface r: rooms)
-	       {
-		   if(r.getNameOfTheLocation().compareTo(broom.getNameOfTheLocation()) == 0)
-		   {
-		       match_found = true;
-		       break;
-		   }
-	       }
-	       if(match_found == false)
-	       {
-		   rooms.add(broom);
-	       }
-	   }
+	for (CourseInterface c : bookedcourses) {
+	    List<LocationInterface> b = c.getBookedRooms();
+	    boolean match_found = false;
+	    for (LocationInterface broom : b) {
+		for (LocationInterface r : rooms) {
+		    if (r.getNameOfTheLocation().compareTo(broom.getNameOfTheLocation()) == 0) {
+			match_found = true;
+			break;
+		    }
+		}
+		if (match_found == false) {
+		    rooms.add(broom);
+		}
+	    }
 	}
 	Map<Integer, List<BookingLocationsInterface>> All_Bookins = new TreeMap<Integer, List<BookingLocationsInterface>>();
-	for(LocationInterface l : rooms)
-	{
-	    Map<Integer, List<BookingLocationsInterface>> day_sortet = l.getBookingsForWeek(6);
-	    for (Map.Entry<Integer, List<BookingLocationsInterface>> entry : day_sortet.entrySet())
-	    {
+	for (LocationInterface l : rooms) {
+	    Map<Integer, List<BookingLocationsInterface>> day_sortet = l.getBookingsForWeek(startWeekOfTerm);
+	    for (Map.Entry<Integer, List<BookingLocationsInterface>> entry : day_sortet.entrySet()) {
 		int key = entry.getKey();
 		List<BookingLocationsInterface> booklist = entry.getValue();
 		List<BookingLocationsInterface> day_entries = All_Bookins.get(key);
-		if(day_entries == null)
-		{
+		if (day_entries == null) {
 		    day_entries = new ArrayList<BookingLocationsInterface>();
 		}
 		day_entries.addAll(booklist);
 		All_Bookins.put(key, day_entries);
 	    }
 	}
-	
+
 	//Sort all bookings by start time during their day
-	
 	//Display!
-	
-	for (Map.Entry<Integer, List<BookingLocationsInterface>> entry : All_Bookins.entrySet())
-	{
-	    int dayOfWeek = entry.getKey()+1; // account for diffrerence i calendar and our system
+	weekNumber.clear();
+	weekNumber.setText("This is schedule for week " + startWeekOfTerm);
+	for (Map.Entry<Integer, List<BookingLocationsInterface>> entry : All_Bookins.entrySet()) {
+	    int dayOfWeek = entry.getKey() + 1; // account for diffrerence i calendar and our system
 	    List<BookingLocationsInterface> bookings = entry.getValue();
-	    for(BookingLocationsInterface booking: bookings)
-	    {
-		
-		    LocationInterface r = booking.getCourse().getRoomReferencedByBooking(booking);
-		    String Booking_info = booking.getPeriodOfBooking().getStartDate().getHour() + " - " + booking.getPeriodOfBooking().getEndDate().getHour();
-		    //Booking_info += " - " + booking.getCourse() != null ? booking.getCourse().getNameOfTheCourse() : "" + " - " + r != null ? r.getNameOfTheLocation() : "";
-		    Booking_info += " - " + booking.getCourse().getNameOfTheCourse() +" - " + r.getNameOfTheLocation();
-		    if(dayOfWeek == Calendar.MONDAY)
-		    {
-			mondayLessonsListView.getItems().add(Booking_info);
-		    }
-		    else if(dayOfWeek == Calendar.TUESDAY)
-		    {
-			tuesdayLessonsListView.getItems().add(Booking_info);	
-		    }
-		    else if(dayOfWeek == Calendar.WEDNESDAY)
-		    {
-			wednesdayLessonsListView.getItems().add(Booking_info);	
-		    }
-		    else if(dayOfWeek == Calendar.THURSDAY)
-		    {
-			thursdayLessonsListView.getItems().add(Booking_info);
-		    }
-		    else if(dayOfWeek == Calendar.FRIDAY)
-		    {
-			fridayLessonsListView.getItems().add(Booking_info);
-		    }
-		    else if(dayOfWeek == Calendar.SATURDAY)
-		    {
-			saturdayLessonsListView.getItems().add(Booking_info);
-		    }
-		    else if(dayOfWeek == Calendar.SUNDAY)
-		    {
-			sundayLessonsListView.getItems().add(Booking_info);	
-		    }
-		    
+	    for (BookingLocationsInterface booking : bookings) {
+
+		LocationInterface r = booking.getCourse().getRoomReferencedByBooking(booking);
+		String Booking_info = booking.getPeriodOfBooking().getStartDate().getHour() + " - " + booking.getPeriodOfBooking().getEndDate().getHour();
+		Booking_info += " - " + booking.getCourse().getNameOfTheCourse() + " - " + r.getNameOfTheLocation();
+		if (dayOfWeek == Calendar.MONDAY) {
+		    mondayLessonsListView.getItems().add(Booking_info);
+		} else if (dayOfWeek == Calendar.TUESDAY) {
+		    tuesdayLessonsListView.getItems().add(Booking_info);
+		} else if (dayOfWeek == Calendar.WEDNESDAY) {
+		    wednesdayLessonsListView.getItems().add(Booking_info);
+		} else if (dayOfWeek == Calendar.THURSDAY) {
+		    thursdayLessonsListView.getItems().add(Booking_info);
+		} else if (dayOfWeek == Calendar.FRIDAY) {
+		    fridayLessonsListView.getItems().add(Booking_info);
+		} else if (dayOfWeek == Calendar.SATURDAY) {
+		    saturdayLessonsListView.getItems().add(Booking_info);
+		} else if (dayOfWeek == Calendar.SUNDAY) {
+		    sundayLessonsListView.getItems().add(Booking_info);
+		}
+
 	    }
 	}
-	    
-	
+
     }
-    
+
+    @FXML
+    private void handlenextWeekTeacherButton(ActionEvent event) {
+	sundayLessonsListView.getItems().clear();
+	saturdayLessonsListView.getItems().clear();
+	fridayLessonsListView.getItems().clear();
+	thursdayLessonsListView.getItems().clear();
+	wednesdayLessonsListView.getItems().clear();
+	tuesdayLessonsListView.getItems().clear();
+	mondayLessonsListView.getItems().clear();
+	String stringFromWeek = weekNumber.getText();
+	String[] strings = stringFromWeek.split("week ");
+	int currentweekNumber = Integer.parseInt(strings[1]);
+	int nextWeekNumber = currentweekNumber + 1;
+	scheldue_result res = clientController.getCurrentScheldue();
+	displayNewScheldue(res, nextWeekNumber);
+    }
+
+    @FXML
+    private void handlepreviousWeekButton(ActionEvent event) {
+	sundayLessonsListView.getItems().clear();
+	saturdayLessonsListView.getItems().clear();
+	fridayLessonsListView.getItems().clear();
+	thursdayLessonsListView.getItems().clear();
+	wednesdayLessonsListView.getItems().clear();
+	tuesdayLessonsListView.getItems().clear();
+	mondayLessonsListView.getItems().clear();
+	String stringFromWeek = weekNumber.getText();
+	String[] strings = stringFromWeek.split("week ");
+	int currentweekNumber = Integer.parseInt(strings[1]);
+	int preWeekNumber = currentweekNumber - 1;
+	scheldue_result res = clientController.getCurrentScheldue();
+	displayNewScheldue(res, preWeekNumber);
+    }
 
 }
