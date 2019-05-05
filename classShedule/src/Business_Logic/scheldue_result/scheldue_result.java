@@ -12,13 +12,18 @@ import java.util.List;
 
 /**
  *
- * @author Laura
+ * @author lawar15
  * we only use this for multiple retun ?
  */
-public class scheldue_result implements Serializable {
-    public List<CourseInterface> bookedCourses = new ArrayList<CourseInterface>();
+public class Scheldue_result implements Serializable {
+    private List<CourseInterface> bookedCourses = new ArrayList<CourseInterface>();
     public List<CourseInterface> BookingFails = new ArrayList<CourseInterface>();
-   
+    public void setBookedCourses(List<CourseInterface> bookedCourses){
+	this.bookedCourses = bookedCourses;
+    }
+    public void setBookingFails( List<CourseInterface> failed){
+	this.BookingFails = failed;
+    }
     public List<CourseInterface> getBookedCourses (){
 	return this.bookedCourses;
     }
