@@ -10,7 +10,7 @@ import Business_Logic.IServices.BookingLocationsInterface;
 import Business_Logic.IServices.CourseInterface;
 import Business_Logic.IServices.LocationInterface;
 import Business_Logic.IServices.TeacherInterface;
-import Business_Logic.scheldue_result.scheldue_result;
+import Business_Logic.scheldue_result.Scheldue_result;
 import Client.ClientController;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
@@ -33,14 +33,18 @@ import java.util.ResourceBundle;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -59,7 +63,7 @@ public class ClientFXMLController implements Initializable {
     @FXML
     private TextField inputLogin;
     @FXML
-    private TextField inputPassword;
+    private PasswordField inputPassword;
     @FXML
     private Button signInButton;
     @FXML
@@ -158,6 +162,33 @@ public class ClientFXMLController implements Initializable {
     @FXML
     private DatePicker finishOfTermDatePicker;
     @FXML
+    private Button showPaneToDayTimePreferences;
+    @FXML
+    private Pane underPaneTimeToDays;
+    @FXML
+    private ListView allWeekDays;
+    @FXML
+    private ListView besttimeToStartPossibilities;
+    @FXML
+    private ListView besttimeToFinishPossibilities;
+    @FXML
+    private ListView mediumtimeToStartPossibilities;
+    @FXML
+    private ListView mediumtimeToFinishPossibilities;
+    @FXML
+    private ListView emergencytimeToStartPossibilities;
+    @FXML
+    private ListView emergencytimeToFinishPossibilities;
+    @FXML
+    private Button addToPreferences;
+    @FXML
+    private Button saveall;
+    @FXML
+    private Button hiddePaneToDayTimePreferencesButon;
+    @FXML
+    private ListView mypreferences;
+    
+    @FXML
     private ListView teachersInTermListView;
     @FXML
     private ListView coursesListView;
@@ -186,6 +217,7 @@ public class ClientFXMLController implements Initializable {
     private Button backToschedulerMenu;
     @FXML
     private Button addToPossibleCoursesButton;
+    
 
     private ClientController clientController;
 
@@ -205,6 +237,7 @@ public class ClientFXMLController implements Initializable {
 	loginPane.setVisible(true);
     }
     //For sign in methods:
+
 
     @FXML
     private void handleSignInButton(ActionEvent event) {
@@ -318,15 +351,16 @@ public class ClientFXMLController implements Initializable {
 	cal.setTime(dateOfstart);
 	int startWeekOfabsence = cal.get(Calendar.WEEK_OF_YEAR);
 	changingPaneTeacher.setVisible(false);
+	backToSchedulerPaneButton.setVisible(false);
 	classScheduleViewPane.setVisible(true);
 	String nameOfTeacher = classorTeacherName.getText();
 	String[] parts = nameOfTeacher.split("Teacher ");
 	String teachersname = parts[1];
 	String teachersId = clientController.getTeachersIdByName(teachersname);
-	Map<Integer, Map<Period, CourseInterface>> mapForTeacher = clientController.getClassScheduleForTeacher(teachersId);
+	//Map<Integer, Map<Period, CourseInterface>> mapForTeacher = clientController.getClassScheduleForTeacher(teachersId);
 
 	clientController.handleTeachersAbsence(startDateOfAbsence, finishDateOfAbsence, null);
-	scheldue_result res = clientController.getCurrentScheldue();
+	Scheldue_result res = clientController.getCurrentScheldue();
 	displayNewScheldue(res, startWeekOfabsence);
 
     }
@@ -364,6 +398,111 @@ public class ClientFXMLController implements Initializable {
 	    String test = "";
 
 	}
+    }
+        @FXML
+    private void handleShowPaneToDayPreferencesButton(ActionEvent event){
+	underPaneTimeToDays.setVisible(true);
+	String[] timestamps = clientController.getPossibleTimeStamps();
+	String[] days =clientController.getNamesOfAllDaysOfWeek();
+	allWeekDays.getItems().addAll(days);
+	besttimeToStartPossibilities.getItems().clear();
+	besttimeToFinishPossibilities.getItems().clear();
+	mediumtimeToStartPossibilities.getItems().clear();
+	mediumtimeToFinishPossibilities.getItems().clear();
+	emergencytimeToFinishPossibilities.getItems().clear();
+	emergencytimeToFinishPossibilities.getItems().clear();
+	 allWeekDays.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+        @Override
+        public void handle(MouseEvent event) {
+	    besttimeToStartPossibilities.getItems().addAll(timestamps);
+            System.out.println("clicked on " + allWeekDays.getSelectionModel().getSelectedItem());
+        }
+    });
+	 besttimeToStartPossibilities.setOnMouseClicked(new EventHandler<MouseEvent>() {
+	           @Override
+        public void handle(MouseEvent event) {
+	    List<String> timeStamps =clientController.getPossibleTimeStampsAfterTime((String)besttimeToStartPossibilities.getSelectionModel().getSelectedItem());
+	    besttimeToFinishPossibilities.getItems().addAll(timeStamps);
+            System.out.println("clicked on " + besttimeToStartPossibilities.getSelectionModel().getSelectedItem());
+        }
+    }); 
+	 	 besttimeToFinishPossibilities.setOnMouseClicked(new EventHandler<MouseEvent>() {
+	           @Override
+        public void handle(MouseEvent event) {
+	    List<String> timeStamps =clientController.getPossibleTimeStampsAfterTime((String)besttimeToFinishPossibilities.getSelectionModel().getSelectedItem());
+	    mediumtimeToStartPossibilities.getItems().addAll(timeStamps);
+            System.out.println("clicked on " + besttimeToFinishPossibilities.getSelectionModel().getSelectedItem());
+        }
+    }); 
+		mediumtimeToStartPossibilities.setOnMouseClicked(new EventHandler<MouseEvent>() {
+	           @Override
+        public void handle(MouseEvent event) {
+	    List<String> timeStamps =clientController.getPossibleTimeStampsAfterTime((String)mediumtimeToStartPossibilities.getSelectionModel().getSelectedItem());
+	    mediumtimeToFinishPossibilities.getItems().addAll(timeStamps);
+            System.out.println("clicked on " + mediumtimeToStartPossibilities.getSelectionModel().getSelectedItem());
+        }
+    }); 
+	mediumtimeToFinishPossibilities.setOnMouseClicked(new EventHandler<MouseEvent>() {
+	           @Override
+        public void handle(MouseEvent event) {
+	    List<String> timeStamps =clientController.getPossibleTimeStampsAfterTime((String)mediumtimeToFinishPossibilities.getSelectionModel().getSelectedItem());
+	    emergencytimeToStartPossibilities.getItems().addAll(timeStamps);
+            System.out.println("clicked on " + mediumtimeToFinishPossibilities.getSelectionModel().getSelectedItem());
+        }
+    }); 
+	emergencytimeToStartPossibilities.setOnMouseClicked(new EventHandler<MouseEvent>() {
+	           @Override
+        public void handle(MouseEvent event) {
+	    List<String> timeStamps =clientController.getPossibleTimeStampsAfterTime((String)emergencytimeToStartPossibilities.getSelectionModel().getSelectedItem());
+	    emergencytimeToFinishPossibilities.getItems().addAll(timeStamps);
+            System.out.println("clicked on " + emergencytimeToStartPossibilities.getSelectionModel().getSelectedItem());
+        }
+    }); 
+		
+	emergencytimeToStartPossibilities.setOnMouseClicked(new EventHandler<MouseEvent>() {
+	           @Override
+        public void handle(MouseEvent event) {
+	    addToPreferences.setVisible(true);
+            System.out.println("clicked on " + emergencytimeToStartPossibilities.getSelectionModel().getSelectedItem());
+        }
+    }); 
+
+    }
+    @FXML
+    private void handleAddToPreferencesButton(ActionEvent event){
+	String day =(String)allWeekDays.getSelectionModel().getSelectedItem();
+	mypreferences.getItems().add(day+": best period(:"+besttimeToStartPossibilities.getSelectionModel().getSelectedItem()+"-"+besttimeToFinishPossibilities.getSelectionModel().getSelectedItem()+":), medium period(:"+mediumtimeToStartPossibilities.getSelectionModel().getSelectedItem()+"-"+mediumtimeToFinishPossibilities.getSelectionModel().getSelectedItem()+":), emergency period(:"+emergencytimeToStartPossibilities.getSelectionModel().getSelectedItem()+"-"+emergencytimeToFinishPossibilities.getSelectionModel().getSelectedItem()+":)" );
+	besttimeToStartPossibilities.getItems().clear();
+	besttimeToFinishPossibilities.getItems().clear();
+	mediumtimeToStartPossibilities.getItems().clear();
+	mediumtimeToFinishPossibilities.getItems().clear();
+	emergencytimeToFinishPossibilities.getItems().clear();
+	emergencytimeToFinishPossibilities.getItems().clear();
+	allWeekDays.getItems().remove(day);
+    }
+    @FXML
+    private void handleSaveAllDaysPreferences(ActionEvent event){
+	List<String> preferences =mypreferences.getItems();
+	Map<String, String[]> besttimes = new TreeMap<String, String[]>();
+	Map<String, String[]> mediumtimes= new TreeMap<String, String[]>();
+	Map<String, String[]> emergencytimes= new TreeMap<String, String[]>();
+	for(String s: preferences){
+	   String[] splitted = s.split(":");
+	   String bestperiod =splitted[2];
+	   String mediumperiod =splitted[4];
+	   String emergencyperiod =splitted[6];
+	   String[] splittedbestperiod = bestperiod.split("-");
+	   besttimes.put(splitted[0], splittedbestperiod);
+	   String[] splittedmediumperiod = mediumperiod.split("-");
+	   mediumtimes.put(splitted[0], splittedmediumperiod);
+	   String[] splittedemergencyperiod = emergencyperiod.split("-");
+	   emergencytimes.put(splitted[0], splittedemergencyperiod);
+	   
+	}
+	clientController.addPossibleTimesToBook(besttimes, mediumtimes, emergencytimes);
+	mypreferences.getItems().clear();
+	underPaneTimeToDays.setVisible(false);
     }
 
     @FXML
@@ -414,7 +553,7 @@ public class ClientFXMLController implements Initializable {
 
 	clientController.handleTeachersAbsence(startdate, finishDate, teacher);
 
-	scheldue_result res = clientController.getCurrentScheldue();
+	Scheldue_result res = clientController.getCurrentScheldue();
 	WeekFields weekFields = WeekFields.of(Locale.getDefault());
 	int weekNumber = localDate.get(weekFields.weekOfWeekBasedYear());
 	changingPaneScheduler.setVisible(false);
@@ -508,14 +647,15 @@ public class ClientFXMLController implements Initializable {
 	for (LocationInterface r : selectedRooms) {
 	    rmi_rooms.add(r);
 	}
-	scheldue_result new_scheldue = clientController.createNewScheldue(SemesterStat, SemesterEnd, rmi_rooms, rmi_courses);
+	Scheldue_result new_scheldue = clientController.createNewScheldue(SemesterStat, SemesterEnd, rmi_rooms, rmi_courses);
 	creatingNewSchedulePane.setVisible(false);
-	//fillScheduleForWeek(SemesterStat);
+	
 	classScheduleViewPane.setVisible(true);
+	backToSchedulerPaneButton.setVisible(true);
 	displayNewScheldue(new_scheldue, startWeekOfTerm);
     }
 
-    private void displayNewScheldue(scheldue_result new_scheldue, int startWeekOfTerm) {
+    private void displayNewScheldue(Scheldue_result new_scheldue, int startWeekOfTerm) {
 	//start from first week ? start from the first week of the term
 
 	//we show scheldue from start always , for easyness yep
@@ -564,7 +704,7 @@ public class ClientFXMLController implements Initializable {
 
 		LocationInterface r = booking.getCourse().getRoomReferencedByBooking(booking);
 		String Booking_info = booking.getPeriodOfBooking().getStartDate().getHour() + " - " + booking.getPeriodOfBooking().getEndDate().getHour();
-		Booking_info += " - " + booking.getCourse().getNameOfTheCourse() + " - " + r.getNameOfTheLocation();
+		Booking_info += " - " + booking.getCourse().getNameOfTheCourse() + " - " + r.getNameOfTheLocation() + " - " + booking.getCourse().getAssignedLecturer().getTeachersId();
 		if (dayOfWeek == Calendar.MONDAY) {
 		    mondayLessonsListView.getItems().add(Booking_info);
 		} else if (dayOfWeek == Calendar.TUESDAY) {
@@ -599,7 +739,7 @@ public class ClientFXMLController implements Initializable {
 	String[] strings = stringFromWeek.split("week ");
 	int currentweekNumber = Integer.parseInt(strings[1]);
 	int nextWeekNumber = currentweekNumber + 1;
-	scheldue_result res = clientController.getCurrentScheldue();
+	Scheldue_result res = clientController.getCurrentScheldue();
 	displayNewScheldue(res, nextWeekNumber);
     }
 
@@ -616,7 +756,7 @@ public class ClientFXMLController implements Initializable {
 	String[] strings = stringFromWeek.split("week ");
 	int currentweekNumber = Integer.parseInt(strings[1]);
 	int preWeekNumber = currentweekNumber - 1;
-	scheldue_result res = clientController.getCurrentScheldue();
+	Scheldue_result res = clientController.getCurrentScheldue();
 	displayNewScheldue(res, preWeekNumber);
     }
 

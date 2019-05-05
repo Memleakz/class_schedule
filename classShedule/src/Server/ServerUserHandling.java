@@ -21,7 +21,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -138,14 +140,15 @@ public class ServerUserHandling {
 
     private static List<Period> getBookedPeriodsForTeacher(String teachersID) {
 	List<Period> teachersBookedPeriods = new ArrayList<Period>();
-	String query5 = "SELECT \"StartDate\", \"FinishDate\" FROM \"BookedPeriodsForTeachers\" NATURAL JOIN \"Periods\" WHERE \"teacher_of_booking\" = \'" + teachersID + "\' ;";
+	//String query5 = "SELECT \"StartDate\", \"FinishDate\" FROM \"BookedPeriodsForTeachers\" NATURAL JOIN \"Periods\" WHERE \"teacher_of_booking\" = \'" + teachersID + "\' ;";
+	String query5 = "SELECT \"StartDate\", \"FinishDate\" FROM \"BookedPeriodsForTeachers\" JOIN \"Periods\" ON \"BookedPeriodsForTeachers\".periods_bookings_teacher::int8 = \"Periods\".periods_id  WHERE \"teacher_of_booking\" = 'jan001' ";
 	try {
 	    ResultSet periodsteachers = dbm.executeQuery(query5);
 
 	    while (periodsteachers.next()) {
 		String tStart = periodsteachers.getString("StartDate");
 		String tFinish = periodsteachers.getString("FinishDate");
-		Period newPeriod = new Period(tStart, tFinish);
+		Period newPeriod = changeDataPickersToPeriod(tStart, tFinish);
 		teachersBookedPeriods.add(newPeriod);
 
 	    }
@@ -229,14 +232,15 @@ public class ServerUserHandling {
 
     private static List<Period> getBookedPeriodsForClass(String classesID) {
 	List<Period> studentsbookedperiods = new ArrayList<Period>();
-	String query4 = "SELECT \"StartDate\", \"FinishDate\" FROM \"Periods\" NATURAL JOIN \"BookedPeriodsForClassesOfStudents\" WHERE \"classOfStudents\" = \'" + classesID + "\' ;";
+	//String query4 = "SELECT \"StartDate\", \"FinishDate\" FROM \"Periods\" NATURAL JOIN \"BookedPeriodsForClassesOfStudents\" WHERE \"classOfStudents\" = \'" + classesID + "\' ;";
+	String query4 = "SELECT \"StartDate\", \"FinishDate\" FROM \"Periods\" JOIN \"BookedPeriodsForClassesOfStudents\" ON \"Periods\".periods_id = \"bookingsPeriod\"::int8  WHERE \"classOfStudents\" = '"+classesID+"' ;";
 	try {
 	    ResultSet periodssforss = dbm.executeQuery(query4);
 
 	    while (periodssforss.next()) {
 		String start = periodssforss.getString("StartDate");
 		String finish = periodssforss.getString("FinishDate");
-		Period period = new Period(start, finish);
+		Period period = changeDataPickersToPeriod(start, finish);
 		studentsbookedperiods.add(period);
 	    }
 	} catch (SQLException ex) {
@@ -265,11 +269,16 @@ public class ServerUserHandling {
     }
 
     static Period changeDataPickersToPeriod(String startDateOfAbsence, String finishDateOfAbsence) {
-	String[] partsStart = startDateOfAbsence.split("-");
-	String[] partsFinish = finishDateOfAbsence.split("-");
-	String replaceStringStart = partsStart[2] + "/" + partsStart[1] + "/" + partsStart[0] + " 00:00:01";
-	String replaceStringFinish = partsFinish[2] + "/" + partsFinish[1] + "/" + partsFinish[0] + " 23:59:59";
-	Period newPeriod = new Period(replaceStringStart, replaceStringFinish);
+	DateTimeFormatter informatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	DateTimeFormatter outformatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+	LocalDateTime replaceStringStart = LocalDateTime.parse(startDateOfAbsence,informatter);
+	LocalDateTime replaceStringFinish = LocalDateTime.parse(finishDateOfAbsence,informatter);
+	
+	//String[] partsStart = startDateOfAbsence.split("-");
+	//String[] partsFinish = finishDateOfAbsence.split("-");
+	//String replaceStringStart = partsStart[2] + "/" + partsStart[1] + "/" + partsStart[0] + " 00:00:01";
+	//String replaceStringFinish = partsFinish[2] + "/" + partsFinish[1] + "/" + partsFinish[0] + " 23:59:59";
+	Period newPeriod = new Period(replaceStringStart.format(outformatter), replaceStringFinish.format(outformatter));
 	return newPeriod;
     }
 
@@ -282,7 +291,7 @@ public class ServerUserHandling {
 	    while (periods.next()) {
 		String start = periods.getString("StartDate");
 		String finish = periods.getString("FinishDate");
-		Period period = new Period(start, finish);
+		Period period = changeDataPickersToPeriod(start, finish);
 		periodwithId = period;
 	    }
 	} catch (SQLException ex) {
@@ -294,19 +303,21 @@ public class ServerUserHandling {
     static List<BookingLocationsInterface> getAllBookingsForTeacher(String teacherID) {
 	List<BookingLocationsInterface> teachersBookings = new ArrayList<BookingLocationsInterface>();
 	String query = "SELECT * FROM \"Bookings\" WHERE \"teacher_for_booking\" = \'" + teacherID + "\' ;";
+	DateTimeFormatter outformatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 	try {
 	    ResultSet bookingsForTeacher = dbm.executeQuery(query);
 
 	    while (bookingsForTeacher.next()) {
-		String studentsClassId = studentsClassId = bookingsForTeacher.getString("studentsForBooking");
+		//String studentsClassId = studentsClassId = bookingsForTeacher.getString("studentsForBooking");
 		String bookedPeriodId = bookedPeriodId = bookingsForTeacher.getString("period_for_booking");
 		String courseId = courseId = bookingsForTeacher.getString("course_for_booking");
 		int bookingsId = bookingsId = bookingsForTeacher.getInt("bookings_id");
-		List<StudentsInterface> classForCourse = getClassForCourse(courseId);
+		//List<StudentsInterface> classForCourse = getClassForCourse(courseId);
 		Period periodforbooking = getPeriodForId(bookedPeriodId);
 		CourseInterface courseforBooking = getCourseById(courseId);
-		TeacherInterface teacherForCourse = getTeacher(teacherID);
-		teachersBookings.add(BookingFactory.getBookingOfTheRoom(periodforbooking.getStartDate().toString(), periodforbooking.getEndDate().toString(), courseforBooking, teacherForCourse, classForCourse));
+		//TeacherInterface teacherForCourse = getTeacher(teacherID);
+		
+		teachersBookings.add(BookingFactory.getBookingOfTheRoom(periodforbooking.getStartDate().format(outformatter), periodforbooking.getEndDate().format(outformatter), courseforBooking));
 
 	    }
 	} catch (SQLException ex) {
@@ -362,7 +373,6 @@ public class ServerUserHandling {
 		int desiredDaysBetweenLectures = courses.getInt("desiredDaysBetweenLectures");
 		String tID = courses.getString("assigned_teacher");
 		TeacherInterface teachertocourse = getTeacher(tID);
-		//, int numberOflessons, int numberOfHourstogether, int maxOnWeek
 		CourseInterface course = CourseFactory.getCourse(courseId, nameOfTheCourse, studentsinCourse, numberLessons, numberhoursTogether, maxLecturesInWeek,teachertocourse,
 			desiredDaysBetweenLectures);
 		coursewithId = course;

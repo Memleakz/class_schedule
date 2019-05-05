@@ -12,7 +12,7 @@ import Business_Logic.IServices.LocationInterface;
 import Business_Logic.IServices.ServerInterface;
 import Business_Logic.IServices.TeacherInterface;
 import Business_Logic.User.User;
-import Business_Logic.scheldue_result.scheldue_result;
+import Business_Logic.scheldue_result.Scheldue_result;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -128,15 +128,9 @@ public class ClientController {
 	Period p = new Period(startDateOfAbsence, finishDateOfAbsence);
 	List<CourseInterface> tcourses = new ArrayList<CourseInterface>();
 	List<CourseInterface> courses = ClientClassSchedulingHandling.getAllCourses(serverController);
-	/*for(CourseInterface c : courses)
-	    {
-		if(c.getAssignedLecturer().getTeachersId().equals(currentUser.getTeachersID()))
-		{
-		    tcourses.add(c);
-		}
-	    }*/
+	
 	//Find affected bookings
-	scheldue_result active = ClientClassSchedulingHandling.getCurrentActiveScheldue(serverController);
+	Scheldue_result active = ClientClassSchedulingHandling.getCurrentActiveScheldue(serverController);
 	List<BookingLocationsInterface> bookings = new ArrayList<BookingLocationsInterface>();
 	List<LocationInterface> rooms = new ArrayList<LocationInterface>();
 	List<CourseInterface> bookedcourses = active.getBookedCourses();
@@ -183,15 +177,28 @@ public class ClientController {
 	ClientClassSchedulingHandling.addNewTeacherToDb(serverController, login, password, name, id, arrayList, teachersCourses);
     }
 
-    public scheldue_result createNewScheldue(String semesterStart, String semesterEnd, ArrayList<LocationInterface> Rooms, ArrayList<CourseInterface> Courses) {
+    public Scheldue_result createNewScheldue(String semesterStart, String semesterEnd, ArrayList<LocationInterface> Rooms, ArrayList<CourseInterface> Courses) {
 	return ClientClassSchedulingHandling.createNewScheldue(serverController, semesterStart, semesterEnd, Rooms, Courses);
     }
 
-    public scheldue_result getCurrentScheldue() {
+    public Scheldue_result getCurrentScheldue() {
 	return ClientClassSchedulingHandling.getCurrentActiveScheldue(serverController);
     }
 
     public List<BookingLocationsInterface> AttemptreBookBooking(String startBookingFrom, List<BookingLocationsInterface> booking) {
 	return ClientClassSchedulingHandling.AttemptreBookBooking(serverController, startBookingFrom, booking);
+    }
+    public void addPossibleTimesToBook(Map<String, String[]> besttimes, Map<String, String[]> mediumtimes, Map<String, String[]> emergencytimes)
+    {
+	ClientClassSchedulingHandling.addPossibleTimesToBook(serverController, besttimes,mediumtimes,emergencytimes);
+    }
+    public String[] getNamesOfAllDaysOfWeek(){
+	return ClientClassSchedulingHandling.getNamesOfAllDaysOfWeek();
+    }
+    public String[] getPossibleTimeStamps(){
+	return ClientClassSchedulingHandling.getPossibleTimeStamps();
+    }
+    public List<String> getPossibleTimeStampsAfterTime(String time){
+	return ClientClassSchedulingHandling.getPossibleTimeStampsAfterTime(time);
     }
 }

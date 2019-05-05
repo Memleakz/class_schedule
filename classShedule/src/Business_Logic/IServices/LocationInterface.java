@@ -25,4 +25,5 @@ public interface LocationInterface {
   public Map <CourseInterface,List<BookingLocationsInterface>> getBookings();
   public Map<Integer, List<BookingLocationsInterface>> getBookingsForWeek(int weeknr);
   public List<BookingLocationsInterface> getAllBookingsForTeacher(TeacherInterface t,Period p);
+  public int getId();
 }

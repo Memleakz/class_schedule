@@ -16,6 +16,7 @@ public interface TeacherInterface {
    public List<Period> getbookedPeriods(); 
    public List<CourseInterface> getPossibleCourses();
    public String getName();
-   public boolean isPeriodAvailable(String startdate, String finishDate);
+   public boolean isTeacherAvailable(String startdate, String finishDate);
    public String getTeachersId();
+   public void addbookedPeriods(Period p);
 }

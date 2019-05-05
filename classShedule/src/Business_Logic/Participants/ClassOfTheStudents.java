@@ -34,4 +34,9 @@ public ClassOfTheStudents (String id, String fieldOfStudy, int numberOfMembers, 
     public List<Period> getbookedPeriods(){
     return this.bookedPeriods;
 }
+
+    @Override
+    public String getId() {
+	return this.id;
+    }
 }

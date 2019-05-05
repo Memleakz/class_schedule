@@ -15,4 +15,5 @@ import java.util.List;
 public interface StudentsInterface {
     public int getNumberOfStuents();
     public List<Period> getbookedPeriods();
+    public String getId();
 }

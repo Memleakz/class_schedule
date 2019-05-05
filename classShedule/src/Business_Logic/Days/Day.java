@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 /**
  *
@@ -19,18 +20,26 @@ import java.util.Date;
  */
 
 public class Day implements ClasificationInterface{
+    private Map<String, String[]> bestTimeForDay;
+    private Map<String, String[]> mediumTimeForDay;
+    private Map<String, String[]> emergencyTimeForDay;
     private final Period bestPeriod;
     private final Period mediumPeriod;
     private final Period emergencyPeriod;
     private final LocalDateTime dateOfTheDay;
     private boolean hollyDay;
 
-  public Day(LocalDateTime dateOfTheDay){
+  public Day(LocalDateTime dateOfTheDay,Map<String, String[]> bestTimeForDay,Map<String, String[]> mediumTimeForDay, Map<String, String[]> emergencyTimeForDay ){
+ 
+      
       this.dateOfTheDay = dateOfTheDay;
+      this.bestTimeForDay = bestTimeForDay;
+      this.mediumTimeForDay = mediumTimeForDay;
+      this.emergencyTimeForDay = emergencyTimeForDay;
+      
       this.bestPeriod = this.calculateBestPeriodOfTheDay(dateOfTheDay);
       this.mediumPeriod = this.calculateMediumPeriodOfTheDay(dateOfTheDay);
       this.emergencyPeriod = this.calculateEmergencyPeriodOgTheDay(dateOfTheDay);
-      //this.hollyDay = this.isThisHollyDay(dateOfTheDay);
   }
     @Override
   public Period getBestPeriod(){
@@ -47,22 +56,6 @@ public class Day implements ClasificationInterface{
   public boolean isThisAHollyDay(){
       return this.hollyDay;
   }
-private boolean isThisHollyDay(LocalDateTime date){
-    String stringOfTheDate = new SimpleDateFormat("MM/dd").format(date);
-   switch(stringOfTheDate) {
-   case "12/24" :
-      return true;
-   case "12/25" :
-      return true;
-   case "12/26" :
-      return true;
-   case "12/31":
-      return true;
-   default : 
-       break;
-}
-return false; 
-}
 private Period calculateBestPeriodOfTheDay(LocalDateTime date){
 Date convertedDateOfTheDay = Date.from(date.atZone(ZoneId.systemDefault()).toInstant());
 Calendar calendar = Calendar.getInstance();
@@ -71,23 +64,34 @@ String stringOfTheDate = new SimpleDateFormat("dd/MM/yyyy").format(convertedDate
 int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 switch(dayOfWeek) {
    case Calendar.MONDAY :
-      return new Period(stringOfTheDate+" 08:00:00",stringOfTheDate+" 16:00:00");
+       String[] timesformonaday =bestTimeForDay.get("monday");  
+      return new Period(stringOfTheDate+" "+timesformonaday[0],stringOfTheDate+" "+timesformonaday[1]);
    case Calendar.TUESDAY :
-      return new Period(stringOfTheDate+" 08:00:00",stringOfTheDate+" 16:00:00");
+       String[] timesfortuesday =bestTimeForDay.get("tuesday");
+      return new Period(stringOfTheDate+" "+timesfortuesday[0],stringOfTheDate+" "+timesfortuesday[1]);
    case Calendar.WEDNESDAY :
-      return new Period(stringOfTheDate+" 08:00:00",stringOfTheDate+" 16:00:00");
+        String[] timesforwednesday =bestTimeForDay.get("wednesday");
+      return new Period(stringOfTheDate+" "+timesforwednesday[0],stringOfTheDate+" "+timesforwednesday[1]);
    case Calendar.THURSDAY :
-      return new Period(stringOfTheDate+" 08:00:00",stringOfTheDate+" 16:00:00");
+        String[] timesforthursday =bestTimeForDay.get("thursday");
+      return new Period(stringOfTheDate+" "+timesforthursday[0],stringOfTheDate+" "+timesforthursday[1]);
     case Calendar.FRIDAY :
-      return new Period(stringOfTheDate+" 08:00:00",stringOfTheDate+" 16:00:00");
+	String[] timesforfriday =bestTimeForDay.get("friday");
+      return new Period(stringOfTheDate+" "+timesforfriday[0],stringOfTheDate+" "+timesforfriday[1]);
     case Calendar.SATURDAY :
-      return null;
+	String[] timesforsaturday =bestTimeForDay.get("saturday");
+	if(timesforsaturday.length>0 && timesforsaturday[0] != null && timesforsaturday[1] != null){
+      return new Period(stringOfTheDate+" "+timesforsaturday[0],stringOfTheDate+" "+timesforsaturday[1]);
+	}
+	else{
+	    return null;
+	}
     case Calendar.SUNDAY :
       return null;
    default : 
        break;
 }
-return null;
+return null; 
 }
 private Period calculateMediumPeriodOfTheDay(LocalDateTime date){
  Date convertedDateOfTheDay = Date.from(date.atZone(ZoneId.systemDefault()).toInstant());
@@ -97,23 +101,35 @@ String stringOfTheDate = new SimpleDateFormat("dd/MM/yyyy").format(convertedDate
 int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 switch(dayOfWeek) {
    case Calendar.MONDAY :
-      return new Period(stringOfTheDate+" 16:00:00",stringOfTheDate+" 20:00:00");
+       String[] timesformonaday =mediumTimeForDay.get("monday");  
+      return new Period(stringOfTheDate+" "+timesformonaday[0],stringOfTheDate+" "+timesformonaday[1]);
    case Calendar.TUESDAY :
-      return new Period(stringOfTheDate+" 16:00:00",stringOfTheDate+" 20:00:00");
+       String[] timesfortuesday =mediumTimeForDay.get("tuesday");
+      return new Period(stringOfTheDate+" "+timesfortuesday[0],stringOfTheDate+" "+timesfortuesday[1]);
    case Calendar.WEDNESDAY :
-      return new Period(stringOfTheDate+" 16:00:00",stringOfTheDate+" 20:00:00");
+        String[] timesforwednesday =mediumTimeForDay.get("wednesday");
+      return new Period(stringOfTheDate+" "+timesforwednesday[0],stringOfTheDate+" "+timesforwednesday[1]);
    case Calendar.THURSDAY :
-      return new Period(stringOfTheDate+" 16:00:00",stringOfTheDate+" 20:00:00");
+        String[] timesforthursday =mediumTimeForDay.get("thursday");
+      return new Period(stringOfTheDate+" "+timesforthursday[0],stringOfTheDate+" "+timesforthursday[1]);
     case Calendar.FRIDAY :
-      return new Period(stringOfTheDate+" 16:00:00",stringOfTheDate+" 20:00:00");
+	String[] timesforfriday =mediumTimeForDay.get("friday");
+      return new Period(stringOfTheDate+" "+timesforfriday[0],stringOfTheDate+" "+timesforfriday[1]);
     case Calendar.SATURDAY :
-      return null;
+	
+	String[] timesforsaturday =mediumTimeForDay.get("saturday");
+	if(timesforsaturday.length>0 && timesforsaturday[0] != null && timesforsaturday[1] != null){
+      return new Period(stringOfTheDate+" "+timesforsaturday[0],stringOfTheDate+" "+timesforsaturday[1]);
+	}
+	else{
+	    return null;
+	}
     case Calendar.SUNDAY :
       return null;
    default : 
        break;
 }
-return null;   
+return null; 
 }
 private Period calculateEmergencyPeriodOgTheDay(LocalDateTime date){
  Date convertedDateOfTheDay = Date.from(date.atZone(ZoneId.systemDefault()).toInstant());
@@ -123,17 +139,27 @@ String stringOfTheDate = new SimpleDateFormat("dd/MM/yyyy").format(convertedDate
 int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 switch(dayOfWeek) {
    case Calendar.MONDAY :
-      return new Period(stringOfTheDate+" 20:00:00",stringOfTheDate+" 22:00:00");
+       String[] timesformonaday =emergencyTimeForDay.get("monday");  
+      return new Period(stringOfTheDate+" "+timesformonaday[0],stringOfTheDate+" "+timesformonaday[1]);
    case Calendar.TUESDAY :
-      return new Period(stringOfTheDate+" 20:00:00",stringOfTheDate+" 22:00:00");
+       String[] timesfortuesday =emergencyTimeForDay.get("tuesday");
+      return new Period(stringOfTheDate+" "+timesfortuesday[0],stringOfTheDate+" "+timesfortuesday[1]);
    case Calendar.WEDNESDAY :
-      return new Period(stringOfTheDate+" 20:00:00",stringOfTheDate+" 22:00:00");
+        String[] timesforwednesday =emergencyTimeForDay.get("wednesday");
+      return new Period(stringOfTheDate+" "+timesforwednesday[0],stringOfTheDate+" "+timesforwednesday[1]);
    case Calendar.THURSDAY :
-      return new Period(stringOfTheDate+" 20:00:00",stringOfTheDate+" 22:00:00");
+        String[] timesforthursday =emergencyTimeForDay.get("thursday");
+      return new Period(stringOfTheDate+" "+timesforthursday[0],stringOfTheDate+" "+timesforthursday[1]);
     case Calendar.FRIDAY :
-      return new Period(stringOfTheDate+" 20:00:00",stringOfTheDate+" 22:00:00");
+	String[] timesforfriday =emergencyTimeForDay.get("friday");
+      return new Period(stringOfTheDate+" "+timesforfriday[0],stringOfTheDate+" "+timesforfriday[1]);
     case Calendar.SATURDAY :
-      return new Period(stringOfTheDate+" 08:00:00",stringOfTheDate+" 16:00:00");
+	String[] timesforsaturday =emergencyTimeForDay.get("saturday");
+	if(timesforsaturday.length>0 && timesforsaturday[0] != null && timesforsaturday[1] != null){
+      return new Period(stringOfTheDate+" "+timesforsaturday[0],stringOfTheDate+" "+timesforsaturday[1]);}
+	else{
+	    return null;
+	}
     case Calendar.SUNDAY :
       return null;
    default : 

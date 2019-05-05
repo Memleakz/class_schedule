@@ -18,11 +18,13 @@ import Business_Logic.IServices.TeacherInterface;
 import Business_Logic.Locations.RoomFactory;
 import Business_Logic.Participants.StudentsFactory;
 import Business_Logic.Responsible.LecturerFactory;
-import Business_Logic.scheldue_result.scheldue_result;
+import Business_Logic.scheldue_result.Scheldue_result;
 import static Server.ServerUserHandling.changeDataPickersToPeriod;
 import Server.database.DatabaseManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,7 +59,7 @@ public class ServerClassSchedulingHandling {
 	this.Courses.add(c);
     }
 
-    static scheldue_result AssignRoomsForCourses(String SemesterStart, String SemesterEnd, List<LocationInterface> Rooms, List<CourseInterface> Courses) {
+    static Scheldue_result AssignRoomsForCourses(String SemesterStart, String SemesterEnd, List<LocationInterface> Rooms, List<CourseInterface> Courses) {
 	List<CourseInterface> bookedCourses = new ArrayList<CourseInterface>();
 	List<CourseInterface> BookingFails = new ArrayList<CourseInterface>();
 
@@ -108,6 +110,7 @@ public class ServerClassSchedulingHandling {
 	    if (BookingDone != true) {
 		for (LocationInterface r : allPossibleRooms) {
 		    known_bookings = l.get(r);
+		    //List<BookingLocationsInterface> abooks = AttemBookCourseTimes(null, c, r, "emergency", Total_needed_bookings, BookingPeriod,bestTimeForDay,mediumTimeForDay,emergencyTimeForDay);
 		    List<BookingLocationsInterface> abooks = AttemBookCourseTimes(null, c, r, "emergency", Total_needed_bookings, BookingPeriod);
 		    if (known_bookings == null) {
 			l.put(r, abooks);
@@ -135,12 +138,34 @@ public class ServerClassSchedulingHandling {
 	    }
 	    //place booking
 	}
-	scheldue_result ret_obj = new scheldue_result();
-	ret_obj.BookingFails = BookingFails;
-	ret_obj.bookedCourses = bookedCourses;
+	Scheldue_result ret_obj = new Scheldue_result();
+	ret_obj.setBookingFails(BookingFails);
+	ret_obj.setBookedCourses(bookedCourses);
 
-	//print_table(); //debug
 	return ret_obj;
+    }
+
+    private static boolean addNewBookingsToRoomToDb(LocationInterface room, List<BookingLocationsInterface> bookingsForRoom) {
+	int roomsId = room.getId();
+	for (BookingLocationsInterface onebooking : bookingsForRoom) {
+	    LocalDateTime startdate = onebooking.getPeriodOfBooking().getStartDate();
+	    LocalDateTime enddate = onebooking.getPeriodOfBooking().getEndDate();
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+	    String formattedStartDate = startdate.format(formatter);
+	    String formattedFinishDate = enddate.format(formatter);
+	    int idOfPeriod = getPeriodsIdByStartAndFinishDate(formattedStartDate, formattedFinishDate);
+	    int bookingsId = onebooking.getId();
+	    String coursesId = onebooking.getCourse().getId();
+	    String newcourseInRoomQuery = "INSERT INTO \"BookedRoomsForCourse\" (\"courseInRoom\",\"id_bookedRoomsCourse\",\"fk_room\") VALUES ('" + coursesId + "',DEFAULT,'" + roomsId + "')";
+	    dbm.execute(newcourseInRoomQuery);
+	    String newbookingsInRoomQuery = "INSERT INTO \"RoomsAndBookings\" (\"id_rooms_for_bookings\",\"room_for_courses\",\"bookingsToRooms\") VALUES (DEFAULT,'" + roomsId + "','" + bookingsId + "')";
+	    dbm.execute(newbookingsInRoomQuery);
+	    String newBookedPeriodsInRoomQuery = "INSERT INTO \"BookedPeriodsForRoom\" (\"id_booked_period\",\"room_for_period\",\"period_for_booking\") VALUES (DEFAULT,'" + roomsId + "','" + idOfPeriod + "')";
+	    dbm.execute(newBookedPeriodsInRoomQuery);
+	    return true;
+	}
+
+	return false;
     }
 
     private static CourseInterface finalizeBookings(CourseInterface c, Map<LocationInterface, List<BookingLocationsInterface>> bookings) {
@@ -149,8 +174,10 @@ public class ServerClassSchedulingHandling {
 	    LocationInterface r = entry.getKey();
 	    List<BookingLocationsInterface> booklist = entry.getValue();
 	    for (BookingLocationsInterface b : booklist) {
+		AddNewBookingToDb(b);
 		r.addNewBooking(b, c);
 	    }
+	    addNewBookingsToRoomToDb(r, booklist);
 	    bookedRooms.add(r);
 
 	}
@@ -191,12 +218,12 @@ public class ServerClassSchedulingHandling {
 	return possible_rooms; // no rooms matched
     }
 
-    public static List<BookingLocationsInterface> AttemBookCourseTimes(TeacherInterface adam, CourseInterface c, LocationInterface r, String target_periode, int Total_needed_bookings, Period BookingPeriod) {
+    public static List<BookingLocationsInterface> AttemBookCourseTimes(TeacherInterface adam, CourseInterface c, LocationInterface r, String target_periode, int total_needed_bookings, Period BookingPeriod) {
 
 	List<BookingLocationsInterface> return_data = new ArrayList<BookingLocationsInterface>();
-	while (Total_needed_bookings != 0) {
+	while (total_needed_bookings != 0) {
 
-	    List<ClasificationInterface> possibleDays = ClasificationFactory.getPossibleDays(BookingPeriod); //this should come from course ? 
+	    List<ClasificationInterface> possibleDays = ClasificationFactory.getPossibleDays(BookingPeriod, getBestTimeForDay(), getMediumTimeForDay(), getEmergencyTimeForDay());
 	    int desiredDaysBetweenBooking = 0;
 	    for (ClasificationInterface d : possibleDays) {
 		if (desiredDaysBetweenBooking != 0) {
@@ -230,13 +257,16 @@ public class ServerClassSchedulingHandling {
 		    String start_string = d.getDateOfTheDay().withHour(start_hour + (block_booking_size * (i))).format(formatter);
 		    int new_end_time = start_hour + (block_booking_size * (i + 1));
 		    String end_string = d.getDateOfTheDay().withHour(new_end_time).format(formatter);
-		    BookingLocationsInterface b = BookingFactory.getBookingOfTheRoom(start_string, end_string, c, c.getAssignedLecturer(), c.getParticipants());
-		    if (!isSpecialCloseDay(b) && r.isAvailable(b)) {
+		    BookingLocationsInterface b = BookingFactory.getBookingOfTheRoom(start_string, end_string, c);
+		    boolean isTeacherAvailableToBooking = b.getTeacher().isTeacherAvailable(start_string, end_string);
+		    if (!isSpecialCloseDay(b) && r.isAvailable(b) && isTeacherAvailableToBooking == true) {
 			//break;
 			return_data.add(b);
-			Total_needed_bookings--;
+			c.getAssignedLecturer().addbookedPeriods(b.getPeriodOfBooking());
+			total_needed_bookings--;
 			desiredDaysBetweenBooking = c.getDeseiredDaysBetweenLectures();
-			if (Total_needed_bookings == 0) {
+			if (total_needed_bookings == 0) {
+
 			    return return_data;
 			}
 			continue;
@@ -254,37 +284,57 @@ public class ServerClassSchedulingHandling {
 	return return_data;
     }
 
-    public void print_table() {
-	System.out.print("##");
-	Map<String, List<BookingLocationsInterface>> hour_sortet_bookings = new TreeMap<String, List<BookingLocationsInterface>>();
-	List<List<BookingLocationsInterface>> room_bookings = new ArrayList<List<BookingLocationsInterface>>();
-	for (LocationInterface r : this.Rooms) {
-	    System.out.print(r.getNameOfTheLocation() + " | ");
-	    List<BookingLocationsInterface> b = r.getAllBookings();
-	    for (BookingLocationsInterface br : b) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		String key = br.getPeriodOfBooking().getStartDate().format(formatter);
-		List<BookingLocationsInterface> known = hour_sortet_bookings.get(key);
-		if (known != null) {
-		    known.add(br);
-		    hour_sortet_bookings.put(key, known);
-		} else {
-		    known = new ArrayList<BookingLocationsInterface>();
-		    known.add(br);
-		    hour_sortet_bookings.put(key, known);
-		}
-	    }
+    private static boolean AddNewBookingToDb(BookingLocationsInterface booking) {
+	String teachersId = booking.getTeacher().getTeachersId();
+	LocalDateTime startdate = booking.getPeriodOfBooking().getStartDate();
+	LocalDateTime enddate = booking.getPeriodOfBooking().getEndDate();
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+	String formattedStartDate = startdate.format(formatter);
+	String formattedFinishDate = enddate.format(formatter);
+	String courseId = booking.getCourse().getId();
+	List<StudentsInterface> students = booking.getCourse().getParticipants();
+	List<String> classesIds = new ArrayList<String>();
+	for (StudentsInterface s : students) {
+	    String studentsId = s.getId();
+	    classesIds.add(studentsId);
 	}
-	System.out.println();
 
-	for (Map.Entry<String, List<BookingLocationsInterface>> entry : hour_sortet_bookings.entrySet()) {
-	    List<BookingLocationsInterface> booklist = entry.getValue();
-	    System.out.println(entry.getKey() + "  ");
-	    for (BookingLocationsInterface br : booklist) {
-		System.out.println(br.getPeriodOfBooking().getStartDate().getHour() + ": " + br.getCourse().getNameOfTheCourse());
+	if (teachersId != null && startdate != null && enddate != null && courseId != null && classesIds != null) {
+	    String newPeriodQuery = "INSERT INTO \"Periods\" (\"StartDate\",\"FinishDate\",\"periods_id\") VALUES ('" + formattedStartDate + "','" + formattedFinishDate + "'," + "DEFAULT)";
+	    dbm.execute(newPeriodQuery);
+	    int idOfBookingsPeriod = getPeriodsIdByStartAndFinishDate(formattedStartDate, formattedFinishDate);
+	    String newBookingTeacherQuery = "INSERT INTO \"BookedPeriodsForTeachers\" (\"periods_bookings_teacher\",\"teacher_of_booking\",\"bookings_teachers_id\") VALUES ('" + idOfBookingsPeriod + "','" + teachersId + "'," + "DEFAULT)";
+	    dbm.execute(newBookingTeacherQuery);
+	    String newBookingQuery = "INSERT INTO \"Bookings\" (\"teacher_for_booking\",\"course_for_booking\",\"bookings_id\",\"period_for_booking\",\"studentsForBooking\") VALUES ('" + teachersId + "','" + courseId + "'," + "DEFAULT, '" + idOfBookingsPeriod + "',null)";
+	    dbm.execute(newBookingQuery);
+
+	    for (String string : classesIds) {
+		String newStudentsQuery = "INSERT INTO \"BookedPeriodsForClassesOfStudents\" (\"bookingsPeriod\",\"classOfStudents\",\"id_booking_students\") VALUES ('" + idOfBookingsPeriod + "','" + string + "'," + "DEFAULT)";
+		dbm.execute(newStudentsQuery);
+		int bookingsId = getBookingsIDByCourseAndPeriod(idOfBookingsPeriod, courseId);
+		String newStudentsToBooking = "INSERT INTO \"StudentsForBookings\" (\"id\",\"classOfStudents\",\"bookingForstudents\") VALUES (DEFAULT,'" + string + "','" + bookingsId + "')";
+		dbm.execute(newStudentsToBooking);
 	    }
-	    System.out.println();
+
+	    return true;
 	}
+	return false;
+    }
+
+    private static int getBookingsIDByCourseAndPeriod(int periodOfBookingId, String courseOfBookingId) {
+	int idToReturn = 0;
+	String query = "SELECT \"bookings_id\" FROM \"Bookings\" WHERE \"period_for_booking\" = \'" + periodOfBookingId + "\' AND \"course_for_booking\" = \'" + courseOfBookingId + "\';";
+	try {
+	    ResultSet bookingsSearch = dbm.executeQuery(query);
+
+	    while (bookingsSearch.next()) {
+		idToReturn = bookingsSearch.getInt("bookings_id");
+	    }
+
+	} catch (SQLException ex) {
+	    Logger.getLogger(ServerUserHandling.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return idToReturn;
     }
 
     private static boolean isSpecialCloseDay(BookingLocationsInterface b) {
@@ -299,7 +349,7 @@ public class ServerClassSchedulingHandling {
     }
 
     ///Cancel a couse and attempt to find a new date.
-    public int cancelBooking(BookingLocationsInterface booking, boolean attemptRebook, String SemesterEnd) {
+    public int cancelBooking(BookingLocationsInterface booking, boolean attemptRebook, String SemesterEnd, Map<String, String[]> bestTimeForDay, Map<String, String[]> mediumTimeForDay, Map<String, String[]> emergencyTimeForDay) {
 	for (LocationInterface r : this.Rooms) {
 	    if (r.cancelBooking(booking)) {
 		break;
@@ -311,6 +361,7 @@ public class ServerClassSchedulingHandling {
 	    Period booking_period = new Period(booking.getPeriodOfBooking().getStartDate().plusDays(1).format(formatter), SemesterEnd);
 	    for (LocationInterface r : allPossibleRooms) {
 		//we just need to book 1..
+		//List<BookingLocationsInterface> bookings = AttemBookCourseTimes(booking.getTeacher(), booking.getCourse(), r, "bedst", 1, booking_period,bestTimeForDay,mediumTimeForDay,emergencyTimeForDay);
 		List<BookingLocationsInterface> bookings = AttemBookCourseTimes(booking.getTeacher(), booking.getCourse(), r, "bedst", 1, booking_period);
 		if (bookings.size() == 1) {
 		    r.addNewBooking(bookings.get(0), booking.getCourse());
@@ -401,7 +452,8 @@ public class ServerClassSchedulingHandling {
 
     static LocationInterface getRoomById(int rooms_id) {
 	LocationInterface room;
-	String query = "SELECT * FROM \"Rooms\" NATURAL JOIN \"NeighborAreasForRoom\" WHERE \"rooms_id\" = \'" + rooms_id + "\' ;";
+	//String query = "SELECT * FROM \"Rooms\" NATURAL JOIN \"NeighborAreasForRoom\" WHERE \"rooms_id\" = \'" + rooms_id + "\' ;";
+	String query = "SELECT * FROM \"Rooms\" JOIN \"NeighborAreasForRoom\" on \"Rooms\".rooms_id = \"NeighborAreasForRoom\".room_for_areas WHERE \"Rooms\".Rooms_id = " + rooms_id;
 	List<String> closeNeighborAreas = new ArrayList<String>();
 	List<BookingLocationsInterface> bookings = new ArrayList<BookingLocationsInterface>();
 
@@ -433,13 +485,13 @@ public class ServerClassSchedulingHandling {
 	List<BookingLocationsInterface> bookings = new ArrayList<BookingLocationsInterface>();
 	int bookingID = 0;
 	List<Integer> bookingsIds = new ArrayList<Integer>();
-	String query = "SELECT * FROM \"BookedCoursesForRoom\" NATURAL JOIN \"BookedRoomsForCourse\" WHERE \"fk_room\" = \'" + room_id + "\' ;";
+	String query = "SELECT * FROM \"RoomsAndBookings\" WHERE \"room_for_courses\" = \'" + room_id + "\' ;";
 
 	try {
 	    ResultSet coursesRs = dbm.executeQuery(query);
 
 	    while (coursesRs.next()) {
-		bookingID = coursesRs.getInt("bookings_for_room");
+		bookingID = coursesRs.getInt("bookingsToRooms");
 
 		bookingsIds.add(bookingID);
 	    }
@@ -450,7 +502,10 @@ public class ServerClassSchedulingHandling {
 
 	for (int i : bookingsIds) {
 	    BookingLocationsInterface bookingToList = getBookingById(i);
-	    bookings.add(bookingToList);
+	    if(bookingToList != null)
+	    {
+		bookings.add(bookingToList);
+	    }
 	}
 	return bookings;
     }
@@ -468,7 +523,7 @@ public class ServerClassSchedulingHandling {
 	    ResultSet teacherRs = dbm.executeQuery(query);
 
 	    while (teacherRs.next()) {
-		teachersid = teacherRs.getString("teachersName");
+		teachersid = teacherRs.getString("teacher_for_booking");
 		coursesId = teacherRs.getString("course_for_booking");
 		bookingId = teacherRs.getInt("bookings_id");
 		periodsId = teacherRs.getInt("period_for_booking");
@@ -476,7 +531,8 @@ public class ServerClassSchedulingHandling {
 		CourseInterface course = getCourseById(coursesId);
 		TeacherInterface teacherforbooking = getTeacher(teachersid);
 		List<StudentsInterface> studentsbooking = getClassForCourse(coursesId);
-		booking = BookingFactory.getBookingOfTheRoom(periodforbooking.getStartDate().toString(), periodforbooking.getEndDate().toString(), course, teacherforbooking, studentsbooking);
+		DateTimeFormatter outformatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+		booking = BookingFactory.getBookingOfTheRoom(periodforbooking.getStartDate().format(outformatter), periodforbooking.getEndDate().format(outformatter), course);
 
 	    }
 
@@ -493,15 +549,35 @@ public class ServerClassSchedulingHandling {
 	    ResultSet periods = dbm.executeQuery(query);
 
 	    while (periods.next()) {
-		Date startOfPeriod = periods.getDate("StartDate");
-		Date finishOfPeriod = periods.getDate("FinishDate");
-		period = new Period(startOfPeriod.toString(), finishOfPeriod.toString());
+		String startOfPeriod = periods.getString("StartDate");
+		String finishOfPeriod = periods.getString("FinishDate");
+		DateTimeFormatter informatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		DateTimeFormatter outformatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+		LocalDateTime replaceStringStart = LocalDateTime.parse(startOfPeriod,informatter);
+		LocalDateTime replaceStringFinish = LocalDateTime.parse(finishOfPeriod,informatter);
+	
+		period = new Period(replaceStringStart.format(outformatter), replaceStringFinish.format(outformatter));
 
 	    }
 	} catch (SQLException ex) {
 	    Logger.getLogger(ServerUserHandling.class.getName()).log(Level.SEVERE, null, ex);
 	}
 	return period;
+    }
+
+    private static int getPeriodsIdByStartAndFinishDate(String startDate, String finishDate) {
+	int id = 0;
+	String query = "SELECT \"periods_id\" FROM \"Periods\" WHERE \"StartDate\" = \'" + startDate + "\' AND \"FinishDate\" = \'" + finishDate + "\' ;";
+	try {
+	    ResultSet periods = dbm.executeQuery(query);
+
+	    while (periods.next()) {
+		id = periods.getInt("periods_id");
+	    }
+	} catch (SQLException ex) {
+	    Logger.getLogger(ServerUserHandling.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return id;
     }
 
     private static List<StudentsInterface> getStudentsForCourse(String coursesId) {
@@ -562,14 +638,16 @@ public class ServerClassSchedulingHandling {
 
     private static List<Period> getBookedPeriodsForTeacher(String teachersID) {
 	List<Period> teachersBookedPeriods = new ArrayList<Period>();
-	String query5 = "SELECT \"StartDate\", \"FinishDate\" FROM \"BookedPeriodsForTeachers\" NATURAL JOIN \"Periods\" WHERE \"teacher_of_booking\" = \'" + teachersID + "\' ;";
+	//Bad join!
+	//String query5 = "SELECT \"StartDate\", \"FinishDate\" FROM \"BookedPeriodsForTeachers\" NATURAL JOIN \"Periods\" WHERE \"teacher_of_booking\" = \'" + teachersID + "\' ;";
+	String query5 = "SELECT \"StartDate\",\"FinishDate\" FROM \"BookedPeriodsForTeachers\" LEFT JOIN \"Periods\" on \"BookedPeriodsForTeachers\".periods_bookings_teacher::int8 = \"Periods\".periods_id WHERE \"teacher_of_booking\" = '"+teachersID+"' ;";
 	try {
 	    ResultSet periodsteachers = dbm.executeQuery(query5);
 
 	    while (periodsteachers.next()) {
 		String tStart = periodsteachers.getString("StartDate");
 		String tFinish = periodsteachers.getString("FinishDate");
-		Period newPeriod = new Period(tStart, tFinish);
+		Period newPeriod = changeDataPickersToPeriod(tStart, tFinish);
 		teachersBookedPeriods.add(newPeriod);
 
 	    }
@@ -653,20 +731,48 @@ public class ServerClassSchedulingHandling {
 
     private static List<Period> getBookedPeriodsForClass(String classesID) {
 	List<Period> studentsbookedperiods = new ArrayList<Period>();
-	String query4 = "SELECT \"StartDate\", \"FinishDate\" FROM \"Periods\" NATURAL JOIN \"BookedPeriodsForClassesOfStudents\" WHERE \"classOfStudents\" = \'" + classesID + "\' ;";
+	//String query4 = "SELECT \"StartDate\", \"FinishDate\" FROM \"Periods\" NATURAL JOIN \"BookedPeriodsForClassesOfStudents\" WHERE \"classOfStudents\" = \'" + classesID + "\' ;";
+	String query4 = "SELECT * FROM \"Periods\" INNER JOIN \"BookedPeriodsForClassesOfStudents\" ON \"BookedPeriodsForClassesOfStudents\".id_booking_students = \"Periods\".periods_id WHERE \"classOfStudents\" = '"+classesID+"' ;";
 	try {
 	    ResultSet periodssforss = dbm.executeQuery(query4);
 
 	    while (periodssforss.next()) {
 		String start = periodssforss.getString("StartDate");
 		String finish = periodssforss.getString("FinishDate");
-		Period period = new Period(start, finish);
+		Period period = changeDataPickersToPeriod(start,finish);
 		studentsbookedperiods.add(period);
 	    }
 	} catch (SQLException ex) {
 	    Logger.getLogger(ServerUserHandling.class.getName()).log(Level.SEVERE, null, ex);
 	}
 	return studentsbookedperiods;
+    }
+
+    static Map<LocationInterface, List<BookingLocationsInterface>> getClassSchedule() {
+	Map<LocationInterface, List<BookingLocationsInterface>> schedule = new TreeMap<LocationInterface, List<BookingLocationsInterface>>();
+	String query = "SELECT * FROM \"RoomsAndBookings\";";
+	try {
+	    ResultSet scheduleee = dbm.executeQuery(query);
+
+	    while (scheduleee.next()) {
+		int roomToBookingID = scheduleee.getInt("room_for_courses");
+		int bookingToRoomID = scheduleee.getInt("bookingsToRooms");
+		BookingLocationsInterface bookingToRoom = getBookingById(bookingToRoomID);
+		LocationInterface roomToBooking = getRoomById(roomToBookingID);
+		List<BookingLocationsInterface> bookings = schedule.get(roomToBooking);
+		if (bookings != null) {
+		    bookings.add(bookingToRoom);
+		    schedule.put(roomToBooking, bookings);
+		} else {
+		    List<BookingLocationsInterface> newList = new ArrayList<BookingLocationsInterface>();
+		    newList.add(bookingToRoom);
+		    schedule.put(roomToBooking, newList);
+		}
+	    }
+	} catch (SQLException ex) {
+	    Logger.getLogger(ServerUserHandling.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return schedule;  
     }
 
     static CourseInterface getCourseById(String courseId) {
@@ -706,5 +812,103 @@ public class ServerClassSchedulingHandling {
 
 	}
 	return -1;
+    }
+
+    static Map<String, String[]> getBestTimeForDay() {
+	Map<String, String[]> ret = new TreeMap<String, String[]>();
+	String query = "select * from \"DaysBookingPeriodes\" where daysbookinperiodename = 'best';";
+	try {
+	    ResultSet optimalBookingTimes = dbm.executeQuery(query);
+
+	    while (optimalBookingTimes.next()) {
+		String day = optimalBookingTimes.getString("day");
+		String starthour = optimalBookingTimes.getString("starthour");
+		String endhour = optimalBookingTimes.getString("endhour");
+		String[] strvalues = new String[2];
+		strvalues[0] = starthour;
+		strvalues[1] = endhour;
+
+		ret.put(day, strvalues);
+	    }
+	} catch (SQLException ex) {
+	    Logger.getLogger(ServerUserHandling.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return ret;
+    }
+
+    static Map<String, String[]> getMediumTimeForDay() {
+	Map<String, String[]> ret = new TreeMap<String, String[]>();
+	String query = "select * from \"DaysBookingPeriodes\" where daysbookinperiodename = 'medium';";
+	try {
+	    ResultSet optimalBookingTimes = dbm.executeQuery(query);
+
+	    while (optimalBookingTimes.next()) {
+		String day = optimalBookingTimes.getString("day");
+		String starthour = optimalBookingTimes.getString("starthour");
+		String endhour = optimalBookingTimes.getString("endhour");
+		String[] strvalues = new String[2];
+		strvalues[0] = starthour;
+		strvalues[1] = endhour;
+
+		ret.put(day, strvalues);
+	    }
+	} catch (SQLException ex) {
+	    Logger.getLogger(ServerUserHandling.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return ret;
+    }
+
+    static Map<String, String[]> getEmergencyTimeForDay() {
+	Map<String, String[]> ret = new TreeMap<String, String[]>();
+	String query = "select * from \"DaysBookingPeriodes\" where daysbookinperiodename = 'emergency';";
+	try {
+	    ResultSet optimalBookingTimes = dbm.executeQuery(query);
+
+	    while (optimalBookingTimes.next()) {
+		String day = optimalBookingTimes.getString("day");
+		String starthour = optimalBookingTimes.getString("starthour");
+		String endhour = optimalBookingTimes.getString("endhour");
+		String[] strvalues = new String[2];
+		strvalues[0] = starthour;
+		strvalues[1] = endhour;
+
+		ret.put(day, strvalues);
+	    }
+	} catch (SQLException ex) {
+	    Logger.getLogger(ServerUserHandling.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return ret;
+    }
+
+    static boolean setPossibleTimesOfDayInDb(Map<String, String[]> besttimes, Map<String, String[]> mediumtimes, Map<String, String[]> emergencytimes) {
+	String[] daysOfWeek = {"monday", "tuesday", "wednesday", "thursday", "saturday", "sunday"};
+	if (emergencytimes != null && mediumtimes != null && besttimes != null) {
+	    for (int i = 0; i <= besttimes.size(); i++) {
+		String[] periods = besttimes.get(daysOfWeek[i]);
+		String startperiod = periods[0];
+		String endperiod = periods[1];
+		String newDayQuery = "INSERT INTO \"DaysBookingPeriodes\" (\"DaysBookinPeriodId\",\"daysbookinperiodename\",\"starthour\",\"endhour\",\"day\") VALUES (DEFAULT, 'best','" + startperiod + "','" + endperiod + "', '" + daysOfWeek[i] + "')";
+		dbm.execute(newDayQuery);
+		return true;
+	    }
+	    for (int i = 0; i <= mediumtimes.size(); i++) {
+		String[] periods = mediumtimes.get(daysOfWeek[i]);
+		String startperiod = periods[0];
+		String endperiod = periods[1];
+		String newDayQuery = "INSERT INTO \"DaysBookingPeriodes\" (\"DaysBookinPeriodId\",\"daysbookinperiodename\",\"starthour\",\"endhour\",\"day\") VALUES (DEFAULT, 'medium','" + startperiod + "','" + endperiod + "', '" + daysOfWeek[i] + "')";
+		dbm.execute(newDayQuery);
+		return true;
+	    }
+	    for (int i = 0; i <= emergencytimes.size(); i++) {
+		String[] periods = emergencytimes.get(daysOfWeek[i]);
+		String startperiod = periods[0];
+		String endperiod = periods[1];
+		String newDayQuery = "INSERT INTO \"DaysBookingPeriodes\" (\"DaysBookinPeriodId\",\"daysbookinperiodename\",\"starthour\",\"endhour\",\"day\") VALUES (DEFAULT, 'medium','" + startperiod + "','" + endperiod + "', '" + daysOfWeek[i] + "')";
+		dbm.execute(newDayQuery);
+
+	    }
+	    return true;
+	}
+	return false;
     }
 }

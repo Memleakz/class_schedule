@@ -9,6 +9,7 @@ import Business_Logic.Common.Period;
 import Business_Logic.IServices.CourseInterface;
 import Business_Logic.IServices.TeacherInterface;
 import java.io.Serializable;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -31,7 +32,10 @@ public class Lecturer implements TeacherInterface, Serializable {
     public List<Period> getbookedPeriods() {
 	return this.bookedPeriods;
     }
-
+    @Override
+    public void addbookedPeriods(Period p) {
+	this.bookedPeriods.add(p);
+    }
     @Override
     public List<CourseInterface> getPossibleCourses() {
 	return this.possibleCourses;
@@ -45,7 +49,7 @@ public class Lecturer implements TeacherInterface, Serializable {
     }
 
     @Override
-    public boolean isPeriodAvailable(String startdate, String finishdate) {
+    public boolean isTeacherAvailable(String startdate, String finishdate) {
     Period periodOfBooking = new Period(startdate, finishdate);
     int start_compare = 0;
     int end_compare = 0;
@@ -56,18 +60,22 @@ public class Lecturer implements TeacherInterface, Serializable {
 	start_compare = periodOfAll.getStartDate().compareTo(periodOfBooking.getStartDate());
 	end_compare = periodOfAll.getEndDate().compareTo(periodOfBooking.getStartDate());
 	start_compare_end = periodOfAll.getStartDate().compareTo(periodOfBooking.getEndDate());
-	
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 	if(start_compare <= 0 && end_compare <= 0)
-	{
-	    
+	{ 
+	    //System.out.println(this.getTeachersId() + " avail: " + periodOfAll.getStartDate().format(formatter));
 	    isAvalible = true;
+	    continue;
 	}
 	if(start_compare_end >= 0)
 	{
+	    //System.out.println(this.getTeachersId() + " avail: " + periodOfAll.getStartDate().format(formatter));
 	    isAvalible = true;
+	    continue;
 	}
-	
-	return false;
+	//System.out.println(this.getTeachersId() + "NOT avail: " + periodOfAll.getStartDate().format(formatter));
+	isAvalible = false;
+	break;
     }
     if(isAvalible== true){
     return true;

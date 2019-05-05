@@ -12,7 +12,6 @@ import Business_Logic.IServices.LocationInterface;
 import Business_Logic.IServices.TeacherInterface;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -251,5 +250,10 @@ public class Room implements LocationInterface, Serializable{
 	
 	Collections.sort(all);
 	return all;
+    }
+
+    @Override
+    public int getId() {
+	return this.id;
     }
 }

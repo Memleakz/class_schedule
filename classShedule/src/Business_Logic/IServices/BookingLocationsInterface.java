@@ -13,7 +13,7 @@ import Business_Logic.Common.Period;
  */
 public interface BookingLocationsInterface extends Comparable{
     public Period getPeriodOfBooking();
-    public String getId();
+    public int getId();
     public boolean IsAvailable(Period p);
     public CourseInterface getCourse();
     public void setCourse(CourseInterface bcourse);

@@ -8,9 +8,6 @@ package Business_Logic.Bookings;
 import Business_Logic.Common.Period;
 import Business_Logic.IServices.BookingLocationsInterface;
 import Business_Logic.IServices.CourseInterface;
-import Business_Logic.IServices.StudentsInterface;
-import Business_Logic.IServices.TeacherInterface;
-import java.util.List;
 
 /**
  *
@@ -18,9 +15,9 @@ import java.util.List;
  */
 public class BookingFactory {
     
-  public static BookingLocationsInterface getBookingOfTheRoom(String start , String end,CourseInterface course,TeacherInterface lecturer, List<StudentsInterface> students)
+  public static BookingLocationsInterface getBookingOfTheRoom(String start , String end,CourseInterface course)
   {
       Period p = new Period(start,end);
-      return new BookingOfTheRoom(course,lecturer,students,p);
+      return new BookingOfTheRoom(course,p);
   }
 }

@@ -10,6 +10,7 @@ import Business_Logic.IServices.ClasificationInterface;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -17,14 +18,24 @@ import java.util.List;
  */
 public class ClasificationFactory {
 
-  public static List<ClasificationInterface> getPossibleDays(Period p)
-  {
+    /**
+     *
+     * @param p
+     * @param bestTimeForDay
+     * @param mediumTimeForDay
+     * @param bestTimeForDay
+     * @return
+     */
+    public static List<ClasificationInterface> getPossibleDays(Period p,Map<String,String[]> bestTimeForDay,Map<String,String[]> mediumTimeForDay,Map<String,String[]> emergencyTimeForDay)
+ 
+ 
+    {
       List<ClasificationInterface> possible_days_in_period = new ArrayList<ClasificationInterface>();
       LocalDateTime startdate = p.getStartDate();
       LocalDateTime enddate = p.getEndDate();
 	for (LocalDateTime date =startdate ; date.isBefore(enddate); date = date.plusDays(1))
 	{
-	    ClasificationInterface newCreatedDay =new Day(date);
+	    ClasificationInterface newCreatedDay =new Day(date,bestTimeForDay,mediumTimeForDay, emergencyTimeForDay);
 	    possible_days_in_period.add(newCreatedDay);
 	}
 	return possible_days_in_period;

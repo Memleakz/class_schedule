@@ -12,7 +12,7 @@ import Business_Logic.IServices.LocationInterface;
 import Business_Logic.IServices.ServerInterface;
 import Business_Logic.IServices.TeacherInterface;
 import Business_Logic.IServices.UserInterface;
-import Business_Logic.scheldue_result.scheldue_result;
+import Business_Logic.scheldue_result.Scheldue_result;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -24,18 +24,32 @@ import java.util.Map;
  * @author lawar15
  */
 public class ServerControllerImplementation extends UnicastRemoteObject implements ServerInterface {
-    scheldue_result current_scheldue = null;
+    Scheldue_result current_scheldue = null;
     String semester_end = "31/05/2019 22:00:00";
     String semester_start = "03/02/2019 08:00:00";
     public ServerControllerImplementation() throws RemoteException {
 	//Load current active scheldue from db , we need this for making changes.
 	
-	//TEST - create stadard a new scheldue.
-	String semesterStart = "03/02/2019 08:00:00";
-	String semesterEnd = "31/05/2019 22:00:00";
 	List<LocationInterface> Rooms = ServerClassSchedulingHandling.getAllRooms();
 	List<CourseInterface> Courses = ServerClassSchedulingHandling.getAllCourses();
-	this.current_scheldue = this.getNewSchelue(semesterStart, semesterEnd, Rooms, Courses);
+	Scheldue_result tmp = new Scheldue_result();
+	List<CourseInterface> Courses_with_bookings = new ArrayList<CourseInterface>();
+	for(CourseInterface c : Courses)
+	{
+	    if(c.getBookedRooms() != null && c.getBookedRooms().size() != 0)
+	    {
+		Courses_with_bookings.add(c);
+	    }
+	}
+	if(Courses_with_bookings.size() != 0)
+	{
+	    tmp.setBookedCourses(Courses);
+	    this.current_scheldue = tmp;
+	}
+	else
+	{
+	    this.current_scheldue = this.getNewSchelue(semester_start, semester_end, Rooms, Courses);
+	}
     }
 
     @Override
@@ -89,12 +103,14 @@ public class ServerControllerImplementation extends UnicastRemoteObject implemen
     }
 
     @Override
-    public scheldue_result getNewSchelue(String semesterStart, String semesterEnd, List<LocationInterface> Rooms, List<CourseInterface> Courses) throws RemoteException {
+    //public Scheldue_result getNewSchelue(String semesterStart, String semesterEnd, List<LocationInterface> Rooms, List<CourseInterface> Courses,Map<String,String[]> bestTimeForDay,Map<String,String[]> mediumTimeForDay,Map<String,String[]> emergencyTimeForDay) throws RemoteException {
+    public Scheldue_result getNewSchelue(String semesterStart, String semesterEnd, List<LocationInterface> Rooms, List<CourseInterface> Courses) throws RemoteException {
 	//save to db now ? or first when user accepts ?
+	//return ServerClassSchedulingHandling.AssignRoomsForCourses(semesterStart,semesterEnd,Rooms,Courses,bestTimeForDay,mediumTimeForDay,emergencyTimeForDay);
 	return ServerClassSchedulingHandling.AssignRoomsForCourses(semesterStart,semesterEnd,Rooms,Courses);
     }
      @Override
-    public scheldue_result getCurrentSchelue() throws RemoteException {
+    public Scheldue_result getCurrentSchelue() throws RemoteException {
 	//save to db now ? or first when user accepts ?
 	return this.current_scheldue;
     }
@@ -132,6 +148,11 @@ public class ServerControllerImplementation extends UnicastRemoteObject implemen
     public int addTeacher(String login, String password, String name, String id, ArrayList<BookingLocationsInterface> arrayList, List<CourseInterface> teachersCourses) throws RemoteException {
 	return ServerClassSchedulingHandling.setTeacherInDb(login,password,name,id,arrayList,teachersCourses);
 
+    }
+
+    @Override
+    public boolean addPossibleTimesToBook(Map<String, String[]> besttimes, Map<String, String[]> mediumtimes, Map<String, String[]> emergencytimes) throws RemoteException {
+	return ServerClassSchedulingHandling.setPossibleTimesOfDayInDb(besttimes, mediumtimes, emergencytimes);
     }
 
 }

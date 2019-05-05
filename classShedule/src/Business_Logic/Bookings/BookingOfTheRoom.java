@@ -19,14 +19,14 @@ import java.util.List;
  * @author lawar15
  */
 public class BookingOfTheRoom implements BookingLocationsInterface,Serializable{
-    String id;
+    int id;
     TeacherInterface lecturer;
     List<StudentsInterface> students;
     Period periodOfBooking;
     CourseInterface course;
-    public BookingOfTheRoom(CourseInterface course,TeacherInterface lecturer, List<StudentsInterface> students, Period periodOfBooking){
-	this.lecturer = lecturer;
-	this.students = students;
+    public BookingOfTheRoom(CourseInterface course, Period periodOfBooking){
+	this.lecturer = course.getAssignedLecturer();
+	this.students = course.getParticipants();
 	this.periodOfBooking = periodOfBooking;
 	this.course = course;
     }
@@ -35,7 +35,7 @@ public class BookingOfTheRoom implements BookingLocationsInterface,Serializable{
 	return this.periodOfBooking;
     }
     @Override
-    public String getId(){
+    public int getId(){
 	return this.id;
     }
     @Override
