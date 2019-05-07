@@ -7,6 +7,7 @@ package Business_Logic.Bookings;
 
 
 import Business_Logic.Common.Period;
+import Business_Logic.Common.Schedule;
 import Business_Logic.IServices.BookingLocationsInterface;
 import Business_Logic.IServices.CourseInterface;
 import Business_Logic.IServices.StudentsInterface;
@@ -24,11 +25,13 @@ public class BookingOfTheRoom implements BookingLocationsInterface,Serializable{
     List<StudentsInterface> students;
     Period periodOfBooking;
     CourseInterface course;
-    public BookingOfTheRoom(CourseInterface course, Period periodOfBooking){
+    Schedule scheduleOfBooking;
+    public BookingOfTheRoom(CourseInterface course, Period periodOfBooking,Schedule scheduleOfBooking){
 	this.lecturer = course.getAssignedLecturer();
 	this.students = course.getParticipants();
 	this.periodOfBooking = periodOfBooking;
 	this.course = course;
+	this.scheduleOfBooking = scheduleOfBooking;
     }
     @Override
     public Period getPeriodOfBooking(){
@@ -90,6 +93,11 @@ public class BookingOfTheRoom implements BookingLocationsInterface,Serializable{
     @Override
     public TeacherInterface getTeacher() {
 	return this.lecturer;
+    }
+
+    @Override
+    public Schedule getScheduleOfBooking() {
+	return this.scheduleOfBooking;
     }
 
 

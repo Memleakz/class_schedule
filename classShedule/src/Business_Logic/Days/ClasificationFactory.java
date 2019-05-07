@@ -6,6 +6,7 @@
 package Business_Logic.Days;
 
 import Business_Logic.Common.Period;
+import Business_Logic.Common.Schedule;
 import Business_Logic.IServices.ClasificationInterface;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,10 +27,11 @@ public class ClasificationFactory {
      * @param bestTimeForDay
      * @return
      */
-    public static List<ClasificationInterface> getPossibleDays(Period p,Map<String,String[]> bestTimeForDay,Map<String,String[]> mediumTimeForDay,Map<String,String[]> emergencyTimeForDay)
+    public static List<ClasificationInterface> getPossibleDays(Schedule bookingsSchedule,Map<String,String[]> bestTimeForDay,Map<String,String[]> mediumTimeForDay,Map<String,String[]> emergencyTimeForDay)
  
  
     {
+      Period p =bookingsSchedule.getPeriodOfTerm();
       List<ClasificationInterface> possible_days_in_period = new ArrayList<ClasificationInterface>();
       LocalDateTime startdate = p.getStartDate();
       LocalDateTime enddate = p.getEndDate();

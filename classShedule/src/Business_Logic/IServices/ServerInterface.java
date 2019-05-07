@@ -6,7 +6,7 @@
 package Business_Logic.IServices;
 
 import Business_Logic.Common.Period;
-import Business_Logic.scheldue_result.Scheldue_result;
+import Business_Logic.Common.Scheldue_result;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;

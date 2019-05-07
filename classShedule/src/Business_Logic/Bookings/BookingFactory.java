@@ -6,6 +6,7 @@
 package Business_Logic.Bookings;
 
 import Business_Logic.Common.Period;
+import Business_Logic.Common.Schedule;
 import Business_Logic.IServices.BookingLocationsInterface;
 import Business_Logic.IServices.CourseInterface;
 
@@ -15,9 +16,9 @@ import Business_Logic.IServices.CourseInterface;
  */
 public class BookingFactory {
     
-  public static BookingLocationsInterface getBookingOfTheRoom(String start , String end,CourseInterface course)
+  public static BookingLocationsInterface getBookingOfTheRoom(String start , String end,CourseInterface course, Schedule scheduleOfBooking)
   {
       Period p = new Period(start,end);
-      return new BookingOfTheRoom(course,p);
+      return new BookingOfTheRoom(course,p,scheduleOfBooking);
   }
 }

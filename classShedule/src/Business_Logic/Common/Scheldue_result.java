@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Business_Logic.scheldue_result;
+package Business_Logic.Common;
 
 import Business_Logic.IServices.CourseInterface;
 import java.io.Serializable;
@@ -13,11 +13,30 @@ import java.util.List;
 /**
  *
  * @author lawar15
- * we only use this for multiple retun ?
+ * I only use this for multiple return
  */
 public class Scheldue_result implements Serializable {
     private List<CourseInterface> bookedCourses = new ArrayList<CourseInterface>();
     public List<CourseInterface> BookingFails = new ArrayList<CourseInterface>();
+    private String result_period_start = "";
+    private String result_period_end = "";
+    
+    public String getResultPeriodStart()
+    {
+	return this.result_period_start;
+    }
+     public String getResultPeriodEnd()
+    {
+	return this.result_period_end;
+    }
+     public void setResultPeriodStart(String start)
+    {
+	this.result_period_start = start;
+    }
+     public void setResultPeriodEnd(String end)
+    {
+	this.result_period_end = end;
+    }
     public void setBookedCourses(List<CourseInterface> bookedCourses){
 	this.bookedCourses = bookedCourses;
     }

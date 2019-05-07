@@ -12,7 +12,7 @@ import Business_Logic.IServices.LocationInterface;
 import Business_Logic.IServices.ServerInterface;
 import Business_Logic.IServices.TeacherInterface;
 import Business_Logic.User.User;
-import Business_Logic.scheldue_result.Scheldue_result;
+import Business_Logic.Common.Scheldue_result;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;

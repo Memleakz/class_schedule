@@ -10,7 +10,7 @@ import Business_Logic.IServices.BookingLocationsInterface;
 import Business_Logic.IServices.CourseInterface;
 import Business_Logic.IServices.LocationInterface;
 import Business_Logic.IServices.TeacherInterface;
-import Business_Logic.scheldue_result.Scheldue_result;
+import Business_Logic.Common.Scheldue_result;
 import Client.ClientController;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
@@ -187,7 +187,7 @@ public class ClientFXMLController implements Initializable {
     private Button hiddePaneToDayTimePreferencesButon;
     @FXML
     private ListView mypreferences;
-    
+
     @FXML
     private ListView teachersInTermListView;
     @FXML
@@ -217,7 +217,6 @@ public class ClientFXMLController implements Initializable {
     private Button backToschedulerMenu;
     @FXML
     private Button addToPossibleCoursesButton;
-    
 
     private ClientController clientController;
 
@@ -237,7 +236,6 @@ public class ClientFXMLController implements Initializable {
 	loginPane.setVisible(true);
     }
     //For sign in methods:
-
 
     @FXML
     private void handleSignInButton(ActionEvent event) {
@@ -399,106 +397,130 @@ public class ClientFXMLController implements Initializable {
 
 	}
     }
-        @FXML
-    private void handleShowPaneToDayPreferencesButton(ActionEvent event){
+
+    @FXML
+    private void handleShowPaneToDayPreferencesButton(ActionEvent event) {
 	underPaneTimeToDays.setVisible(true);
 	String[] timestamps = clientController.getPossibleTimeStamps();
-	String[] days =clientController.getNamesOfAllDaysOfWeek();
+	String[] days = clientController.getNamesOfAllDaysOfWeek();
 	allWeekDays.getItems().addAll(days);
 	besttimeToStartPossibilities.getItems().clear();
 	besttimeToFinishPossibilities.getItems().clear();
 	mediumtimeToStartPossibilities.getItems().clear();
 	mediumtimeToFinishPossibilities.getItems().clear();
+	emergencytimeToStartPossibilities.getItems().clear();
 	emergencytimeToFinishPossibilities.getItems().clear();
-	emergencytimeToFinishPossibilities.getItems().clear();
-	 allWeekDays.setOnMouseClicked(new EventHandler<MouseEvent>() {
+	allWeekDays.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
-        @Override
-        public void handle(MouseEvent event) {
-	    besttimeToStartPossibilities.getItems().addAll(timestamps);
-            System.out.println("clicked on " + allWeekDays.getSelectionModel().getSelectedItem());
-        }
-    });
-	 besttimeToStartPossibilities.setOnMouseClicked(new EventHandler<MouseEvent>() {
-	           @Override
-        public void handle(MouseEvent event) {
-	    List<String> timeStamps =clientController.getPossibleTimeStampsAfterTime((String)besttimeToStartPossibilities.getSelectionModel().getSelectedItem());
-	    besttimeToFinishPossibilities.getItems().addAll(timeStamps);
-            System.out.println("clicked on " + besttimeToStartPossibilities.getSelectionModel().getSelectedItem());
-        }
-    }); 
-	 	 besttimeToFinishPossibilities.setOnMouseClicked(new EventHandler<MouseEvent>() {
-	           @Override
-        public void handle(MouseEvent event) {
-	    List<String> timeStamps =clientController.getPossibleTimeStampsAfterTime((String)besttimeToFinishPossibilities.getSelectionModel().getSelectedItem());
-	    mediumtimeToStartPossibilities.getItems().addAll(timeStamps);
-            System.out.println("clicked on " + besttimeToFinishPossibilities.getSelectionModel().getSelectedItem());
-        }
-    }); 
-		mediumtimeToStartPossibilities.setOnMouseClicked(new EventHandler<MouseEvent>() {
-	           @Override
-        public void handle(MouseEvent event) {
-	    List<String> timeStamps =clientController.getPossibleTimeStampsAfterTime((String)mediumtimeToStartPossibilities.getSelectionModel().getSelectedItem());
-	    mediumtimeToFinishPossibilities.getItems().addAll(timeStamps);
-            System.out.println("clicked on " + mediumtimeToStartPossibilities.getSelectionModel().getSelectedItem());
-        }
-    }); 
+	    @Override
+	    public void handle(MouseEvent event) {
+		besttimeToStartPossibilities.getItems().addAll(timestamps);
+		System.out.println("clicked on " + allWeekDays.getSelectionModel().getSelectedItem());
+	    }
+	});
+	besttimeToStartPossibilities.setOnMouseClicked(new EventHandler<MouseEvent>() {
+	    @Override
+	    public void handle(MouseEvent event) {
+		if(besttimeToStartPossibilities.getSelectionModel().getSelectedItem() == null){
+		    besttimeToFinishPossibilities.getItems().addAll(timestamps);
+		}else{
+		List<String> timeStamps = clientController.getPossibleTimeStampsAfterTime((String) besttimeToStartPossibilities.getSelectionModel().getSelectedItem());
+		besttimeToFinishPossibilities.getItems().addAll(timeStamps);
+		}
+		System.out.println("clicked on " + besttimeToStartPossibilities.getSelectionModel().getSelectedItem());
+	    }
+	});
+	besttimeToFinishPossibilities.setOnMouseClicked(new EventHandler<MouseEvent>() {
+	    @Override
+	    public void handle(MouseEvent event) {
+		if(besttimeToFinishPossibilities.getSelectionModel().getSelectedItem() == null){
+		    mediumtimeToStartPossibilities.getItems().addAll(timestamps);
+		}else{
+		List<String> timeStamps = clientController.getPossibleTimeStampsAfterTime((String) besttimeToFinishPossibilities.getSelectionModel().getSelectedItem());
+		mediumtimeToStartPossibilities.getItems().addAll(timeStamps);
+		}
+		System.out.println("clicked on " + besttimeToFinishPossibilities.getSelectionModel().getSelectedItem());
+	    }
+	});
+	mediumtimeToStartPossibilities.setOnMouseClicked(new EventHandler<MouseEvent>() {
+	    @Override
+	    public void handle(MouseEvent event) {
+		if(mediumtimeToStartPossibilities.getSelectionModel().getSelectedItem() == null){
+		    mediumtimeToFinishPossibilities.getItems().addAll(timestamps);
+		}else{
+		List<String> timeStamps = clientController.getPossibleTimeStampsAfterTime((String) mediumtimeToStartPossibilities.getSelectionModel().getSelectedItem());
+		mediumtimeToFinishPossibilities.getItems().addAll(timeStamps);
+		}
+		System.out.println("clicked on " + mediumtimeToStartPossibilities.getSelectionModel().getSelectedItem());
+	    }
+	});
 	mediumtimeToFinishPossibilities.setOnMouseClicked(new EventHandler<MouseEvent>() {
-	           @Override
-        public void handle(MouseEvent event) {
-	    List<String> timeStamps =clientController.getPossibleTimeStampsAfterTime((String)mediumtimeToFinishPossibilities.getSelectionModel().getSelectedItem());
-	    emergencytimeToStartPossibilities.getItems().addAll(timeStamps);
-            System.out.println("clicked on " + mediumtimeToFinishPossibilities.getSelectionModel().getSelectedItem());
-        }
-    }); 
+	    @Override
+	    public void handle(MouseEvent event) {
+		if(mediumtimeToFinishPossibilities.getSelectionModel().getSelectedItem() == null){
+		    emergencytimeToStartPossibilities.getItems().addAll(timestamps);
+		}else{
+		List<String> timeStamps = clientController.getPossibleTimeStampsAfterTime((String) mediumtimeToFinishPossibilities.getSelectionModel().getSelectedItem());
+		emergencytimeToStartPossibilities.getItems().addAll(timeStamps);
+		}
+		System.out.println("clicked on " + mediumtimeToFinishPossibilities.getSelectionModel().getSelectedItem());
+	    }
+	});
 	emergencytimeToStartPossibilities.setOnMouseClicked(new EventHandler<MouseEvent>() {
-	           @Override
-        public void handle(MouseEvent event) {
-	    List<String> timeStamps =clientController.getPossibleTimeStampsAfterTime((String)emergencytimeToStartPossibilities.getSelectionModel().getSelectedItem());
-	    emergencytimeToFinishPossibilities.getItems().addAll(timeStamps);
-            System.out.println("clicked on " + emergencytimeToStartPossibilities.getSelectionModel().getSelectedItem());
-        }
-    }); 
-		
-	emergencytimeToStartPossibilities.setOnMouseClicked(new EventHandler<MouseEvent>() {
-	           @Override
-        public void handle(MouseEvent event) {
-	    addToPreferences.setVisible(true);
-            System.out.println("clicked on " + emergencytimeToStartPossibilities.getSelectionModel().getSelectedItem());
-        }
-    }); 
+	    @Override
+	    public void handle(MouseEvent event) {
+		if(emergencytimeToStartPossibilities.getSelectionModel().getSelectedItem() == null){
+		    emergencytimeToFinishPossibilities.getItems().addAll(timestamps);
+		}else{
+		List<String> timeStamps = clientController.getPossibleTimeStampsAfterTime((String) emergencytimeToStartPossibilities.getSelectionModel().getSelectedItem());
+		emergencytimeToFinishPossibilities.getItems().addAll(timeStamps);
+		}
+		System.out.println("clicked on " + emergencytimeToStartPossibilities.getSelectionModel().getSelectedItem());
+	    }
+	});
+
+	emergencytimeToFinishPossibilities.setOnMouseClicked(new EventHandler<MouseEvent>() {
+	    @Override
+	    public void handle(MouseEvent event) {
+		addToPreferences.setVisible(true);
+		System.out.println("clicked on " + emergencytimeToFinishPossibilities.getSelectionModel().getSelectedItem());
+	    }
+	});
 
     }
+
     @FXML
-    private void handleAddToPreferencesButton(ActionEvent event){
-	String day =(String)allWeekDays.getSelectionModel().getSelectedItem();
-	mypreferences.getItems().add(day+": best period(:"+besttimeToStartPossibilities.getSelectionModel().getSelectedItem()+"-"+besttimeToFinishPossibilities.getSelectionModel().getSelectedItem()+":), medium period(:"+mediumtimeToStartPossibilities.getSelectionModel().getSelectedItem()+"-"+mediumtimeToFinishPossibilities.getSelectionModel().getSelectedItem()+":), emergency period(:"+emergencytimeToStartPossibilities.getSelectionModel().getSelectedItem()+"-"+emergencytimeToFinishPossibilities.getSelectionModel().getSelectedItem()+":)" );
+    private void handleAddToPreferencesButton(ActionEvent event) {
+	String day = (String) allWeekDays.getSelectionModel().getSelectedItem();
+	mypreferences.getItems().add(day + ": best period(#" + besttimeToStartPossibilities.getSelectionModel().getSelectedItem() + "-" + besttimeToFinishPossibilities.getSelectionModel().getSelectedItem() + "#), medium period(#" + mediumtimeToStartPossibilities.getSelectionModel().getSelectedItem() + "-" + mediumtimeToFinishPossibilities.getSelectionModel().getSelectedItem() + "#), emergency period(#" + emergencytimeToStartPossibilities.getSelectionModel().getSelectedItem() + "-" + emergencytimeToFinishPossibilities.getSelectionModel().getSelectedItem() + "#)");
 	besttimeToStartPossibilities.getItems().clear();
 	besttimeToFinishPossibilities.getItems().clear();
 	mediumtimeToStartPossibilities.getItems().clear();
 	mediumtimeToFinishPossibilities.getItems().clear();
-	emergencytimeToFinishPossibilities.getItems().clear();
+	emergencytimeToStartPossibilities.getItems().clear();
 	emergencytimeToFinishPossibilities.getItems().clear();
 	allWeekDays.getItems().remove(day);
     }
+
     @FXML
-    private void handleSaveAllDaysPreferences(ActionEvent event){
-	List<String> preferences =mypreferences.getItems();
+    private void handleSaveAllDaysPreferences(ActionEvent event) {
+	List<String> preferences = mypreferences.getItems();
 	Map<String, String[]> besttimes = new TreeMap<String, String[]>();
-	Map<String, String[]> mediumtimes= new TreeMap<String, String[]>();
-	Map<String, String[]> emergencytimes= new TreeMap<String, String[]>();
-	for(String s: preferences){
-	   String[] splitted = s.split(":");
-	   String bestperiod =splitted[2];
-	   String mediumperiod =splitted[4];
-	   String emergencyperiod =splitted[6];
-	   String[] splittedbestperiod = bestperiod.split("-");
-	   besttimes.put(splitted[0], splittedbestperiod);
-	   String[] splittedmediumperiod = mediumperiod.split("-");
-	   mediumtimes.put(splitted[0], splittedmediumperiod);
-	   String[] splittedemergencyperiod = emergencyperiod.split("-");
-	   emergencytimes.put(splitted[0], splittedemergencyperiod);
-	   
+	Map<String, String[]> mediumtimes = new TreeMap<String, String[]>();
+	Map<String, String[]> emergencytimes = new TreeMap<String, String[]>();
+	for (String s : preferences) {
+	    String[] splitted = s.split("#");
+	    String bestperiod = splitted[1];
+	    String mediumperiod = splitted[3];
+	    String emergencyperiod = splitted[5];
+	    String[] splittedbestperiod = bestperiod.split("-");
+	    String[] splittedToKey = s.split(":");
+	    besttimes.put(splittedToKey[0], splittedbestperiod);
+	    String[] splittedmediumperiod = mediumperiod.split("-");
+	    mediumtimes.put(splittedToKey[0], splittedmediumperiod);
+	    String[] splittedemergencyperiod = emergencyperiod.split("-");
+	    emergencytimes.put(splittedToKey[0], splittedemergencyperiod);
+
 	}
 	clientController.addPossibleTimesToBook(besttimes, mediumtimes, emergencytimes);
 	mypreferences.getItems().clear();
@@ -649,7 +671,7 @@ public class ClientFXMLController implements Initializable {
 	}
 	Scheldue_result new_scheldue = clientController.createNewScheldue(SemesterStat, SemesterEnd, rmi_rooms, rmi_courses);
 	creatingNewSchedulePane.setVisible(false);
-	
+
 	classScheduleViewPane.setVisible(true);
 	backToSchedulerPaneButton.setVisible(true);
 	displayNewScheldue(new_scheldue, startWeekOfTerm);

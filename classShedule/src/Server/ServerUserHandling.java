@@ -7,6 +7,7 @@ package Server;
 
 import Business_Logic.Bookings.BookingFactory;
 import Business_Logic.Common.Period;
+import Business_Logic.Common.Schedule;
 import Business_Logic.Courses.CourseFactory;
 import Business_Logic.IServices.BookingLocationsInterface;
 import Business_Logic.IServices.CourseInterface;
@@ -282,7 +283,7 @@ public class ServerUserHandling {
 	return newPeriod;
     }
 
-    static Period getPeriodForId(String periodsId) {
+    static Period getPeriodForId(int periodsId) {
 	Period periodwithId = null;
 	String query = "SELECT \"StartDate\", \"FinishDate\" FROM \"Periods\" WHERE \"periods_id\" = \'" + periodsId + "\' ;";
 	try {
@@ -299,7 +300,22 @@ public class ServerUserHandling {
 	}
 	return periodwithId;
     }
-
+        static Schedule getScheduleById(int scheduleId){
+	Schedule scheduletoreturn= null;
+	String getSchedulequery= "SELECT * FROM \"Schedules\" WHERE \"schedules_id\"='"+scheduleId+"'"; 
+	    try {
+	    ResultSet schedulesss = dbm.executeQuery(getSchedulequery);
+	    int periodsid=0;
+	    while (schedulesss.next()) {
+		 periodsid= schedulesss.getInt("periods_id");
+	    }
+	    Period periodOfSchedule = getPeriodForId(periodsid);
+	    scheduletoreturn = new Schedule(scheduleId,periodOfSchedule);
+	} catch (SQLException ex) {
+	    Logger.getLogger(ServerUserHandling.class.getName()).log(Level.SEVERE, null, ex);
+	} 
+	    return scheduletoreturn;
+    }
     static List<BookingLocationsInterface> getAllBookingsForTeacher(String teacherID) {
 	List<BookingLocationsInterface> teachersBookings = new ArrayList<BookingLocationsInterface>();
 	String query = "SELECT * FROM \"Bookings\" WHERE \"teacher_for_booking\" = \'" + teacherID + "\' ;";
@@ -309,15 +325,17 @@ public class ServerUserHandling {
 
 	    while (bookingsForTeacher.next()) {
 		//String studentsClassId = studentsClassId = bookingsForTeacher.getString("studentsForBooking");
-		String bookedPeriodId = bookedPeriodId = bookingsForTeacher.getString("period_for_booking");
-		String courseId = courseId = bookingsForTeacher.getString("course_for_booking");
-		int bookingsId = bookingsId = bookingsForTeacher.getInt("bookings_id");
+		int bookedPeriodId =bookingsForTeacher.getInt("period_for_booking");
+		String courseId =bookingsForTeacher.getString("course_for_booking");
+		int bookingsId =bookingsForTeacher.getInt("bookings_id");
+		int schedulesId = bookingsForTeacher.getInt("schedules_id");
 		//List<StudentsInterface> classForCourse = getClassForCourse(courseId);
+		Schedule scheduleOfbooking = getScheduleById(schedulesId);
 		Period periodforbooking = getPeriodForId(bookedPeriodId);
 		CourseInterface courseforBooking = getCourseById(courseId);
 		//TeacherInterface teacherForCourse = getTeacher(teacherID);
 		
-		teachersBookings.add(BookingFactory.getBookingOfTheRoom(periodforbooking.getStartDate().format(outformatter), periodforbooking.getEndDate().format(outformatter), courseforBooking));
+		teachersBookings.add(BookingFactory.getBookingOfTheRoom(periodforbooking.getStartDate().format(outformatter), periodforbooking.getEndDate().format(outformatter), courseforBooking,scheduleOfbooking));
 
 	    }
 	} catch (SQLException ex) {

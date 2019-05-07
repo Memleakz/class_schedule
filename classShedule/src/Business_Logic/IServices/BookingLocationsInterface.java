@@ -6,6 +6,7 @@
 package Business_Logic.IServices;
 
 import Business_Logic.Common.Period;
+import Business_Logic.Common.Schedule;
 
 /**
  *
@@ -18,5 +19,6 @@ public interface BookingLocationsInterface extends Comparable{
     public CourseInterface getCourse();
     public void setCourse(CourseInterface bcourse);
     public TeacherInterface getTeacher();
+    public Schedule getScheduleOfBooking();
     
 }

@@ -10,9 +10,10 @@ import Business_Logic.IServices.CourseInterface;
 import Business_Logic.IServices.LocationInterface;
 import Business_Logic.IServices.ServerInterface;
 import Business_Logic.IServices.TeacherInterface;
-import Business_Logic.scheldue_result.Scheldue_result;
+import Business_Logic.Common.Scheldue_result;
 import java.rmi.RemoteException;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -109,28 +110,25 @@ public class ClientClassSchedulingHandling {
     static String[] getPossibleTimeStamps() {
 	String[] timestamp = new String[48];
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:SS");
-	LocalDateTime dateTime = LocalDateTime.now();
-	dateTime.withHour(0);
-	dateTime.withMinute(0);
-	dateTime.withSecond(0);
-	for(int i=0;i<=timestamp.length;i++){
+	LocalDateTime dateTime = LocalDateTime.of(2000, Month.JANUARY, 1, 00, 00, 00);
+	for(int i=0;i<(timestamp.length-1);i++){
 	    String formattedDateTime = dateTime.format(formatter);
 	    timestamp[i]=formattedDateTime;
-	    dateTime.plusMinutes(30);
+	    dateTime =dateTime.plusMinutes(30);
 	}
 	return timestamp;
     }
         static List<String> getPossibleTimeStampsAfterTime(String time) {	    
 	List <String> timestamp = new ArrayList<String>();
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:SS");
-	LocalDateTime dateTime = LocalDateTime.parse(time, formatter);
+	LocalTime  dateTime = LocalTime.parse(time);
 	//Add First to list..so we include it.
-	timestamp.add(dateTime.format(formatter));
-	dateTime.plusMinutes(30);
-	while(dateTime.getHour() != 0 && dateTime.getMinute() != 0){
+	//timestamp.add(dateTime.format(formatter));
+	dateTime = dateTime.plusMinutes(30);
+	while(dateTime.getHour() != 0 || dateTime.getMinute() != 0){
 	    String formattedDateTime = dateTime.format(formatter);
 	    timestamp.add(formattedDateTime);
-	    dateTime.plusMinutes(30);
+	    dateTime = dateTime.plusMinutes(30);
 	}
 	return timestamp;
     }
