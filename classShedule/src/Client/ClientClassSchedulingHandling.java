@@ -10,7 +10,7 @@ import Business_Logic.IServices.CourseInterface;
 import Business_Logic.IServices.LocationInterface;
 import Business_Logic.IServices.ServerInterface;
 import Business_Logic.IServices.TeacherInterface;
-import Business_Logic.Common.Scheldue_result;
+import Business_Logic.Common.Schedule_result;
 import java.rmi.RemoteException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -64,9 +64,9 @@ public class ClientClassSchedulingHandling {
 	}
     }
 
-    static Scheldue_result createNewScheldue(ServerInterface serverController, String semesterStart, String semesterEnd, ArrayList<LocationInterface> Rooms, ArrayList<CourseInterface> Courses) {
+    static Schedule_result createNewScheldue(ServerInterface serverController, String semesterStart, String semesterEnd, ArrayList<LocationInterface> Rooms, ArrayList<CourseInterface> Courses) {
 	try {
-	    Scheldue_result scheldue = serverController.getNewSchelue(semesterStart, semesterEnd, Rooms, Courses);
+	    Schedule_result scheldue = serverController.getNewSchelue(semesterStart, semesterEnd, Rooms, Courses);
 	    return scheldue;
 	} catch (RemoteException ex) {
 	    Logger.getLogger(ClientClassSchedulingHandling.class.getName()).log(Level.SEVERE, null, ex);
@@ -84,7 +84,7 @@ public class ClientClassSchedulingHandling {
 	return null;
     }
 
-    static Scheldue_result getCurrentActiveScheldue(ServerInterface serverController) {
+    static Schedule_result getCurrentActiveScheldue(ServerInterface serverController) {
 	try {
 	    return serverController.getCurrentSchelue();
 	} catch (RemoteException ex) {

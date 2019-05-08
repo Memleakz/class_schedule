@@ -24,4 +24,7 @@ public class Schedule implements Serializable{
     public Period getPeriodOfTerm(){
 	return this.periodOfTerm;
     }
+    public void setPeriodOfTerm(Period periodOfTerm){
+	this.periodOfTerm = periodOfTerm;
+    }
 }

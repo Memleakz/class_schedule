@@ -55,7 +55,7 @@ public class Lecturer implements TeacherInterface, Serializable {
     int end_compare = 0;
     int start_compare_end = 0;
     boolean isAvalible = true;
-    for(Period periodOfAll : this.bookedPeriods)
+    for(Period periodOfAll : getbookedPeriods())
     {
 	start_compare = periodOfAll.getStartDate().compareTo(periodOfBooking.getStartDate());
 	end_compare = periodOfAll.getEndDate().compareTo(periodOfBooking.getStartDate());
@@ -63,17 +63,14 @@ public class Lecturer implements TeacherInterface, Serializable {
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 	if(start_compare <= 0 && end_compare <= 0)
 	{ 
-	    //System.out.println(this.getTeachersId() + " avail: " + periodOfAll.getStartDate().format(formatter));
 	    isAvalible = true;
 	    continue;
 	}
 	if(start_compare_end >= 0)
 	{
-	    //System.out.println(this.getTeachersId() + " avail: " + periodOfAll.getStartDate().format(formatter));
 	    isAvalible = true;
 	    continue;
 	}
-	//System.out.println(this.getTeachersId() + "NOT avail: " + periodOfAll.getStartDate().format(formatter));
 	isAvalible = false;
 	break;
     }

@@ -15,7 +15,7 @@ import java.util.List;
  * @author lawar15
  * I only use this for multiple return
  */
-public class Scheldue_result implements Serializable {
+public class Schedule_result implements Serializable {
     private List<CourseInterface> bookedCourses = new ArrayList<CourseInterface>();
     public List<CourseInterface> BookingFails = new ArrayList<CourseInterface>();
     private String result_period_start = "";

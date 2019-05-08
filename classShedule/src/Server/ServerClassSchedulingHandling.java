@@ -19,7 +19,7 @@ import Business_Logic.IServices.TeacherInterface;
 import Business_Logic.Locations.RoomFactory;
 import Business_Logic.Participants.StudentsFactory;
 import Business_Logic.Responsible.LecturerFactory;
-import Business_Logic.Common.Scheldue_result;
+import Business_Logic.Common.Schedule_result;
 import static Server.ServerUserHandling.changeDataPickersToPeriod;
 import Server.database.DatabaseManager;
 import java.sql.ResultSet;
@@ -110,7 +110,7 @@ public class ServerClassSchedulingHandling {
 	    return scheduletoreturn;
     }
     
-    static Scheldue_result AssignRoomsForCourses(String SemesterStart, String SemesterEnd, List<LocationInterface> Rooms, List<CourseInterface> Courses) {
+    static Schedule_result AssignRoomsForCourses(String SemesterStart, String SemesterEnd, List<LocationInterface> Rooms, List<CourseInterface> Courses) {
 	List<CourseInterface> bookedCourses = new ArrayList<CourseInterface>();
 	List<CourseInterface> BookingFails = new ArrayList<CourseInterface>();
 	Schedule scheduleOfBooking = createNewScheduleinDb(SemesterStart,SemesterEnd);
@@ -189,7 +189,7 @@ public class ServerClassSchedulingHandling {
 	    }
 	    //place booking
 	}
-	Scheldue_result ret_obj = new Scheldue_result();
+	Schedule_result ret_obj = new Schedule_result();
 	ret_obj.setBookingFails(BookingFails);
 	ret_obj.setBookedCourses(bookedCourses);
 	ret_obj.setResultPeriodStart(SemesterStart);

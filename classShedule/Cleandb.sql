@@ -1,0 +1,9 @@
+﻿DELETE FROM "BookedPeriodsForClassesOfStudents";
+DELETE FROM "BookedPeriodsForRoom";
+DELETE FROM "BookedPeriodsForTeachers";
+DELETE FROM "BookedRoomsForCourse";
+DELETE FROM "RoomsAndBookings";
+DELETE FROM "StudentsForBookings";
+DELETE FROM "StudentsForCourses";
+DELETE FROM "Bookings";
+DELETE FROM "Schedules"

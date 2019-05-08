@@ -10,7 +10,7 @@ import Business_Logic.IServices.BookingLocationsInterface;
 import Business_Logic.IServices.CourseInterface;
 import Business_Logic.IServices.LocationInterface;
 import Business_Logic.IServices.TeacherInterface;
-import Business_Logic.Common.Scheldue_result;
+import Business_Logic.Common.Schedule_result;
 import Client.ClientController;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
@@ -358,7 +358,7 @@ public class ClientFXMLController implements Initializable {
 	//Map<Integer, Map<Period, CourseInterface>> mapForTeacher = clientController.getClassScheduleForTeacher(teachersId);
 
 	clientController.handleTeachersAbsence(startDateOfAbsence, finishDateOfAbsence, null);
-	Scheldue_result res = clientController.getCurrentScheldue();
+	Schedule_result res = clientController.getCurrentScheldue();
 	displayNewScheldue(res, startWeekOfabsence);
 
     }
@@ -575,7 +575,7 @@ public class ClientFXMLController implements Initializable {
 
 	clientController.handleTeachersAbsence(startdate, finishDate, teacher);
 
-	Scheldue_result res = clientController.getCurrentScheldue();
+	Schedule_result res = clientController.getCurrentScheldue();
 	WeekFields weekFields = WeekFields.of(Locale.getDefault());
 	int weekNumber = localDate.get(weekFields.weekOfWeekBasedYear());
 	changingPaneScheduler.setVisible(false);
@@ -669,7 +669,7 @@ public class ClientFXMLController implements Initializable {
 	for (LocationInterface r : selectedRooms) {
 	    rmi_rooms.add(r);
 	}
-	Scheldue_result new_scheldue = clientController.createNewScheldue(SemesterStat, SemesterEnd, rmi_rooms, rmi_courses);
+	Schedule_result new_scheldue = clientController.createNewScheldue(SemesterStat, SemesterEnd, rmi_rooms, rmi_courses);
 	creatingNewSchedulePane.setVisible(false);
 
 	classScheduleViewPane.setVisible(true);
@@ -677,7 +677,15 @@ public class ClientFXMLController implements Initializable {
 	displayNewScheldue(new_scheldue, startWeekOfTerm);
     }
 
-    private void displayNewScheldue(Scheldue_result new_scheldue, int startWeekOfTerm) {
+    private void displayNewScheldue(Schedule_result new_scheldue, int startWeekOfTerm) {
+	mondayLessonsListView.getItems().clear();
+	tuesdayLessonsListView.getItems().clear();
+	wednesdayLessonsListView.getItems().clear();
+	thursdayLessonsListView.getItems().clear();
+	fridayLessonsListView.getItems().clear();
+	saturdayLessonsListView.getItems().clear();
+	sundayLessonsListView.getItems().clear();
+	
 	//start from first week ? start from the first week of the term
 
 	//we show scheldue from start always , for easyness yep
@@ -761,7 +769,7 @@ public class ClientFXMLController implements Initializable {
 	String[] strings = stringFromWeek.split("week ");
 	int currentweekNumber = Integer.parseInt(strings[1]);
 	int nextWeekNumber = currentweekNumber + 1;
-	Scheldue_result res = clientController.getCurrentScheldue();
+	Schedule_result res = clientController.getCurrentScheldue();
 	displayNewScheldue(res, nextWeekNumber);
     }
 
@@ -778,7 +786,7 @@ public class ClientFXMLController implements Initializable {
 	String[] strings = stringFromWeek.split("week ");
 	int currentweekNumber = Integer.parseInt(strings[1]);
 	int preWeekNumber = currentweekNumber - 1;
-	Scheldue_result res = clientController.getCurrentScheldue();
+	Schedule_result res = clientController.getCurrentScheldue();
 	displayNewScheldue(res, preWeekNumber);
     }
 

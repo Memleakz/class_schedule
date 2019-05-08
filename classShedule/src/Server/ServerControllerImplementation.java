@@ -13,9 +13,10 @@ import Business_Logic.IServices.LocationInterface;
 import Business_Logic.IServices.ServerInterface;
 import Business_Logic.IServices.TeacherInterface;
 import Business_Logic.IServices.UserInterface;
-import Business_Logic.Common.Scheldue_result;
+import Business_Logic.Common.Schedule_result;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +26,13 @@ import java.util.Map;
  * @author lawar15
  */
 public class ServerControllerImplementation extends UnicastRemoteObject implements ServerInterface {
-    Scheldue_result current_scheldue = null;
+    Schedule_result current_scheldue = null;
     public ServerControllerImplementation() throws RemoteException {
 	//Load current active scheldue from db , we need this for making changes.
 	
 	List<LocationInterface> Rooms = ServerClassSchedulingHandling.getAllRooms();
 	List<CourseInterface> Courses = ServerClassSchedulingHandling.getAllCourses();
-	Scheldue_result tmp = new Scheldue_result();
+	Schedule_result tmp = new Schedule_result();
 	List<CourseInterface> Courses_with_bookings = new ArrayList<CourseInterface>();
 	for(CourseInterface c : Courses)
 	{
@@ -104,14 +105,14 @@ public class ServerControllerImplementation extends UnicastRemoteObject implemen
 
     @Override
     //public Scheldue_result getNewSchelue(String semesterStart, String semesterEnd, List<LocationInterface> Rooms, List<CourseInterface> Courses,Map<String,String[]> bestTimeForDay,Map<String,String[]> mediumTimeForDay,Map<String,String[]> emergencyTimeForDay) throws RemoteException {
-    public Scheldue_result getNewSchelue(String semesterStart, String semesterEnd, List<LocationInterface> Rooms, List<CourseInterface> Courses) throws RemoteException {
+    public Schedule_result getNewSchelue(String semesterStart, String semesterEnd, List<LocationInterface> Rooms, List<CourseInterface> Courses) throws RemoteException {
 	//save to db now ? or first when user accepts ?
 	//return ServerClassSchedulingHandling.AssignRoomsForCourses(semesterStart,semesterEnd,Rooms,Courses,bestTimeForDay,mediumTimeForDay,emergencyTimeForDay);
 	this.current_scheldue = ServerClassSchedulingHandling.AssignRoomsForCourses(semesterStart,semesterEnd,Rooms,Courses);
 	return this.current_scheldue;
     }
      @Override
-    public Scheldue_result getCurrentSchelue() throws RemoteException {
+    public Schedule_result getCurrentSchelue() throws RemoteException {
 	//save to db now ? or first when user accepts ?
 	return this.current_scheldue;
     }
@@ -123,7 +124,9 @@ public class ServerControllerImplementation extends UnicastRemoteObject implemen
 	for(BookingLocationsInterface b : bookings)
 	{  
 	    Schedule schedule = b.getScheduleOfBooking();
-	    //Period targetPeriode = new Period(startBookingFrom,this.current_scheldue.getResultPeriodEnd());
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+	    Period targetPeriode = new Period(startBookingFrom,schedule.getPeriodOfTerm().getEndDate().format(formatter));
+	    schedule.setPeriodOfTerm(targetPeriode);
 	    //Get a new date
 	    CourseInterface c = this.current_scheldue.getBookedCourse(b.getCourse().getNameOfTheCourse());
 	    LocationInterface cr = b.getCourse().getRoomReferencedByBooking(b);

@@ -12,7 +12,7 @@ import Business_Logic.IServices.LocationInterface;
 import Business_Logic.IServices.ServerInterface;
 import Business_Logic.IServices.TeacherInterface;
 import Business_Logic.User.User;
-import Business_Logic.Common.Scheldue_result;
+import Business_Logic.Common.Schedule_result;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -130,7 +130,7 @@ public class ClientController {
 	List<CourseInterface> courses = ClientClassSchedulingHandling.getAllCourses(serverController);
 	
 	//Find affected bookings
-	Scheldue_result active = ClientClassSchedulingHandling.getCurrentActiveScheldue(serverController);
+	Schedule_result active = ClientClassSchedulingHandling.getCurrentActiveScheldue(serverController);
 	List<BookingLocationsInterface> bookings = new ArrayList<BookingLocationsInterface>();
 	List<LocationInterface> rooms = new ArrayList<LocationInterface>();
 	List<CourseInterface> bookedcourses = active.getBookedCourses();
@@ -177,11 +177,11 @@ public class ClientController {
 	ClientClassSchedulingHandling.addNewTeacherToDb(serverController, login, password, name, id, arrayList, teachersCourses);
     }
 
-    public Scheldue_result createNewScheldue(String semesterStart, String semesterEnd, ArrayList<LocationInterface> Rooms, ArrayList<CourseInterface> Courses) {
+    public Schedule_result createNewScheldue(String semesterStart, String semesterEnd, ArrayList<LocationInterface> Rooms, ArrayList<CourseInterface> Courses) {
 	return ClientClassSchedulingHandling.createNewScheldue(serverController, semesterStart, semesterEnd, Rooms, Courses);
     }
 
-    public Scheldue_result getCurrentScheldue() {
+    public Schedule_result getCurrentScheldue() {
 	return ClientClassSchedulingHandling.getCurrentActiveScheldue(serverController);
     }
 
