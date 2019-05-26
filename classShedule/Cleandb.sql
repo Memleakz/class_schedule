@@ -6,4 +6,5 @@ DELETE FROM "RoomsAndBookings";
 DELETE FROM "StudentsForBookings";
 DELETE FROM "StudentsForCourses";
 DELETE FROM "Bookings";
-DELETE FROM "Schedules"
+DELETE FROM "Schedules";
+DELETE FROM "Periods";

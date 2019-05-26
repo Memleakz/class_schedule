@@ -8,11 +8,16 @@ import Business_Logic.Common.Schedule_result;
 import Business_Logic.IServices.CourseInterface;
 import Business_Logic.IServices.LocationInterface;
 import Client.ClientController;
+import Server.ClassSchedulingServer;
 import Server.ServerControllerImplementation;
+import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -40,6 +45,19 @@ public class SpeedTest {
     
     @Before
     public void setUp() {
+        try {
+	    if(this.serverController == null)
+	    {
+		this.serverController = new ServerControllerImplementation();
+		this.registry = LocateRegistry.createRegistry(REGISTRY_PORT);
+		registry.bind(REMOTE_OBJECT_NAME, serverController);
+		System.out.println("Server is running");
+	    }
+	} catch (RemoteException ex) {
+	    Logger.getLogger(ClassSchedulingServer.class.getName()).log(Level.SEVERE, null, ex);
+	} catch (AlreadyBoundException ex) {
+	    Logger.getLogger(ClassSchedulingServer.class.getName()).log(Level.SEVERE, null, ex);
+	}
     }
     
     @After
@@ -49,7 +67,7 @@ public class SpeedTest {
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
     //
-    // @Test
+     @Test
     public void scheldueGenerationSpeedTest() throws RemoteException {
         long timer_start = System.currentTimeMillis();
         //execute logic in between
