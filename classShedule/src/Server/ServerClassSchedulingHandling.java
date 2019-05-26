@@ -64,7 +64,6 @@ public class ServerClassSchedulingHandling {
 	    int periodsId= getPeriodsIdByStartAndFinishDate(SemesterStart,SemesterEnd);
 	    String newScheduleInDB = "INSERT INTO \"Schedules\" (\"schedules_id\",\"periods_id\") VALUES (DEFAULT,'" + periodsId + "')";
 	    dbm.execute(newScheduleInDB);
-	    //Period periodOfSchedule = createNewPeriodinDb(SemesterStart,SemesterEnd);
 	    Schedule scheduleToreturn = getScheduleByPeriod(periodOfSchedule);
 	 return scheduleToreturn;   
     }
@@ -161,7 +160,6 @@ public class ServerClassSchedulingHandling {
 	    if (BookingDone != true) {
 		for (LocationInterface r : allPossibleRooms) {
 		    known_bookings = l.get(r);
-		    //List<BookingLocationsInterface> abooks = AttemBookCourseTimes(null, c, r, "emergency", Total_needed_bookings, BookingPeriod,bestTimeForDay,mediumTimeForDay,emergencyTimeForDay);
 		    List<BookingLocationsInterface> abooks = AttemBookCourseTimes(null, c, r, "emergency", Total_needed_bookings, scheduleOfBooking);
 		    if (known_bookings == null) {
 			l.put(r, abooks);
