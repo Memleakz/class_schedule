@@ -5,7 +5,6 @@
  */
 
 import Business_Logic.Bookings.BookingFactory;
-import Business_Logic.Bookings.BookingOfTheRoom;
 import Business_Logic.Common.Period;
 import Business_Logic.Common.Schedule;
 import Business_Logic.IServices.BookingLocationsInterface;
@@ -13,13 +12,7 @@ import Business_Logic.IServices.CourseInterface;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import org.mockito.Mockito;
 
 /**
@@ -41,7 +34,6 @@ public class BookingUnitTest {
 	    CourseInterface course= Mockito.mock(CourseInterface.class);
 	    Schedule schedule = Mockito.mock(Schedule.class);
 	    BookingLocationsInterface booking = BookingFactory.getBookingOfTheRoom(formattedStartDateTime, formattedEndDateTime, course, schedule);
-//String start , String end,CourseInterface course, Schedule scheduleOfBooking	 
 	    LocalDateTime dateStartTime = LocalDateTime.of(2019, Month.MAY, 07, 13, 0, 0);
 	    LocalDateTime dateEndTime = LocalDateTime.of(2019, Month.MAY, 07, 16, 0, 0);
 	    Period periodtoCompare = Mockito.mock(Period.class);

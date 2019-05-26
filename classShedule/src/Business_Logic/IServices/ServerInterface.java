@@ -36,13 +36,8 @@ public interface ServerInterface  extends Remote {
 	public int addTeacher(String login, String password, String name, String id, ArrayList<BookingLocationsInterface> arrayList, List<CourseInterface> teachersCourses) throws RemoteException;
 	public List<CourseInterface> getAllCourses()throws RemoteException;
 	public List<LocationInterface> getAllRooms()throws RemoteException;
-	//public Scheldue_result getNewSchelue(String semesterStart,String semesterEnd,List<LocationInterface> Rooms,List<CourseInterface> Courses,Map<String,String[]> bestTimeForDay,Map<String,String[]> mediumTimeForDay,Map<String,String[]> emergencyTimeForDay)throws RemoteException;
 	public Schedule_result getNewSchelue(String semesterStart,String semesterEnd,List<LocationInterface> Rooms,List<CourseInterface> Courses)throws RemoteException;
-	
-	//public List<BookingLocationsInterface> AttemptreBookBooking(String startBookingFrom,List<BookingLocationsInterface> bookings,Map<String,String[]> bestTimeForDay,Map<String,String[]> mediumTimeForDay,Map<String,String[]> emergencyTimeForDay)throws RemoteException;
 	public List<BookingLocationsInterface> AttemptreBookBooking(String startBookingFrom,List<BookingLocationsInterface> bookings)throws RemoteException;
-	
 	public Schedule_result getCurrentSchelue() throws RemoteException;
 	public boolean addPossibleTimesToBook(Map<String, String[]> besttimes, Map<String, String[]> mediumtimes, Map<String, String[]> emergencytimes)throws RemoteException;
-//public int setTeacherInDb(String login, String password, String name, String id, List<BookingLocationsInterface> Rooms, List<CourseInterface> teachersCourses)throws RemoteException;
 }
