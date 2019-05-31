@@ -40,14 +40,10 @@ public class Lecturer implements TeacherInterface, Serializable {
     public List<CourseInterface> getPossibleCourses() {
 	return this.possibleCourses;
     }
-
-
-
     @Override
     public String getName() {
 	return this.name;
     }
-
     @Override
     public boolean isTeacherAvailable(String startdate, String finishdate) {
     Period periodOfBooking = new Period(startdate, finishdate);
@@ -79,7 +75,6 @@ public class Lecturer implements TeacherInterface, Serializable {
     }
     return false;
 }
-
     @Override
     public String getTeachersId() {
     return this.id;

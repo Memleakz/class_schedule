@@ -5,10 +5,6 @@
  */
 
 import Business_Logic.Common.Period;
-import Business_Logic.Common.Schedule;
-import Business_Logic.Days.ClasificationFactory;
-import Business_Logic.Days.Day;
-import Business_Logic.IServices.ClasificationInterface;
 import Business_Logic.IServices.TeacherInterface;
 import Business_Logic.Responsible.LecturerFactory;
 import java.time.LocalDateTime;
@@ -16,15 +12,7 @@ import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.mockito.Mockito.*; 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
 import org.mockito.Mockito;
 
 /**

@@ -20,74 +20,75 @@ import java.util.logging.Logger;
  */
 public class DatabaseManager {
 
- 	private Connection connection;
-	private static DatabaseManager dbManager = null;
+    private Connection connection;
+    private static DatabaseManager dbManager = null;
 
-	private DatabaseManager() {
-		
-		String url = "jdbc:postgresql://localhost:5432/class_scheldue";
-		String user = "postgres";
-		String password = "tobias1987";
-		 
-		try {
-			Class.forName("org.postgresql.Driver");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			return;
-		}
+    private DatabaseManager() {
 
-		connection = null;
-		try {
-			connection = DriverManager.getConnection(url, user, password);
-			System.out.println("Connection to database successful!");
-		} catch (SQLException ex) {
-			System.out.println("Connection to database failed.");
-		}
-	}
-	
-public static DatabaseManager getInstance() {
-		if (dbManager == null) {
-			dbManager = new DatabaseManager();
-		}
-		return dbManager;
-	}
-public void execute(String query) {
-		try (Statement statement = connection.createStatement()) {
-			statement.execute(query);
-		} catch (SQLException ex) {
-			Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
+        String url = "jdbc:postgresql://localhost:5432/class_scheldue";
+        String user = "postgres";
+        String password = "tobias1987";
 
-	public void executeUpdate(String query) {
-		try (Statement statement = connection.createStatement()) {
-			statement.executeUpdate(query);
-		} catch (SQLException ex) {
-			Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return;
+        }
 
-	public ResultSet executeQuery(String query) {
-		try {
-			return connection.createStatement().executeQuery(query);
-		} catch (SQLException ex) {
-			Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		return null;
-	}
+        connection = null;
+        try {
+            connection = DriverManager.getConnection(url, user, password);
+            System.out.println("Connection to database successful!");
+        } catch (SQLException ex) {
+            System.out.println("Connection to database failed.");
+        }
+    }
 
-	public int executeInsertAndGetId(String query) {
-		try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
-			statement.executeUpdate();
-			ResultSet generatedKeys = statement.getGeneratedKeys();
-			if (generatedKeys.next()) {
-				return generatedKeys.getInt(1);
-			} else {
-				return -1;
-			}
-		} catch (SQLException ex) {
-			Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
-			return -1;
-		}
-	}
+    public static DatabaseManager getInstance() {
+        if (dbManager == null) {
+            dbManager = new DatabaseManager();
+        }
+        return dbManager;
+    }
+
+    public void execute(String query) {
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(query);
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void executeUpdate(String query) {
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate(query);
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public ResultSet executeQuery(String query) {
+        try {
+            return connection.createStatement().executeQuery(query);
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public int executeInsertAndGetId(String query) {
+        try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
+            statement.executeUpdate();
+            ResultSet generatedKeys = statement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                return generatedKeys.getInt(1);
+            } else {
+                return -1;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            return -1;
+        }
+    }
 }

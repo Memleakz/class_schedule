@@ -19,18 +19,10 @@ import java.util.Map;
  */
 public interface ServerInterface  extends Remote {
 
-	//User functions
-	public UserInterface signUp(UserInterface user, String password) throws RemoteException;
 
 	public UserInterface signIn(String username, String password) throws RemoteException;
-
-	public void signOut() throws RemoteException;
-
-	public UserInterface updateUser(int currentUserID) throws RemoteException;
-	
 	public TeacherInterface handleTeachersAbsence(String teacherID, String startDateOfAbsence, String finishDateOfAbsence) throws RemoteException;
 	public Map<Integer,Map<Period,CourseInterface>> getClassScheduleForTeacher(String teachersID)throws RemoteException;
-
 	public String getIdOfTeacherByName(String name)throws RemoteException;
 	public List<TeacherInterface> getAllTeachers()throws RemoteException;
 	public int addTeacher(String login, String password, String name, String id, ArrayList<BookingLocationsInterface> arrayList, List<CourseInterface> teachersCourses) throws RemoteException;

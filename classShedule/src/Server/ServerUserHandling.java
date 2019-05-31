@@ -141,7 +141,6 @@ public class ServerUserHandling {
 
     private static List<Period> getBookedPeriodsForTeacher(String teachersID) {
 	List<Period> teachersBookedPeriods = new ArrayList<Period>();
-	//String query5 = "SELECT \"StartDate\", \"FinishDate\" FROM \"BookedPeriodsForTeachers\" NATURAL JOIN \"Periods\" WHERE \"teacher_of_booking\" = \'" + teachersID + "\' ;";
 	String query5 = "SELECT \"StartDate\", \"FinishDate\" FROM \"BookedPeriodsForTeachers\" JOIN \"Periods\" ON \"BookedPeriodsForTeachers\".periods_bookings_teacher::int8 = \"Periods\".periods_id  WHERE \"teacher_of_booking\" = 'jan001' ";
 	try {
 	    ResultSet periodsteachers = dbm.executeQuery(query5);
@@ -194,8 +193,6 @@ public class ServerUserHandling {
 		cNumberHoursTogether = coursess.getInt("numberOfHoursTogether");
 		cMaximalWeek = coursess.getInt("maximalTimesOfWeek");
 		cId = coursess.getString("courses_id");
-		//String tID = coursess.getString("assigned_teacher");
-		//TeacherInterface teacherForCourse = getTeacher(tID);
 		int desiredDaysBetweenLectures = coursess.getInt("desiredDaysBetweenLectures");
 		CourseInterface course = CourseFactory.getCourse(cId, cName, new ArrayList<StudentsInterface>(), cNumberLessons, cNumberHoursTogether, cMaximalWeek,null,desiredDaysBetweenLectures);
 		possibleCoursesss.add(course);
@@ -233,7 +230,6 @@ public class ServerUserHandling {
 
     private static List<Period> getBookedPeriodsForClass(String classesID) {
 	List<Period> studentsbookedperiods = new ArrayList<Period>();
-	//String query4 = "SELECT \"StartDate\", \"FinishDate\" FROM \"Periods\" NATURAL JOIN \"BookedPeriodsForClassesOfStudents\" WHERE \"classOfStudents\" = \'" + classesID + "\' ;";
 	String query4 = "SELECT \"StartDate\", \"FinishDate\" FROM \"Periods\" JOIN \"BookedPeriodsForClassesOfStudents\" ON \"Periods\".periods_id = \"bookingsPeriod\"::int8  WHERE \"classOfStudents\" = '"+classesID+"' ;";
 	try {
 	    ResultSet periodssforss = dbm.executeQuery(query4);
@@ -274,11 +270,6 @@ public class ServerUserHandling {
 	DateTimeFormatter outformatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 	LocalDateTime replaceStringStart = LocalDateTime.parse(startDateOfAbsence,informatter);
 	LocalDateTime replaceStringFinish = LocalDateTime.parse(finishDateOfAbsence,informatter);
-	
-	//String[] partsStart = startDateOfAbsence.split("-");
-	//String[] partsFinish = finishDateOfAbsence.split("-");
-	//String replaceStringStart = partsStart[2] + "/" + partsStart[1] + "/" + partsStart[0] + " 00:00:01";
-	//String replaceStringFinish = partsFinish[2] + "/" + partsFinish[1] + "/" + partsFinish[0] + " 23:59:59";
 	Period newPeriod = new Period(replaceStringStart.format(outformatter), replaceStringFinish.format(outformatter));
 	return newPeriod;
     }
@@ -324,18 +315,14 @@ public class ServerUserHandling {
 	    ResultSet bookingsForTeacher = dbm.executeQuery(query);
 
 	    while (bookingsForTeacher.next()) {
-		//String studentsClassId = studentsClassId = bookingsForTeacher.getString("studentsForBooking");
 		int bookedPeriodId =bookingsForTeacher.getInt("period_for_booking");
 		String courseId =bookingsForTeacher.getString("course_for_booking");
 		int bookingsId =bookingsForTeacher.getInt("bookings_id");
 		int schedulesId = bookingsForTeacher.getInt("schedules_id");
-		//List<StudentsInterface> classForCourse = getClassForCourse(courseId);
 		Schedule scheduleOfbooking = getScheduleById(schedulesId);
 		Period periodforbooking = getPeriodForId(bookedPeriodId);
 		CourseInterface courseforBooking = getCourseById(courseId);
-		//TeacherInterface teacherForCourse = getTeacher(teacherID);
-		
-		teachersBookings.add(BookingFactory.getBookingOfTheRoom(periodforbooking.getStartDate().format(outformatter), periodforbooking.getEndDate().format(outformatter), courseforBooking,scheduleOfbooking));
+                teachersBookings.add(BookingFactory.getBookingOfTheRoom(periodforbooking.getStartDate().format(outformatter), periodforbooking.getEndDate().format(outformatter), courseforBooking,scheduleOfbooking));
 
 	    }
 	} catch (SQLException ex) {

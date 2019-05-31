@@ -39,166 +39,158 @@ public class ClientController {
     private List<LocationInterface> allRooms = new ArrayList<LocationInterface>();
 
     public ClientController() throws RemoteException {
-	String hostname = "localhost";
-	try {
-	    Registry registry = LocateRegistry.getRegistry(hostname, 1812);
-	    serverController = (ServerInterface) registry.lookup("serverController");
-	} catch (RemoteException | NotBoundException ex) {
-	    ex.printStackTrace();
-	}
+        String hostname = "localhost";
+        try {
+            Registry registry = LocateRegistry.getRegistry(hostname, 1812);
+            serverController = (ServerInterface) registry.lookup("serverController");
+        } catch (RemoteException | NotBoundException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public boolean signIn(String login, String password) {
-	currentUser = ClientUserHandling.signIn(serverController, login, password);
-	if (currentUser != null) {
-	    return true;
-	}
-	return false;
+        currentUser = ClientUserHandling.signIn(serverController, login, password);
+        if (currentUser != null) {
+            return true;
+        }
+        return false;
     }
 
     public boolean isThisATeacher(String login, String password) {
-	return ClientUserHandling.isUserATeacher(serverController, login, password);
+        return ClientUserHandling.isUserATeacher(serverController, login, password);
     }
 
     public boolean preparePaneToMakingNewSchedule() {
-	allCourses = ClientClassSchedulingHandling.getAllCourses(serverController);
-	allTeachers = ClientClassSchedulingHandling.getAllTeachers(serverController);
-	allRooms = ClientClassSchedulingHandling.getAllRooms(serverController);
-	if (allCourses != null && allTeachers != null && allRooms != null) {
-	    return true;
-	}
-	return false;
+        allCourses = ClientClassSchedulingHandling.getAllCourses(serverController);
+        allTeachers = ClientClassSchedulingHandling.getAllTeachers(serverController);
+        allRooms = ClientClassSchedulingHandling.getAllRooms(serverController);
+        if (allCourses != null && allTeachers != null && allRooms != null) {
+            return true;
+        }
+        return false;
     }
 
     public String makeDatePickerDateToString(LocalDate startdate, boolean isStartDate) {
-	String time = "";
-	if (isStartDate == true) {
-	    time = " 00:00:01";
-	} else {
-	    time = " 23:59:59";
-	}
-	String returstring = "";
-	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-	String formattedString = startdate.format(formatter);
-	String newString = formattedString + time;
-	returstring = newString;
-	return returstring;
+        String time = "";
+        if (isStartDate == true) {
+            time = " 00:00:01";
+        } else {
+            time = " 23:59:59";
+        }
+        String returstring = "";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String formattedString = startdate.format(formatter);
+        String newString = formattedString + time;
+        returstring = newString;
+        return returstring;
     }
 
     public List<CourseInterface> getAllCourses() {
-	//check if prepared.
-	return this.allCourses;
+        //check if prepared.
+        return this.allCourses;
     }
 
     public List<TeacherInterface> getAllTeachers() {
-	//check if prepared.
-	return ClientClassSchedulingHandling.getAllTeachers(serverController);
+        //check if prepared.
+        return ClientClassSchedulingHandling.getAllTeachers(serverController);
     }
 
     public List<LocationInterface> getAllRooms() {
-	//check if prepared.
-	return this.allRooms;
+        //check if prepared.
+        return this.allRooms;
     }
 
     public void handlesignoutAction() {
-	currentUser = null;
+        currentUser = null;
     }
 
-    public boolean handleTeachersAbsence(String startDateOfAbsence, String finishDateOfAbsence,TeacherInterface lecturer) {
-	/*TeacherInterface teacherForAbsence= null;
-	String usersId = currentUser.getTeachersID();
-	teacherForAbsence =ClientUserHandling.handleTeachersAbsence(serverController, usersId , startDateOfAbsence, finishDateOfAbsence);
-	    if(teacherForAbsence !=null){
-		return true;
-	    }
-	    return false;*/
+    public boolean handleTeachersAbsence(String startDateOfAbsence, String finishDateOfAbsence, TeacherInterface lecturer) {
+        //GEt retardo lecturer obj
+        if (lecturer == null) {
+            List<TeacherInterface> Teachers = ClientClassSchedulingHandling.getAllTeachers(serverController);
+            for (TeacherInterface t : Teachers) {
+                if (t.getTeachersId().equals(this.currentUser.getTeachersID())) {
+                    lecturer = t;
+                    break;
+                }
+            }
+        }
+        //Get teachers courses.
+        Period p = new Period(startDateOfAbsence, finishDateOfAbsence);
+        List<CourseInterface> tcourses = new ArrayList<CourseInterface>();
+        List<CourseInterface> courses = ClientClassSchedulingHandling.getAllCourses(serverController);
 
-	//GEt retardo lecturer obj
-	if(lecturer == null)
-	{
-	    List<TeacherInterface> Teachers = ClientClassSchedulingHandling.getAllTeachers(serverController);
-	    for (TeacherInterface t : Teachers) {
-		if (t.getTeachersId().equals(this.currentUser.getTeachersID())) {
-		    lecturer = t;
-		    break;
-		}
-	    }
-	}
-	//Get teachers courses.
-	Period p = new Period(startDateOfAbsence, finishDateOfAbsence);
-	List<CourseInterface> tcourses = new ArrayList<CourseInterface>();
-	List<CourseInterface> courses = ClientClassSchedulingHandling.getAllCourses(serverController);
-	
-	//Find affected bookings
-	Schedule_result active = ClientClassSchedulingHandling.getCurrentActiveScheldue(serverController);
-	List<BookingLocationsInterface> bookings = new ArrayList<BookingLocationsInterface>();
-	List<LocationInterface> rooms = new ArrayList<LocationInterface>();
-	List<CourseInterface> bookedcourses = active.getBookedCourses();
-	//replace this with a server call to get all rooms , once scheldue is saved.
-	for (CourseInterface c : bookedcourses) {
-	    List<LocationInterface> b = c.getBookedRooms();
-	    boolean match_found = false;
-	    for (LocationInterface broom : b) {
-		for (LocationInterface r : rooms) {
-		    if (r.getNameOfTheLocation().compareTo(broom.getNameOfTheLocation()) == 0) {
-			match_found = true;
-			break;
-		    }
-		}
-		if (match_found == false) {
-		    rooms.add(broom);
-		}
-	    }
-	}
+        //Find affected bookings
+        Schedule_result active = ClientClassSchedulingHandling.getCurrentActiveScheldue(serverController);
+        List<BookingLocationsInterface> bookings = new ArrayList<BookingLocationsInterface>();
+        List<LocationInterface> rooms = new ArrayList<LocationInterface>();
+        List<CourseInterface> bookedcourses = active.getBookedCourses();
+        //replace this with a server call to get all rooms , once scheldue is saved.
+        for (CourseInterface c : bookedcourses) {
+            List<LocationInterface> b = c.getBookedRooms();
+            boolean match_found = false;
+            for (LocationInterface broom : b) {
+                for (LocationInterface r : rooms) {
+                    if (r.getNameOfTheLocation().compareTo(broom.getNameOfTheLocation()) == 0) {
+                        match_found = true;
+                        break;
+                    }
+                }
+                if (match_found == false) {
+                    rooms.add(broom);
+                }
+            }
+        }
+        for (LocationInterface r : rooms) {
+            List<BookingLocationsInterface> affected_bookings = r.getAllBookingsForTeacher(lecturer, p);
+            bookings.addAll(affected_bookings);
+        }
 
-	for (LocationInterface r : rooms) {
-	    List<BookingLocationsInterface> affected_bookings = r.getAllBookingsForTeacher(lecturer, p);
-	    bookings.addAll(affected_bookings);
-	}
-
-	ClientClassSchedulingHandling.AttemptreBookBooking(serverController, finishDateOfAbsence, bookings);
-	return true;
+        ClientClassSchedulingHandling.AttemptreBookBooking(serverController, finishDateOfAbsence, bookings);
+        return true;
     }
 
     public String getUsersNameByLogin(String login) {
-	return currentUser.getname();
-
+        return currentUser.getname();
     }
 
     public Map<Integer, Map<Period, CourseInterface>> getClassScheduleForTeacher(String teachersID) {
-	return ClientUserHandling.getClassScheduleForTeacher(serverController, teachersID);
+        return ClientUserHandling.getClassScheduleForTeacher(serverController, teachersID);
     }
 
     public String getTeachersIdByName(String name) {
-	return ClientUserHandling.getUsersIdByName(serverController, name);
+        return ClientUserHandling.getUsersIdByName(serverController, name);
     }
 
     public void addNewTeacher(String login, String password, String name, String id, ArrayList<BookingLocationsInterface> arrayList, List<CourseInterface> teachersCourses) {
-	ClientClassSchedulingHandling.addNewTeacherToDb(serverController, login, password, name, id, arrayList, teachersCourses);
+        ClientClassSchedulingHandling.addNewTeacherToDb(serverController, login, password, name, id, arrayList, teachersCourses);
     }
 
     public Schedule_result createNewScheldue(String semesterStart, String semesterEnd, ArrayList<LocationInterface> Rooms, ArrayList<CourseInterface> Courses) {
-	return ClientClassSchedulingHandling.createNewScheldue(serverController, semesterStart, semesterEnd, Rooms, Courses);
+        return ClientClassSchedulingHandling.createNewScheldue(serverController, semesterStart, semesterEnd, Rooms, Courses);
     }
 
     public Schedule_result getCurrentScheldue() {
-	return ClientClassSchedulingHandling.getCurrentActiveScheldue(serverController);
+        return ClientClassSchedulingHandling.getCurrentActiveScheldue(serverController);
     }
 
     public List<BookingLocationsInterface> AttemptreBookBooking(String startBookingFrom, List<BookingLocationsInterface> booking) {
-	return ClientClassSchedulingHandling.AttemptreBookBooking(serverController, startBookingFrom, booking);
+        return ClientClassSchedulingHandling.AttemptreBookBooking(serverController, startBookingFrom, booking);
     }
-    public void addPossibleTimesToBook(Map<String, String[]> besttimes, Map<String, String[]> mediumtimes, Map<String, String[]> emergencytimes)
-    {
-	ClientClassSchedulingHandling.addPossibleTimesToBook(serverController, besttimes,mediumtimes,emergencytimes);
+
+    public void addPossibleTimesToBook(Map<String, String[]> besttimes, Map<String, String[]> mediumtimes, Map<String, String[]> emergencytimes) {
+        ClientClassSchedulingHandling.addPossibleTimesToBook(serverController, besttimes, mediumtimes, emergencytimes);
     }
-    public String[] getNamesOfAllDaysOfWeek(){
-	return ClientClassSchedulingHandling.getNamesOfAllDaysOfWeek();
+
+    public String[] getNamesOfAllDaysOfWeek() {
+        return ClientClassSchedulingHandling.getNamesOfAllDaysOfWeek();
     }
-    public String[] getPossibleTimeStamps(){
-	return ClientClassSchedulingHandling.getPossibleTimeStamps();
+
+    public String[] getPossibleTimeStamps() {
+        return ClientClassSchedulingHandling.getPossibleTimeStamps();
     }
-    public List<String> getPossibleTimeStampsAfterTime(String time){
-	return ClientClassSchedulingHandling.getPossibleTimeStampsAfterTime(time);
+
+    public List<String> getPossibleTimeStampsAfterTime(String time) {
+        return ClientClassSchedulingHandling.getPossibleTimeStampsAfterTime(time);
     }
 }

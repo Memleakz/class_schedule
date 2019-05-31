@@ -123,7 +123,6 @@ public class ClientClassSchedulingHandling {
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:SS");
 	LocalTime  dateTime = LocalTime.parse(time);
 	//Add First to list..so we include it.
-	//timestamp.add(dateTime.format(formatter));
 	dateTime = dateTime.plusMinutes(30);
 	while(dateTime.getHour() != 0 || dateTime.getMinute() != 0){
 	    String formattedDateTime = dateTime.format(formatter);

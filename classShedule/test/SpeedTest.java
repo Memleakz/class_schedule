@@ -15,7 +15,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
@@ -24,7 +23,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class SpeedTest {
     private static final int REGISTRY_PORT = 1812;
@@ -84,6 +82,6 @@ public class SpeedTest {
 	       
         
         long timer_end = System.currentTimeMillis();
-        System.out.println("DEBUG: Logic A took " + (timer_end - timer_start) + " MilliSeconds");
+        System.out.println("DEBUG: New scheldue created in: " + (timer_end - timer_start) + " MilliSeconds");
     }
 }
