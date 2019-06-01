@@ -66,5 +66,13 @@ class ClientUserHandling {
 	    return null;
 	}
     }
+    static TeacherInterface getTeacherById(ServerInterface serverController,String id){
+	try {
+	    return serverController.getTeacherById(id);
+	} catch (RemoteException ex) {
+	    Logger.getLogger(ClientUserHandling.class.getName()).log(Level.SEVERE, null, ex);
+	    return null;
+	}
+    }
 
 }

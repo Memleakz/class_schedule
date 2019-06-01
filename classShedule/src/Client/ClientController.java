@@ -193,4 +193,7 @@ public class ClientController {
     public List<String> getPossibleTimeStampsAfterTime(String time) {
         return ClientClassSchedulingHandling.getPossibleTimeStampsAfterTime(time);
     }
+    public TeacherInterface getTeacherByID(String id){
+	return ClientUserHandling.getTeacherById(serverController, id);
+    };
 }

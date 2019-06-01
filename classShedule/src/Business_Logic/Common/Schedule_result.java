@@ -6,6 +6,7 @@
 package Business_Logic.Common;
 
 import Business_Logic.IServices.CourseInterface;
+import Business_Logic.IServices.TeacherInterface;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +67,16 @@ public class Schedule_result implements Serializable {
 	    }
 	}
 	return;
+    }
+    public List<CourseInterface> getbookedCoursesForTeacher(TeacherInterface teacher){
+	List<CourseInterface> bookedCoursesforteacherall = new ArrayList<CourseInterface>() ;
+	for(CourseInterface c : this.bookedCourses){
+	    TeacherInterface teacherToCompare =c.getAssignedLecturer();
+	    if(teacherToCompare.getTeachersId().compareTo(teacher.getTeachersId())==0){
+		bookedCoursesforteacherall.add(c);
+	    }
+	}
+	return bookedCoursesforteacherall;
     }
     
 }

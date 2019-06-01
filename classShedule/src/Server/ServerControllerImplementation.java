@@ -135,4 +135,9 @@ public class ServerControllerImplementation extends UnicastRemoteObject implemen
         return ServerClassSchedulingHandling.setPossibleTimesOfDayInDb(besttimes, mediumtimes, emergencytimes);
     }
 
+    @Override
+    public TeacherInterface getTeacherById(String id) throws RemoteException {
+	return ServerUserHandling.getTeacher(id);
+    }
+
 }

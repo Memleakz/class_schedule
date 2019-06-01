@@ -109,7 +109,7 @@ public class ServerUserHandling {
 
     }
 
-    private static TeacherInterface getTeacher(String teacherID) {
+    public static TeacherInterface getTeacher(String teacherID) {
 	TeacherInterface teacher;
 	String query = "SELECT * FROM \"Teachers\" WHERE \"teachers_id\" = \'" + teacherID + "\' ;";
 	List<CourseInterface> possibleCcourses = new ArrayList<CourseInterface>();

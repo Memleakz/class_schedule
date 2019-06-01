@@ -31,5 +31,6 @@ public interface ServerInterface  extends Remote {
 	public Schedule_result getNewSchelue(String semesterStart,String semesterEnd,List<LocationInterface> Rooms,List<CourseInterface> Courses)throws RemoteException;
 	public List<BookingLocationsInterface> AttemptreBookBooking(String startBookingFrom,List<BookingLocationsInterface> bookings)throws RemoteException;
 	public Schedule_result getCurrentSchelue() throws RemoteException;
+	public TeacherInterface getTeacherById(String id) throws RemoteException;
 	public boolean addPossibleTimesToBook(Map<String, String[]> besttimes, Map<String, String[]> mediumtimes, Map<String, String[]> emergencytimes)throws RemoteException;
 }
