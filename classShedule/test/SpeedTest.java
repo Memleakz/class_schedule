@@ -62,9 +62,7 @@ public class SpeedTest {
     public void tearDown() {
     }
 
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
+    //Time how it takes to create a schedule.
      @Test
     public void scheldueGenerationSpeedTest() throws RemoteException {
         long timer_start = System.currentTimeMillis();
