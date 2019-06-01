@@ -580,7 +580,7 @@ public class ClientFXMLController implements Initializable {
         changingPaneScheduler.setVisible(false);
         classScheduleViewPane.setVisible(true);
 
-        displayNewScheldue(res, weekNumber, null);
+        displayNewScheldue(res, weekNumber, teacher);
 
     }
 
@@ -717,6 +717,7 @@ public class ClientFXMLController implements Initializable {
                 if (day_entries == null) {
                     day_entries = new ArrayList<BookingLocationsInterface>();
                 }
+                
                 day_entries.addAll(booklist);
                 All_Bookins.put(key, day_entries);
             }
@@ -725,12 +726,16 @@ public class ClientFXMLController implements Initializable {
         //Sort all bookings by start time during their day
         //Display!
         weekNumber.clear();
+        classorTeacherName.setText("This is a class schedule for Teacher " + teacher.getName());
         weekNumber.setText("This is schedule for week " + startWeekOfTerm);
         for (Map.Entry<Integer, List<BookingLocationsInterface>> entry : All_Bookins.entrySet()) {
             int dayOfWeek = entry.getKey() + 1; // account for diffrerence i calendar and our system
             List<BookingLocationsInterface> bookings = entry.getValue();
             for (BookingLocationsInterface booking : bookings) {
-
+                if(booking.getTeacher().getTeachersId().equals(teacher.getTeachersId()) == false)
+                {
+                    continue;
+                }
                 LocationInterface r = booking.getCourse().getRoomReferencedByBooking(booking);
                 String Booking_info = booking.getPeriodOfBooking().getStartDate().getHour() + " - " + booking.getPeriodOfBooking().getEndDate().getHour();
                 Booking_info += " - " + booking.getCourse().getNameOfTheCourse() + " - " + r.getNameOfTheLocation() + " - " + booking.getCourse().getAssignedLecturer().getTeachersId();
@@ -754,23 +759,23 @@ public class ClientFXMLController implements Initializable {
         }
 	}
 	if(teacher==null){
-        List<LocationInterface> rooms = new ArrayList<LocationInterface>();
-        List<CourseInterface> bookedcourses = new_scheldue.getBookedCourses();
-        //replace this with a server call to get all rooms , once scheldue is saved.
-        for (CourseInterface c : bookedcourses) {
-            List<LocationInterface> b = c.getBookedRooms();
-            boolean match_found = false;
-            for (LocationInterface broom : b) {
-                for (LocationInterface r : rooms) {
-                    if (r.getNameOfTheLocation().compareTo(broom.getNameOfTheLocation()) == 0) {
-                        match_found = true;
-                        break;
+            List<LocationInterface> rooms = new ArrayList<LocationInterface>();
+            List<CourseInterface> bookedcourses = new_scheldue.getBookedCourses();
+            //replace this with a server call to get all rooms , once scheldue is saved.
+            for (CourseInterface c : bookedcourses) {
+                List<LocationInterface> b = c.getBookedRooms();
+                boolean match_found = false;
+                for (LocationInterface broom : b) {
+                    for (LocationInterface r : rooms) {
+                        if (r.getNameOfTheLocation().compareTo(broom.getNameOfTheLocation()) == 0) {
+                            match_found = true;
+                            break;
+                        }
+                    }
+                    if (match_found == false) {
+                        rooms.add(broom);
                     }
                 }
-                if (match_found == false) {
-                    rooms.add(broom);
-                }
-            }
         }
         Map<Integer, List<BookingLocationsInterface>> All_Bookins = new TreeMap<Integer, List<BookingLocationsInterface>>();
         for (LocationInterface l : rooms) {
@@ -832,7 +837,11 @@ public class ClientFXMLController implements Initializable {
         mondayLessonsListView.getItems().clear();
 	String nameOfTeacher = classorTeacherName.getText();
         String[] parts = nameOfTeacher.split("Teacher ");
-        String teachersname = parts[1];
+        String teachersname = "";
+        if(parts.length > 1)
+        {
+            teachersname = parts[1];
+        }
         String teachersId = clientController.getTeachersIdByName(teachersname);
 	TeacherInterface teacherOfSchedule = clientController.getTeacherByID(teachersId);
         String stringFromWeek = weekNumber.getText();
@@ -844,7 +853,15 @@ public class ClientFXMLController implements Initializable {
             return;
         }
         Schedule_result res = clientController.getCurrentScheldue();
-        displayNewScheldue(res, nextWeekNumber,teacherOfSchedule);
+        if(teachersname.equals(""))
+        {
+            displayNewScheldue(res, nextWeekNumber,null);
+        }
+        else
+        {
+           displayNewScheldue(res, nextWeekNumber,teacherOfSchedule); 
+        }
+        
     }
 
     @FXML
@@ -858,7 +875,11 @@ public class ClientFXMLController implements Initializable {
         mondayLessonsListView.getItems().clear();
 	String nameOfTeacher = classorTeacherName.getText();
         String[] parts = nameOfTeacher.split("Teacher ");
-        String teachersname = parts[1];
+        String teachersname = "";
+        if(parts.length > 1)
+        {
+         teachersname = parts[1];
+        }
         String teachersId = clientController.getTeachersIdByName(teachersname);
 	TeacherInterface teacherOfSchedule = clientController.getTeacherByID(teachersId);
         String stringFromWeek = weekNumber.getText();
@@ -870,7 +891,14 @@ public class ClientFXMLController implements Initializable {
             return;
         }
         Schedule_result res = clientController.getCurrentScheldue();
-        displayNewScheldue(res, preWeekNumber,teacherOfSchedule);
+        if(teachersname.equals(""))
+        {
+            displayNewScheldue(res, preWeekNumber,null);
+        }
+        else
+        {
+           displayNewScheldue(res, preWeekNumber,teacherOfSchedule); 
+        }
     }
 
 }

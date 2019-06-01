@@ -25,9 +25,9 @@ public class DatabaseManager {
 
     private DatabaseManager() {
 
-        String url = "jdbc:postgresql://localhost:5432/classScheduling";
-        String user = "lawar15";
-        String password = "0000";
+        String url = "jdbc:postgresql://localhost:5432/class_scheldue";
+        String user = "postgres";
+        String password = "tobias1987";
 
         try {
             Class.forName("org.postgresql.Driver");
